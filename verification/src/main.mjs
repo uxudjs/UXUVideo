@@ -20,8 +20,6 @@ import { checkImportGraph } from './checks/import-graph.mjs';
 import { checkSecurityScan } from './checks/security-scan.mjs';
 import { checkDuplicates } from './checks/duplicates.mjs';
 import { checkStaticTools } from './checks/static-tools.mjs';
-import { checkAndroid } from './checks/android.mjs';
-import { checkDockerLocal } from './checks/docker-local.mjs';
 import { startRuntime } from './checks/runtime-start.mjs';
 import { checkApiDiscovery } from './checks/api-discovery.mjs';
 import { checkApiContracts } from './checks/api-contracts.mjs';
@@ -33,7 +31,6 @@ import { checkUiActions } from './checks/ui-actions.mjs';
 import { checkPerformance } from './checks/performance.mjs';
 import { checkVideo } from './checks/video.mjs';
 import { checkVisual } from './checks/visual.mjs';
-import { checkDeployment } from './checks/deployment.mjs';
 
 const config = getConfig(process.argv);
 const ctx = createContext(config);
@@ -55,10 +52,7 @@ async function main() {
     await checkVerifierQuality(ctx); await checkAstMetrics(ctx); await checkImportGraph(ctx);
     await checkSecurityScan(ctx); await checkDuplicates(ctx);
   });
-  await runStage(ctx, 'static', 'unit, coverage, lint, type, dependency, Android, and production builds', async () => {
-    await checkStaticTools(ctx); await checkAndroid(ctx);
-  });
-  await runStage(ctx, 'docker', 'local release container', checkDockerLocal);
+  await runStage(ctx, 'static', 'unit, coverage, lint, type, dependency, and production builds', checkStaticTools);
   await runStage(ctx, 'runtime', 'deterministic fixtures and local application', startRuntime);
   await runStage(ctx, 'api', 'API, proxy, latency, headers, and PWA contracts', async () => {
     await checkApiDiscovery(ctx); await checkApiContracts(ctx); await checkProxy(ctx); await checkLatency(ctx); await checkSecurityHeaders(ctx);
@@ -66,7 +60,6 @@ async function main() {
   await runStage(ctx, 'browser', 'UI, accessibility, actions, performance, video, and visual parity', async () => {
     await checkUiPages(ctx); await checkUiActions(ctx); await checkPerformance(ctx); await checkVideo(ctx); await checkVisual(ctx);
   });
-  await runStage(ctx, 'deployment', 'public release consistency', checkDeployment);
   await runStage(ctx, 'postflight', 'final verification-only workspace boundary', async () => {
     await checkWorkspaceBoundary(ctx, 'postflight');
   });

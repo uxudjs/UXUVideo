@@ -72,7 +72,7 @@ export function useConfigSync() {
           }
         }
       } catch {
-        // Server may not be available (e.g. Cloudflare Pages)
+        // Server-side sync may not be available.
       }
     };
 

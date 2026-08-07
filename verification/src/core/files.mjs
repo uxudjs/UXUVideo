@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { redact } from './redact.mjs';
 
-const ignored = new Set(['.git', '.gradle', '.next', '.vercel', '.wrangler', 'artifacts', 'build', 'cache', 'coverage', 'dist', 'node_modules', 'out']);
+const ignored = new Set(['.git', '.next', '.vercel', 'artifacts', 'build', 'cache', 'coverage', 'dist', 'node_modules', 'out']);
 
 export function walk(root, predicate = () => true) {
   const output = [];

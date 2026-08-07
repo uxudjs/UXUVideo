@@ -9,10 +9,6 @@ There is one complete validation entry point. Run it from the repository root:
 The runner installs its pinned tools inside this directory, builds and starts
 KVideo locally, exercises APIs and UI, and writes evidence under
 `verification/artifacts/<run-id>/`. It does not edit application source.
-The Docker stage creates a temporary sanitized context below
-`verification/cache/`, excludes this verification tree and generated build
-state, and removes that context after use. Root Docker configuration is not
-modified by the verifier.
 
 Primary outputs:
 
@@ -42,9 +38,8 @@ The regression subset is an internal stage, not a second validation command.
 Only `./verification/run` executes the whole chain: harness self-tests, local
 Issue/pull-request contracts, source policy, static analysis,
 100% application coverage enforcement, verifier dependency/audit checks,
-Android lint/tests/APK build, production builds, Docker, runtime APIs, proxies,
-latency, UI actions, video, performance, visual comparison, and deployment
-consistency.
+production builds, runtime APIs, proxies, latency, UI actions, video,
+performance, and optional visual comparison against a supplied published URL.
 
 Normal verification does not query GitHub. Known Issue and pull-request
 requirements are stored in `history/catalog.json`, review contracts are stored
@@ -65,17 +60,13 @@ Useful options:
 ./verification/run --quick
 ./verification/run --offline
 ./verification/run --audit-github
-./verification/run --candidate
-./verification/run --reference-url https://kvideo.pages.dev
+./verification/run --reference-url https://published.example.test
 ./verification/run --keep-server
 ./verification/run --max-actions 10000 --max-action-depth 10
 ```
 
-`--candidate` is used by pre-merge/push CI. It runs the full candidate checks
-but explicitly skips only the post-publication convergence check, because an
-unpublished commit cannot already equal GitHub main, Cloudflare, and Docker.
-After release, run the default command without this flag; public consistency is
-then mandatory.
+`--reference-url` is optional. When omitted, remote visual and header parity
+checks are skipped while all local web checks still run.
 
 Full mode explores up to 5,000 control-state operations per route and eight
 same-route transitions. Every admitted state's controls are executed. New URL
@@ -103,9 +94,9 @@ runtime-error, LCP, and CLS budgets.
 
 Default mode is deliberately strict. Existing source files over 150 lines,
 lint/type/build failures, uncaught browser errors, severe accessibility
-violations, API contract failures, deployment drift, and threshold breaches
-produce a non-zero exit code. Generated reports and third-party files are not
-source code and are excluded from the 150-line source policy.
+violations, API contract failures, supplied-reference drift, and threshold
+breaches produce a non-zero exit code. Generated reports and third-party files
+are not source code and are excluded from the 150-line source policy.
 
 The suite cannot prove the absence of every defect. It reports exactly what it
 enumerated, what it executed, what it skipped, and why. A green result means all

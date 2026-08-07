@@ -1,14 +1,14 @@
 import path from 'node:path';
+import { findWebOnlyViolations } from '../../../scripts/check-web-only.mjs';
 import { finding } from '../core/finding.mjs';
 import { lineCount, relative, walk, writeJson } from '../core/files.mjs';
 
-const codeExt = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css', '.scss', '.swift', '.kt', '.kts',
-  '.json', '.yaml', '.yml', '.xml', '.svg', '.html', '.sh', '.toml', '.properties']);
-const codeNames = new Set(['Dockerfile', 'gradlew']);
+const codeExt = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css', '.scss',
+  '.json', '.yaml', '.yml', '.svg', '.html', '.sh']);
 const generatedNames = /(?:package-lock\.json|yarn\.lock|pnpm-lock\.yaml|\.min\.(?:js|css))$/;
 
 export function projectSourceFile(file) {
-  return !generatedNames.test(file) && (codeExt.has(path.extname(file)) || codeNames.has(path.basename(file)));
+  return !generatedNames.test(file) && codeExt.has(path.extname(file));
 }
 
 function inventory(root, files) {
@@ -17,6 +17,14 @@ function inventory(root, files) {
 
 export async function checkSourcePolicy(ctx) {
   const root = ctx.config.root;
+  const webOnlyViolations = findWebOnlyViolations(root);
+  finding(ctx, {
+    id: 'source.web-only-policy', category: 'source', title: 'Repository contains only supported web delivery surfaces',
+    status: webOnlyViolations.length ? 'FAIL' : 'PASS', severity: 'critical', expected: 'No Cloudflare deployment adapter, Docker packaging, or native app project',
+    actual: webOnlyViolations.length ? JSON.stringify(webOnlyViolations) : '0 forbidden deployment surfaces',
+    reason: webOnlyViolations.length ? 'Unsupported deployment or native application capability was reintroduced.' : 'Only supported web delivery surfaces are present.',
+    remediation: 'Remove every reported path, script, or dependency before merging.',
+  });
   const projectFiles = walk(root, (file) => projectSourceFile(file) && !file.includes('/verification/'));
   const project = inventory(root, projectFiles);
   const oversized = project.filter((item) => item.lines > ctx.config.maxSourceLines);

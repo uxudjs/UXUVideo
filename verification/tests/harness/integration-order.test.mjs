@@ -12,9 +12,19 @@ test('action caps skip only quick runs and fail complete runs', () => {
   assert.equal(actionCoverageStatus({ quick: false, cappedRoutes: ['desktop:/settings'], emptyRoutes: [] }), 'FAIL');
 });
 
-test('Next production build runs after the Cloudflare adapter build', () => {
+test('Next production build remains part of static verification', () => {
   const source = fs.readFileSync(new URL('../../src/checks/static-tools.mjs', import.meta.url), 'utf8');
-  assert.ok(source.indexOf("'cloudflare-pages-build'") < source.indexOf("'next-build'"));
+  assert.match(source, /'next-build'/);
+});
+
+test('upstream sync enforces the web-only policy before pushing main', () => {
+  const source = fs.readFileSync(new URL('../../../.github/workflows/Github_Upstream_Sync.yml', import.meta.url), 'utf8');
+  const policy = source.indexOf('node scripts/check-web-only.mjs');
+  const push = source.indexOf('git push origin $TARGET_BRANCH');
+
+  assert.ok(policy >= 0);
+  assert.ok(push >= 0);
+  assert.ok(policy < push);
 });
 
 test('action path replay verifies every expected state transition', () => {

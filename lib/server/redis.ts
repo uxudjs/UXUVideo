@@ -1,17 +1,11 @@
-import { Redis } from '@upstash/redis/cloudflare';
+import { Redis } from '@upstash/redis';
 
 import { getRuntimeEnvValue } from '@/lib/server/runtime-env';
 
 let cachedRedis: Redis | undefined;
 
 /**
- * Build the shared Upstash client from whichever environment source is available.
- *
- * `Redis.fromEnv()` is deliberately not used here: the `@upstash/redis/cloudflare`
- * implementation only reads Cloudflare's global bindings and never falls back to
- * `process.env`, so it always resolves to `undefined` on Docker / Node
- * self-hosted deployments. The client is also created lazily because Cloudflare's
- * per-request bindings are not reachable while a module is being evaluated.
+ * Build the shared Upstash client lazily from the server environment.
  *
  * Returns `null` when Upstash is not configured, which callers should treat as
  * "server-side sync unavailable" rather than as a request failure.

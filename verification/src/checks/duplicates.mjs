@@ -5,7 +5,7 @@ import { runCommand } from '../core/command.mjs';
 import { finding } from '../core/finding.mjs';
 import { relative, walk, writeJson } from '../core/files.mjs';
 
-const codeExt = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css', '.kt', '.kts']);
+const codeExt = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css']);
 
 function findReport(dir) {
   if (!fs.existsSync(dir)) return null;
@@ -67,7 +67,7 @@ function addExactFinding(ctx, options) {
 }
 
 export async function checkDuplicates(ctx) {
-  const projectRoots = ['app', 'components', 'lib', 'scripts', 'android-tv/app/src/main/java'];
+  const projectRoots = ['app', 'components', 'lib', 'scripts'];
   const verifierRoots = ['verification/src', 'verification/tests'];
   const project = await cloneScan(ctx, { name: 'jscpd-project', roots: projectRoots, minLines: 8, minTokens: 60 });
   const verifier = await cloneScan(ctx, { name: 'jscpd-verifier', roots: verifierRoots, minLines: 6, minTokens: 45 });

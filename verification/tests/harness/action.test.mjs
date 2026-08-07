@@ -6,7 +6,6 @@ import { clickControl, reorderSortable, stateDifference, stateSnapshot } from '.
 import { semanticDifference } from '../../src/browser/semantic.mjs';
 import { BROWSER_FIXTURE_ORIGIN } from '../../src/browser/init.mjs';
 import { requestFailureBucket } from '../../src/browser/session.mjs';
-import { parseAndroidVersion } from '../../src/checks/android-config.mjs';
 import { coverageArgs } from '../../src/checks/coverage.mjs';
 import { projectSourceFile } from '../../src/checks/source-policy.mjs';
 
@@ -130,7 +129,7 @@ test('semantic deltas expose missing and unexpected visible controls', () => {
   });
 });
 
-test('coverage, Android, and line policies are strict by construction', () => {
+test('coverage and line policies are strict by construction', () => {
   const ctx = { config: { verifyDir: '/verify' } };
   const args = coverageArgs(ctx, '/reports');
   assert.ok(args.includes('--all'));
@@ -139,8 +138,7 @@ test('coverage, Android, and line policies are strict by construction', () => {
   assert.ok(args.includes('components'));
   assert.ok(args.includes('lib'));
   assert.ok(args.includes('scripts'));
-  assert.deepEqual(parseAndroidVersion('versionCode = 9\nversionName = "4.9.20"'), { versionName: '4.9.20', versionCode: 9 });
   assert.equal(projectSourceFile('/repo/app-release.json'), true);
-  assert.equal(projectSourceFile('/repo/Dockerfile'), true);
+  assert.equal(projectSourceFile('/repo/app/page.tsx'), true);
   assert.equal(projectSourceFile('/repo/package-lock.json'), false);
 });

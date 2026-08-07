@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const codeExtensions = new Set([
-  '.css', '.gradle', '.js', '.jsx', '.json', '.kts', '.kt', '.mjs', '.sh', '.ts', '.tsx', '.yaml', '.yml',
+  '.css', '.js', '.jsx', '.json', '.mjs', '.sh', '.ts', '.tsx', '.yaml', '.yml',
 ]);
 const evidencePrefixes = [
   'verification/src/checks/',
@@ -31,7 +31,7 @@ export function parsePrBody(body = '') {
 
 export function isCodeChange(file) {
   const base = path.basename(file);
-  return codeExtensions.has(path.extname(file)) || ['Dockerfile', 'package-lock.json', 'package.json'].includes(base);
+  return codeExtensions.has(path.extname(file)) || ['package-lock.json', 'package.json'].includes(base);
 }
 
 function tagged(text, ref) {

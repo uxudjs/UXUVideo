@@ -38,13 +38,12 @@ test('normal verification uses local historical contracts without GitHub access'
   assert.match(readme, /Normal verification does not query GitHub/);
 });
 
-test('post-publication verification checks every requested release surface', () => {
-  const deployment = fs.readFileSync(path.join(root, 'verification/src/checks/deployment.mjs'), 'utf8');
-  assert.match(deployment, /refs\/heads\/main/);
-  assert.match(deployment, /kuekhaoyang\/kvideo:latest/);
-  assert.match(deployment, /kuekhaoyang\/kvideo:\$\{ctx\.state\.version\}/);
-  assert.match(deployment, /cloudflare-deployments/);
-  assert.match(deployment, /latestDigest === versionDigest/);
+test('verification enforces the web-only repository boundary', () => {
+  const deployment = path.join(root, 'verification/src/checks/deployment.mjs');
+  const sourcePolicy = fs.readFileSync(path.join(root, 'verification/src/checks/source-policy.mjs'), 'utf8');
+  assert.equal(fs.existsSync(deployment), false);
+  assert.match(sourcePolicy, /findWebOnlyViolations/);
+  assert.match(sourcePolicy, /source\.web-only-policy/);
 });
 
 // GH-ISSUE: 16,20,25,78,80,140,143,150,172,174,182,186; GH-PR: 29,235

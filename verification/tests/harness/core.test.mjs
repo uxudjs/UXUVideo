@@ -8,12 +8,13 @@ import { stableGeneratedValue } from '../../src/browser/action-normalize.mjs';
 import { BROWSER_FIXTURE_ORIGIN, sourceArgument } from '../../src/browser/init.mjs';
 import { numericCandidate, prepareActionState } from '../../src/browser/action-state.mjs';
 import { getConfig } from '../../src/config.mjs';
-import { latestDeployment } from '../../src/checks/deployment.mjs';
 import { auditArgs } from '../../src/checks/harness-dependencies.mjs';
+import { evaluateSecurityHeaders, securityHeaderStatus } from '../../src/checks/security-headers.mjs';
 import { findDangerousConstructs } from '../../src/checks/security-scan.mjs';
 import { runCommand } from '../../src/core/command.mjs';
 import { redact, redactText } from '../../src/core/redact.mjs';
 import { escapeXml } from '../../src/core/xml.mjs';
+import { classifyItem } from '../../src/history/catalog.mjs';
 
 test('redacts keyed secrets recursively', () => {
   assert.deepEqual(redact({ nested: { password: 'value', safe: 'visible' } }), {
@@ -60,6 +61,29 @@ test('GitHub auditing is explicit and disabled by default', () => {
   assert.equal(getConfig(['node', 'verify', '--audit-github']).auditGithub, true);
 });
 
+test('published security headers are skipped when no reference response exists', () => {
+  assert.equal(securityHeaderStatus(null), 'SKIP');
+  assert.equal(securityHeaderStatus(evaluateSecurityHeaders({
+    'content-security-policy': "default-src 'self'; frame-ancestors 'none'",
+    'permissions-policy': 'camera=()',
+    'referrer-policy': 'strict-origin-when-cross-origin',
+    'strict-transport-security': 'max-age=31536000',
+    'x-content-type-options': 'nosniff',
+  }, true)), 'PASS');
+  assert.equal(securityHeaderStatus(evaluateSecurityHeaders({}, true)), 'FAIL');
+});
+
+test('retired deployment platforms keep deployment history classification', () => {
+  const catalog = {
+    evidence: { deployment: ['deployment.test.ts'], general: ['general.test.ts'] },
+    regressionIssueOverrides: [],
+    unverifiableIssues: [],
+  };
+
+  assert.deepEqual(classifyItem({ title: 'Cloudflare Pages cleanup' }, catalog).categories, ['deployment']);
+  assert.deepEqual(classifyItem({ title: 'Docker removal' }, catalog).categories, ['deployment']);
+});
+
 test('verification dependency audit fails only at the declared severe threshold', () => {
   assert.deepEqual(auditArgs(), [
     'audit', '--omit=dev', '--audit-level=high', '--json',
@@ -81,15 +105,6 @@ test('generated source IDs do not create false action states', () => {
 test('browser fixtures use an interceptable HTTPS origin', () => {
   assert.equal(new URL(BROWSER_FIXTURE_ORIGIN).protocol, 'https:');
   assert.equal(sourceArgument(BROWSER_FIXTURE_ORIGIN).sourceConfig.baseUrl, BROWSER_FIXTURE_ORIGIN);
-});
-
-test('selects the newest Cloudflare production deployment', () => {
-  const output = JSON.stringify([
-    { Environment: 'Production', Source: 'abcdef1', Deployment: 'https://new.pages.dev' },
-    { Environment: 'Production', Source: '1234567', Deployment: 'https://old.pages.dev' },
-  ]);
-  assert.equal(latestDeployment(output)?.Source, 'abcdef1');
-  assert.equal(latestDeployment('not json'), null);
 });
 
 test('dangerous construct scan ignores matcher text and finds runtime use', () => {

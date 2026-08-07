@@ -1,7 +1,7 @@
 /**
  * Grouped Sources Cache
  * Stores groupedSources data in sessionStorage to avoid extremely long URLs
- * that cause HTTP 414 errors on CDNs (e.g., Cloudflare, AWS CloudFront).
+ * that cause HTTP 414 errors on CDNs and reverse proxies.
  *
  * Instead of passing the full JSON array in the URL parameter,
  * we store it in sessionStorage and pass a short key in the URL.

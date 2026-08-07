@@ -35,12 +35,6 @@ export async function checkStaticTools(ctx) {
     id: 'static.npm-audit', category: 'static', title: 'Dependency vulnerability audit', status: 'SKIP', severity: 'high',
     expected: 'Online npm audit', actual: '--offline', reason: 'The run explicitly disabled network checks.', remediation: 'Rerun without --offline.',
   });
-  if (!ctx.config.quick) {
-    const pages = await runCommand(ctx, 'cloudflare-pages-build', 'npx', ['--yes', 'npm@10.9.3', 'run', 'pages:build'], {
-      timeoutMs: ctx.config.commandTimeoutMs, env: { npm_config_package_lock: 'false', npm_config_save: 'false' },
-    });
-    ctx.state.pagesBuildOk = commandFinding(ctx, pages, { id: 'static.cloudflare-build', title: 'Cloudflare Pages build succeeds', severity: 'critical' });
-  }
   const build = await runNpm(ctx, 'next-build', ['run', 'build'], { timeoutMs: ctx.config.commandTimeoutMs });
   ctx.state.buildOk = commandFinding(ctx, build, { id: 'static.production-build', title: 'Production Next.js build succeeds', severity: 'critical' });
 }

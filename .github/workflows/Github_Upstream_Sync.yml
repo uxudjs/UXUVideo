@@ -47,6 +47,7 @@ jobs:
           echo "Attempting to merge upstream/$UPSTREAM_BRANCH into $TARGET_BRANCH..."
           
           if git merge upstream/$UPSTREAM_BRANCH; then
+            node scripts/check-web-only.mjs
             echo "✅ Merge successful. Pushing changes..."
             git push origin $TARGET_BRANCH
           else

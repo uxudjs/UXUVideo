@@ -30,7 +30,7 @@ async function AdKeywordsWrapper() {
   let keywords: string[] = [];
 
   try {
-    // 1. Try reading from file (Docker runtime support)
+    // 1. Try reading from a server-side file.
     const keywordsFile = process.env.AD_KEYWORDS_FILE;
     if (keywordsFile) {
       // Resolve absolute path or relative to CWD

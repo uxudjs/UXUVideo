@@ -5,8 +5,7 @@ import { getRuntimeFeatures } from '@/lib/server/runtime-features';
 
 export const runtime = 'edge';
 
-// Disable SSL verification for video sources with invalid certificates
-// Note: This is not supported in Cloudflare Workers/Edge Runtime.
+// Edge Runtime does not support disabling SSL verification.
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export async function GET(request: NextRequest) {

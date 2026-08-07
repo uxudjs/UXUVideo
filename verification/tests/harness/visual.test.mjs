@@ -39,7 +39,7 @@ test('visual failures preserve successful local metadata when the remote render 
 
 test('visual reference navigation is never replaced by the external-link fixture', () => {
   const ctx = { config: { localUrl: 'http://127.0.0.1:3000', remoteUrl: null,
-    referenceUrl: 'https://kvideo.pages.dev' } };
-  assert.equal(allowedNavigation(new URL('https://kvideo.pages.dev/settings'), ctx), true);
+    referenceUrl: 'https://published.example.test' } };
+  assert.equal(allowedNavigation(new URL('https://published.example.test/settings'), ctx), true);
   assert.equal(allowedNavigation(new URL('https://example.test/settings'), ctx), false);
 });

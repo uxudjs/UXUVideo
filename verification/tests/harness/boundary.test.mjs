@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
+import { findWebOnlyViolations } from '../../../scripts/check-web-only.mjs';
 import { verificationChange } from '../../src/checks/preflight.mjs';
 
 test('only verification-folder changes satisfy the publishing boundary', () => {
@@ -21,9 +24,31 @@ test('the complete runner repeats the workspace boundary check after all tools',
   assert.match(source, /checkWorkspaceBoundary\(ctx, 'postflight'\)/);
 });
 
-test('Gradle caches are redirected below verification', () => {
-  const source = fs.readFileSync(new URL('../../src/checks/android.mjs', import.meta.url), 'utf8');
-  assert.match(source, /ctx\.config\.verifyDir, 'cache', 'gradle'/);
-  assert.match(source, /--project-cache-dir/);
-  assert.match(source, /GRADLE_USER_HOME/);
+test('web-only policy rejects deployment packaging and native app surfaces', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kvideo-web-only-'));
+  try {
+    fs.mkdirSync(path.join(root, '.github', 'workflows'), { recursive: true });
+    fs.mkdirSync(path.join(root, 'android-tv'));
+    fs.mkdirSync(path.join(root, 'verification'));
+    fs.writeFileSync(path.join(root, 'Dockerfile'), 'FROM scratch\n');
+    fs.writeFileSync(path.join(root, '.github', 'workflows', 'cloudflare-deploy.yml'), 'name: deploy\n');
+    fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({
+      scripts: { 'pages:build': 'next-on-pages' },
+      devDependencies: { '@cloudflare/next-on-pages': '1.0.0' },
+    }));
+    fs.writeFileSync(path.join(root, 'verification', 'package.json'), JSON.stringify({
+      devDependencies: { wrangler: '4.0.0' },
+    }));
+
+    assert.deepEqual(findWebOnlyViolations(root), [
+      '.github/workflows/cloudflare-deploy.yml',
+      'Dockerfile',
+      'android-tv',
+      'package.json: dependency @cloudflare/next-on-pages',
+      'package.json: script pages:build',
+      'verification/package.json: dependency wrangler',
+    ]);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
