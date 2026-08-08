@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# retired local verification cache
+/verification/
+
 # production
 /build
 

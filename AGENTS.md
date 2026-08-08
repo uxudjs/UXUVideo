@@ -2,29 +2,26 @@
 
 ## 项目结构与模块组织
 
-项目仅保留 Next.js 网页能力：页面与 API 路由位于 `app/`，可复用界面位于 `components/`，业务逻辑、Hooks、状态、服务端代码和工具函数位于 `lib/`，共享声明位于 `types/`。静态资源放在 `public/`，文档放在 `docs/`，构建辅助脚本放在 `scripts/`。应用回归测试位于 `tests/`；完整验证器及其自测位于 `verification/`，其生成的 `artifacts/`、`cache/` 不应手工编辑。
+运行时只保留根目录 `_worker.js`。本地辅助脚本位于 `scripts/`，迁移计划、证据与所有测试位于 `work-products/`，测试固定放在 `work-products/tests/`。静态前端属于同级 `UXUV-Pages` 仓库；不要在本仓重新引入 Next.js UI、API route、Node 服务端或 Upstash。
 
 ## 构建、测试与开发命令
 
-- `npm install`：按锁文件安装依赖。
-- `npm run dev`：在本地启动开发服务器；需要局域网访问时设置 `ALLOW_LAN_ACCESS=true`。
-- `npm test`：通过 `tsx` 和 Node 测试运行器执行 `tests/**/*.test.ts`。
-- `npm run lint`：运行 Next.js/TypeScript ESLint 规则。
-- `npm run build`：生成生产构建并转译客户端静态资源。
-- `./verification/run`：在 Bash/WSL 中执行严格验证链；快速排查可用 `--quick`。
+- `node --check _worker.js`：检查 Worker 语法。
+- `npm test`：使用 Node 测试运行器执行 `work-products/tests/`。
+- `npm run check:size`：检查 gzip 后 Worker 小于 3 MiB。
 
 ## 编码风格与命名
 
-保持 TypeScript `strict`，优先具体类型或 `unknown`，避免 `any`。沿用相邻文件格式（通常为 2 空格缩进），不要为统一格式制造无关 diff；以 `npm run lint` 为准。使用函数式 React 组件。组件文件使用 `PascalCase.tsx`，Hooks 使用 `useFeature.ts`，工具与类型文件使用 `kebab-case.ts`，常量使用 `UPPER_SNAKE_CASE`。源码文件原则上不超过 150 行；超限时按单一职责拆分。
+沿用 `_worker.js` 的原生 ESM 与 Web Platform API 风格，不添加运行时 npm 或本地文件依赖。优先小函数、明确上限、结构化错误和 fail-closed 安全边界；不要为单文件交付引入构建层。
 
 ## 测试指南
 
-测试文件命名为 `*.test.ts`，使用 `node:test` 与 `node:assert/strict`，测试标题应描述可观察行为。修复缺陷时添加能复现问题的回归测试；涉及验证框架时分别使用 `verification/tests/regression/` 或 `verification/tests/harness/`。提交前至少运行 `npm test`、`npm run lint` 和 `npm run build`；完整验证链声明执行 100% 应用覆盖率检查。
+测试文件命名为 `*.test.mjs`，使用 `node:test` 与 `node:assert/strict`。修复缺陷先增加能复现问题的回归测试，再做最小修复。提交前至少运行 `node --check _worker.js`、`npm test`、`npm run check:size`、秘密扫描和 `git diff --check`。
 
 ## 提交与 Pull Request
 
-历史与 `CONTRIBUTING.md` 均采用 Conventional Commits，例如 `feat(player): add playback speed`、`fix(sync): reject invalid records`。每个提交与 PR 聚焦一个主题。PR 应说明变更与验证步骤，关联 Issue（如 `Fixes #123`），列出配置或文档影响，并为 UI 改动提供截图或录屏。`main` 仅通过 PR 合并；请求评审前确认测试、Lint、生产构建及相关文档均已更新。
+采用 Conventional Commits，例如 `fix(auth): reject stale session`。每个提交与 PR 聚焦一个主题，说明本地验证、配置/兼容性影响与回滚；涉及 Pages UI 的改动应在 `UXUV-Pages` 仓库完成。
 
 ## 安全与配置
 
-配置优先使用 README 记录的环境变量；不要提交密码、令牌、订阅源或真实账户数据。涉及认证、代理或部署行为的改动，应在 PR 中注明默认值、兼容性与回滚方式。
+配置以 README 为准。不要提交密码、Token、订阅源或真实账户数据。认证、D1、代理、用量和部署改动必须注明默认值、Free 预算、兼容性、证据层级与回滚方式；本地全绿不等于授权 commit、push 或部署。

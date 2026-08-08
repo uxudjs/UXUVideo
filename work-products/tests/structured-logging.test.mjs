@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import worker from '../../_worker.js';
+import { createD1Stub } from './fixtures/d1.mjs';
 
 test('emits one correlated completion log without request secrets, even in debug mode', async () => {
   const messages = [];
@@ -11,25 +12,30 @@ test('emits one correlated completion log without request secrets, even in debug
   let response;
   try {
     response = await worker.fetch(new Request(
-      'https://worker.example/api/detail?url=https%3A%2F%2Fmedia.example%2Fprivate.m3u8&token=query-secret',
+      'https://worker.example/api/admin/usage?url=https%3A%2F%2Fmedia.example%2Fprivate.m3u8&token=query-secret',
       {
-        method: 'POST',
+        method: 'GET',
         headers: {
           Authorization: 'Bearer authorization-secret',
           Cookie: 'session=cookie-secret',
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ password: 'body-secret' }),
       },
-    ), { DEBUG: 'true' }, {});
+    ), {
+      DEBUG: 'true',
+      DB: createD1Stub().db,
+      ADMIN_PASSWORD: 'bootstrap-admin-password',
+      AUTH_SECRET: 'auth-secret-with-at-least-thirty-two-bytes',
+    }, {});
   } finally {
     console.log = originalLog;
   }
 
-  assert.equal(response.status, 501);
-  assert.equal(messages.length, 1);
+  assert.equal(response.status, 401);
+  const entries = messages.map((message) => JSON.parse(message));
+  const completions = entries.filter(({ event }) => event === 'request.complete');
+  assert.equal(completions.length, 1);
 
-  const entry = JSON.parse(messages[0]);
+  const [entry] = completions;
   assert.deepEqual(Object.keys(entry), [
     'event',
     'requestId',
@@ -46,9 +52,9 @@ test('emits one correlated completion log without request secrets, even in debug
   ]);
   assert.equal(entry.event, 'request.complete');
   assert.equal(entry.requestId, response.headers.get('X-Request-Id'));
-  assert.equal(entry.routeId, 'detail');
-  assert.equal(entry.method, 'POST');
-  assert.equal(entry.status, 501);
+  assert.equal(entry.routeId, 'admin-usage');
+  assert.equal(entry.method, 'GET');
+  assert.equal(entry.status, 401);
   assert.equal(Number.isInteger(entry.durationMs), true);
   assert.equal(entry.durationMs >= 0, true);
   assert.equal(entry.workerVersion, response.headers.get('X-UXUV-Worker-Version'));
@@ -56,15 +62,14 @@ test('emits one correlated completion log without request secrets, even in debug
   assert.equal(entry.apiContract, response.headers.get('X-UXUV-API-Contract'));
   assert.equal(entry.cacheStatus, 'bypass');
   assert.equal(entry.upstreamClass, null);
-  assert.equal(entry.errorCode, 'ROUTE_NOT_IMPLEMENTED');
+  assert.equal(entry.errorCode, 'AUTH_REQUIRED');
 
-  const serialized = messages[0].toLowerCase();
+  const serialized = messages.join('\n').toLowerCase();
   for (const secret of [
     'media.example',
     'query-secret',
     'authorization-secret',
     'cookie-secret',
-    'body-secret',
   ]) {
     assert.doesNotMatch(serialized, new RegExp(secret));
   }

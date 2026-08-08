@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 - 2026-08-07
+
+- 将运行时收敛为自包含 `_worker.js`：22 个 API 合同、认证/账户、D1 同步、搜索/详情、Premium、媒体/IPTV 代理、Cloudflare 用量和 Pages 完整性校验均由 Worker 提供。
+- 静态前端迁移到不可变 UXUV-Pages 0.1.2；Worker 固定 Pages 版本、commit、release manifest SHA-256 与 API Contract `1`，不覆盖既有发布字节。
+- 移除旧 Next.js UI/API、Node 服务端、Upstash Redis、前端构建依赖和旧验证框架；本仓运行时无 npm 或本地文件依赖。
+- 新增 Worker-only 仓库边界、Free/D1 预算、安全、媒体生命周期、结构化日志、压缩体积和跨仓完整性回归。当前证据为本地 fixture/静态浏览器门，不代表 Cloudflare 远端、真实媒体或生产部署已通过。
+
 ## 4.9.19 - 2026-07-31
 
 - 修复 Docker / Node 自托管下 `/api/user/sync` 与 `/api/user/config` 无法从 `process.env` 读取 Upstash 凭据、持续返回 500 的问题；Redis 客户端改为按请求环境惰性创建，未配置同步时明确返回 503（#226 / PR #227）。
