@@ -45,8 +45,9 @@ test("Worker and Pages deployment contract is documented", () => {
   const changelog = read("CHANGELOG.md");
   for (const term of [
     "DB", "ADMIN_PASSWORD", "AUTH_SECRET", "CF_ANALYTICS_API_TOKEN", "CF_ACCOUNT_ID",
-    "CF_WORKER_SCRIPT_NAME", "CF_D1_DATABASE_ID", "0.1.2", "Free", "D1", "回滚", "本地",
+    "CF_WORKER_SCRIPT_NAME", "CF_D1_DATABASE_ID", "0.2.0", "https://uxudjs.github.io/UXUV-Pages/",
+    "不再使用版本目录", "Free", "D1", "回滚", "本地",
   ]) assert.match(readme, new RegExp(term));
   assert.match(changelog, /## 1\.0\.0 - 2026-08-07/);
-  assert.match(changelog, /Pages 0\.1\.2/);
+  assert.match(changelog, /UXUV-Pages `0\.2\.0`/);
 });

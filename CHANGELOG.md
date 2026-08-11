@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Worker 改为固定并校验 UXUV-Pages `0.2.0` 的 GitHub Pages 根目录清单，不再引用版本目录或提供旧版回退。
+- 对齐已发布 Pages 根清单的 commit 与 SHA-256，并保留清单、HTML 和资产篡改时的失败关闭行为。
+
 ## 1.0.0 - 2026-08-07
 
 - 将运行时收敛为自包含 `_worker.js`：22 个 API 合同、认证/账户、D1 同步、搜索/详情、Premium、媒体/IPTV 代理、Cloudflare 用量和 Pages 完整性校验均由 Worker 提供。

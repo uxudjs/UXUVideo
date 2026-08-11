@@ -1,9 +1,9 @@
 const WORKER_VERSION = '1.0.0';
 const API_CONTRACT_VERSION = '1';
 const PAGES_VERSION = '0.2.0';
-const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/0.2.0/';
-const PAGES_GIT_COMMIT = '75b3dfbc20fbcfbd8d298056e57f3c34ab65539b';
-const PAGES_MANIFEST_SHA256 = 'ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175';
+const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
+const PAGES_GIT_COMMIT = '88c83a006832ea49d702df23f9260cd6c9cf7119';
+const PAGES_MANIFEST_SHA256 = 'd3faad191675b4476130dbfe3d6e61913b9a6e44643b4354a9a7761fbbe3e6f8';
 const MAX_STATIC_ASSET_BYTES = 5 * 1024 * 1024;
 const PAGES_PUBLIC_PREFIX = new URL(PAGES_BASE_URL).pathname.replace(/\/$/, '');
 const FRONTEND_UNAVAILABLE_HTML = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>UXUVideo 暂不可用</title><body><h1>UXUVideo 暂不可用</h1><p>FRONTEND_INTEGRITY_ERROR</p></body></html>';

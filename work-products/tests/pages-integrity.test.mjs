@@ -9,11 +9,11 @@ import worker, { validatePagesManifest } from '../../_worker.js';
 const PAGES_REPOSITORY = fileURLToPath(new URL('../../../UXUV-Pages/', import.meta.url));
 const RELEASE_REF = 'origin/gh-pages';
 const RELEASE_VERSION = '0.2.0';
-const RELEASE_BASE_URL = `https://uxudjs.github.io/UXUV-Pages/${RELEASE_VERSION}/`;
+const RELEASE_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
 const RELEASE = {
   version: RELEASE_VERSION,
-  gitCommit: '75b3dfbc20fbcfbd8d298056e57f3c34ab65539b',
-  manifestSha256: 'ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175',
+  gitCommit: '88c83a006832ea49d702df23f9260cd6c9cf7119',
+  manifestSha256: 'd3faad191675b4476130dbfe3d6e61913b9a6e44643b4354a9a7761fbbe3e6f8',
 };
 
 function releaseBlob(path) {
@@ -21,7 +21,7 @@ function releaseBlob(path) {
     '-C',
     PAGES_REPOSITORY,
     'show',
-    `${RELEASE_REF}:${RELEASE_VERSION}/${path}`,
+    `${RELEASE_REF}:${path}`,
   ]);
 }
 
@@ -60,7 +60,7 @@ async function dispatch(path, options = {}) {
 
     assert.equal(url.startsWith(RELEASE_BASE_URL), true, `unexpected Pages URL: ${url}`);
     const relativePath = decodeURIComponent(new URL(url).pathname)
-      .slice(`/UXUV-Pages/${RELEASE_VERSION}/`.length);
+      .slice('/UXUV-Pages/'.length);
     const status = options.assetStatus ?? 200;
     const exactBytes = status === 200 ? releaseBlob(relativePath) : Buffer.from('upstream failure');
     const body = options.mutateAsset ? options.mutateAsset(exactBytes, relativePath) : exactBytes;
@@ -174,16 +174,17 @@ test('allows the built-in VideoTogether room service by default and supports exp
   assert.doesNotMatch(disabled.response.headers.get('Content-Security-Policy'), /panghair|aliyuncs|jsdelivr/);
 });
 
-test('maps only the fixed Pages prefix and gives hashed assets immutable caching', async () => {
+test('maps the repository Pages prefix without a version directory and gives hashed assets immutable caching', async () => {
   const assetPath = Object.keys(manifest.assets).find((path) => path.startsWith('/_next/static/'));
   assert.ok(assetPath);
 
-  const { response, requests } = await dispatch(`/UXUV-Pages/${RELEASE_VERSION}${assetPath}`);
+  const { response, requests } = await dispatch(`/UXUV-Pages${assetPath}`);
 
   assert.equal(response.status, 200);
   assert.deepEqual(Buffer.from(await response.arrayBuffer()), releaseBlob(assetPath.slice(1)));
   assert.equal(response.headers.get('Cache-Control'), 'public, max-age=31536000, immutable');
   assert.equal(requests.at(-1), `${RELEASE_BASE_URL}${assetPath.slice(1)}`);
+  assert.doesNotMatch(requests.join('\n'), /\/UXUV-Pages\/0\.2\.0\//);
   assert.doesNotMatch(requests.join('\n'), /\b(?:main|master|latest)\b/i);
 });
 

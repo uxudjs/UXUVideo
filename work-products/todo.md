@@ -1,8 +1,8 @@
 # KVideo 4.9.19 完整复刻任务清单
 
-状态：**执行中；T01-T45/CP0-CP7 已完成；T46-T48 的 Worker 提交、部署与最终发布门保持 HOLD**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
+状态：**执行中；T01-T45/CP0-CP7 是历史已完成基线；原 T46-T48 已取代；T49-T53 待本地实施，T54-T56 保持独立 HOLD**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
 
-旧清单中已完成的 Worker/D1/登录/静态发布迁移继续作为架构基线，但“UXUV-Pages 已全面接管 UI”结论已撤销；T03-T10 已按当前计划完成本地实现与验证。
+旧清单中已完成的 Worker/D1/登录/静态发布迁移继续作为架构基线；T42-T45 的 commit/SHA/pin 只记录 2026-08-10 的历史发布事实，不再是当前运行时发布合同。
 
 ## Phase 0：逐项权威基准
 
@@ -60,7 +60,7 @@
 
 ## Phase 6：PWA、同步、新增 UI 与设备
 
-- [x] T31 复刻 PWA 安装与静态缓存生命周期；真实安装证据留给 T39/T47。
+- [x] T31 复刻 PWA 安装与静态缓存生命周期；真实安装证据留给 T39/T54-T55。
 - [x] T32 建立文档无关、可独立回滚的本地优先同步基础。
 - [x] T33 逐类接入配置、来源与订阅同步。
 - [x] T34 接入普通/Premium 收藏与历史同步。
@@ -75,18 +75,31 @@
 
 - [x] T40 聚合既有证据闭合 273 个 ID：272 `pass`、1 `approved-difference`、零 `unverified`。
 - [x] T41 八路由 × 四断点全页视觉连续两轮 32/32 GREEN；关键区 ≤0.005、DOM 主布局 ≤2 CSS px。
-- [x] T42 使 `.github/workflows/pages.yml` 校验 `expectedCommit == GITHUB_SHA` 并生成 artifact manifest，形成内容冻结候选。
-- [x] CP7 矩阵零 `unverified`、视觉连续两轮全绿、commit→artifact 发布身份合同可复现；`0.2.0` 本地清单为 80 assets / `c0931c5b…3a80`。
+- [x] T42（历史）使 `.github/workflows/pages.yml` 校验 `expectedCommit == GITHUB_SHA` 并生成 artifact manifest，形成当时的内容冻结候选。
+- [x] CP7（历史）矩阵零 `unverified`、视觉连续两轮全绿、`0.2.0` 候选可复现。
 
-## Phase 8：精确身份与远端门
+## Phase 8：历史精确身份结果
 
-- [x] T43 已提交并推送 UXUV-Pages，公开发布身份固定到 `75b3dfbc20fbcfbd8d298056e57f3c34ab65539b`。
-- [x] T44 已发布 `0.2.0`：`gh-pages` 为 `ebee3e674cbed5d7f577509162456823bd9a1da7`，公开 manifest 为 80 assets / `ddd6377e…175`。
-- [x] T45 已验证 80/80 公开资产字节哈希，并更新本地 Worker pin 到 `0.2.0` / `75b3dfbc…539b` / `ddd6377e…175`；未 commit、未部署。
-- [ ] **HOLD T46** 经独立授权提交 UXUVideo，冻结 Git object Worker 字节和 schema/migration 哈希。
-- [ ] **HOLD T47** 上传 T46 精确字节，绑定 deployment ID/digest/远端 schema，并执行旧组合完整状态合同。
-- [ ] **HOLD T48** 由 `@uxu-code:ship` 对全部精确身份给出最终 GO/NO-GO。
-- [ ] CP8 Pages/Worker 字节身份、远端 schema 与“旧 Worker + Pages 0.1.2 + 同一 schema”完整状态证据齐全。
+- [x] T43（历史）已提交并推送 UXUV-Pages，公开发布身份曾固定到 `75b3dfbc20fbcfbd8d298056e57f3c34ab65539b`。
+- [x] T44（历史）已发布 `0.2.0`：`gh-pages` 为 `ebee3e674cbed5d7f577509162456823bd9a1da7`，公开 manifest 为 80 assets / `ddd6377e…175`。
+- [x] T45（历史）已验证 80/80 公开资产字节哈希，并把本地 Worker pin 到 `0.2.0` / `75b3dfbc…539b` / `ddd6377e…175`；该 pin 现由 T49-T53 取代，未部署。
+- [x] 原 T46-T48 已取代且禁止执行。
+
+## Phase 9：Pages 兼容发布本地迁移
+
+- [ ] T49 先在两仓建立 RED：删除 Pages commit/manifest SHA/资产 SHA/SRI/版本目录/`expectedCommit`，并覆盖动态版本、API/range、路径/MIME/大小和无密钥合同。
+- [ ] T50 最小修改 `_worker.js`：只固定公开根地址，兼容读取当前旧字段 manifest 与新精简 manifest，动态传播 manifest 版本并流式返回资产。
+- [ ] T51 简化 UXUV-Pages 发布脚本/workflow：单一当前产物、根目录发布、同版本可修订、无 runtime/published commit/SHA/SRI、无版本目录。
+- [ ] T52 同步 README/CHANGELOG/边界测试，明确 Pages 无对接密钥、兼容小改不更新 Worker、API/range 变化才更新 Worker。
+- [ ] T53 跑五组合兼容矩阵与两仓全门，形成可审阅的本地候选；不得执行 commit、push、Pages 发布或 Worker 部署。
+- [ ] CP8-local 无 runtime commit/SHA/Pages 密钥；旧/新 manifest 均可由新 Worker 加载；同版本修订与新兼容版本无需 Worker；不兼容合同失败关闭。
+
+## Phase 10：一次性远端迁移与清理
+
+- [ ] **HOLD T54** 经独立授权先复制/部署 T53 Worker，保持当前 Pages 不变并完成远端冒烟。
+- [ ] **HOLD T55** T54 通过后，经独立授权发布精简 Pages；只读确认生产零旧路径引用后删除 `gh-pages` 遗留版本目录。
+- [ ] **HOLD T56** 由 `@uxu-code:ship` 对一次性顺序、独立 Pages 更新和 Pages-only 回滚给出 GO/NO-GO。
+- [ ] CP8-remote 公开根 manifest/路由/版本头正确，旧版本目录清理完成，后续兼容 Pages 小改无需重新部署 Worker。
 
 ## 每任务固定检查
 
@@ -96,16 +109,17 @@
 - [ ] 新测试位于相应仓库 `work-products/tests/`，仓库文件引用使用相对路径。
 - [ ] 更新对应矩阵 ID 和证据，不以源码字符串、路由存在或页面 200 代替行为证明。
 - [ ] 运行聚焦测试、相关检查点和 `git diff --check`。
-- [ ] 未 reset/checkout/覆盖用户工作，未删除或覆盖 `0.1.2`。
+- [ ] 未 reset/checkout/覆盖用户工作；本地实施不删除远端 `0.2.0`，远端清理只在 T55 确认零引用后执行。
 - [ ] 未记录 Secret、密码、Cookie、真实账户、订阅或完整媒体 URL。
 - [ ] 明确本地、第三方 mock/真实、Actions artifact、gh-pages、公开 Pages、Worker deployment、D1 schema、真实媒体/设备证据层级。
+- [ ] Pages 请求未发送 Cookie、Authorization、Token、Secret 或任何对接密钥。
+- [ ] 任何版本头/运行时配置若包含 Pages 版本，都来自已验证 manifest，不来自 Worker 硬编码值。
 
 ## 当前授权边界
 
-- [x] 已批准：新版 SPEC 进入规划。
-- [x] 已批准：本最终修订计划（用户调用 `@uxu-code:build auto`）。
-- [x] 已批准：`@uxu-code:build auto` 范围内的本地业务实现。
+- [x] 已批准：2026-08-11 Pages 兼容发布规格进入规划（用户调用 `@uxu-code:plan`）。
+- [ ] 待批准：本修订计划进入 T49-T53 本地实施；需用户调用 `@uxu-code:build` 或 `@uxu-code:build auto`。
 - [x] 已批准：T39-T42 本地任务；真实 VideoTogether 脚本/临时房间已测试，真实 Cast 设备改为用户部署后验收，不阻断单文件 Worker 本地交付。
 - [x] 已批准并完成：UXUV-Pages commit、push 与 `0.2.0` Pages 发布（T43-T44）。
-- [ ] 未批准：UXUVideo Worker commit、push、部署及 T46-T48 远端状态变更；本轮不执行。
+- [ ] 未批准：T49-T53 的 commit/push；T54 Worker 复制/部署、T55 UXUV-Pages commit/push/发布/远端目录删除、T56 最终发布门；本轮不执行。
 - [ ] 未批准：真实 D1、Secret、Analytics Token、生产数据迁移或不可逆 schema 变更。

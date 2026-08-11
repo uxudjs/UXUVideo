@@ -1,6 +1,6 @@
 # 实施计划：KVideo 4.9.19 完整 UI/功能复刻
 
-状态：**执行中；T01-T45/CP0-CP7 已完成；T46-T48 保持独立 HOLD**
+状态：**执行中；T01-T45/CP0-CP7 为历史已完成基线；原 T46-T48 已被取代；T49-T53 待本地实施，T54-T56 保持独立 HOLD**
 
 ## 1. 计划依据与充分性
 
@@ -9,9 +9,11 @@
 - 当前 Worker：UXUVideo `main` HEAD `e7e397e520f90433f98eb1f929fc5d135bacfec0`，单文件 `_worker.js` 已实现 Worker/D1/登录安全架构；本轮不重做该架构。
 - 规划起点前端：UXUV-Pages `main` HEAD `4bc847affa76755a5c99ce249d793aa43e0b83bb`，版本 `0.1.2`，工作树在规划检查时干净；虽有 8 个静态入口，但只保留简化界面与部分流程。
 - 差距证据：固定 KVideo 提交包含完整设计样式、导航、主题、搜索、来源/订阅、收藏/历史、自定义播放器、弹幕、广告过滤、IPTV、Premium、设置、PWA、TV 和三语界面；当前 UXUV-Pages 只有少量通用体验组件和原生化播放器，不能据此声明完成复刻。
-- 规划充分性：规格已固定功能矩阵、唯一允许差异、视觉阈值、安全边界、发布顺序和停止条件。实现中的未知项只允许通过固定提交源码审计消除；若发现需新增非 13.3 差异，必须停止并回到 `@uxu-code:spec`。
+- 2026-08-11 Pages 发布修订依据：用户明确要求删除 `_worker.js` 的 `PAGES_GIT_COMMIT`、manifest/资产 SHA 固定和 Pages 对接密钥，只使用 `pagesVersion`、`apiContract`、`workerRange` 判断兼容；兼容 Pages 小步更新不得要求用户重发 Worker。现有 `_worker.js` 仍精确固定 `0.2.0`/commit/manifest SHA，UXUV-Pages 发布脚本仍生成 `gitCommit`/`sha256`/`sri` 并写版本目录，均是本轮待迁移对象。
+- 参考边界：`../CfGfwAX/_worker.js` 只固定公共 Pages 根地址并直接读取页面，不含 Pages 版本、commit、manifest SHA、资源 SHA 或对接密钥。本计划保留 UXUVideo 已有 manifest 的路由/MIME/大小/兼容校验，但移除会强制 Worker 随 Pages 小改而更新的身份固定。
+- 规划充分性：规格已固定功能矩阵、安全边界、兼容字段、失败关闭、一次性迁移顺序和回滚条件。当前修订不改变 API Contract、D1、认证或媒体合同；若实现发现必须新增 Secret、改变 API Contract 或放宽路径/MIME/大小边界，立即停止并回到 `@uxu-code:spec`。
 
-旧 `work-products/plan.md` / `todo.md` 的 Worker/Pages 架构迁移历史已经完成，本计划仅撤销其“UI 全面接管”结论，不撤销已验证的 Worker、D1、认证、静态发布和安全合同。
+旧 `work-products/plan.md` / `todo.md` 的 Worker/Pages 架构迁移历史继续作为证据；T42-T45 的精确身份结果只描述 2026-08-10 已发生的候选/发布事实，不再是当前运行时发布规范。未执行的原 T46-T48 被 T49-T56 取代，禁止按旧 pin 流程继续执行。
 
 ## 2. 成功定义与不变量
 
@@ -23,7 +25,7 @@
 6. UXUVideo `_worker.js` 只有在 RED 合同证明现有 Worker 无法支持 KVideo 正常成功路径时才允许最小修改；不得放宽 SSRF、CSRF、认证、Free 上限或 D1 安全合同。
 7. 不 reset、checkout 或覆盖当前工作树；从固定提交取源码使用只读 `git show`/`git archive` 到临时目录或逐文件补丁。
 8. 视觉基线只能来自固定提交和无敏感 fixture；更新基线截图、改变阈值或批准非 13.3 差异必须先问用户。
-9. `0.1.2` 永不覆盖；新候选使用新的不可变版本。先发布并验证 Pages 字节，后更新 Worker 固定版本。
+9. Worker 固定唯一 `PAGES_BASE_URL`，但不固定 Pages 版本、commit、manifest SHA、资产 SHA 或 SRI。运行时只接受合法 `pagesVersion`、相同 `apiContract`、覆盖当前 Worker 的 `workerRange` 以及安全路由/MIME/大小合同；兼容 Pages 更新与回滚均不修改 Worker。
 10. 本地、公开 Pages、测试 Cloudflare/D1、真实媒体/设备证据分别记录，互不替代。
 11. T04-T38 的每个用户流程切片必须在本任务内同步闭合其简中/繁中/英语文案、键盘/焦点、适用的 320/768/1024/1440 断点和错误/空/加载状态；不得把这些质量要求推迟到最终汇总任务。
 
@@ -110,13 +112,19 @@ flowchart TD
   T38 --> T40
   T39 --> T40
   T40 --> T41["T41 视觉矩阵闭环"]
-  T41 --> T42["T42 本地 Pages 候选"]
-  T42 --> T43["T43 Pages commit HOLD"]
-  T43 --> T44["T44 Pages 发布 HOLD"]
-  T44 --> T45["T45 公网校验与 Worker pin"]
-  T45 --> T46["T46 Worker 身份 HOLD"]
-  T46 --> T47["T47 远端/回滚门 HOLD"]
-  T47 --> T48["T48 最终发布门 HOLD"]
+  T41 --> T42["T42 历史本地 Pages 候选"]
+  T42 --> T43["T43 历史 Pages commit"]
+  T43 --> T44["T44 历史 Pages 发布"]
+  T44 --> T45["T45 历史 Worker pin"]
+  T45 --> T49["T49 兼容发布 RED"]
+  T49 --> T50["T50 Worker 兼容加载"]
+  T49 --> T51["T51 Pages 根目录发布"]
+  T50 --> T52["T52 文档与边界"]
+  T51 --> T52
+  T52 --> T53["T53 两仓本地门"]
+  T53 --> T54["T54 一次性 Worker 更新 HOLD"]
+  T54 --> T55["T55 Pages 发布与旧目录清理 HOLD"]
+  T55 --> T56["T56 最终发布门 HOLD"]
 ```
 
 ## 4. 任务
@@ -697,7 +705,7 @@ flowchart TD
 
 **回滚：** 产品回归回所属任务；禁止用更新基线掩盖差异。
 
-### T42：形成内容冻结的本地 Pages 候选
+### T42（历史，已完成）：形成内容冻结的本地 Pages 候选
 
 **执行结论（2026-08-10）：** `0.2.0` 的 Pages/Worker 本地门全绿；128 个 Node 合同、105 个浏览器场景、连续两轮 32/32 视觉矩阵及两次确定性构建通过。80-asset 验证清单两次 SHA-256 均为 `c0931c5b05df3579ef2cf10d5348a6e4a1b4dedc4e694ddce6b61d07dc4e3a80`。workflow 的 `expectedCommit == GITHUB_SHA`、commit-bound manifest 与固定 upload-artifact commit 均有失败关闭测试。该身份基于未提交 base HEAD，只证明本地内容可复现；未 commit、push、发布或部署。
 
@@ -713,7 +721,7 @@ flowchart TD
 
 **回滚：** 删除未提交候选输出并恢复候选版本元数据；不碰 `release/0.1.2`。
 
-### T43：冻结精确 Pages commit 与 Git tree
+### T43（历史，已完成）：冻结精确 Pages commit 与 Git tree
 
 **执行结论（2026-08-10）：** 已完成。UXUV-Pages 的最终公开发布身份为 main commit `75b3dfbc20fbcfbd8d298056e57f3c34ab65539b`、Git tree `f8b40f4cbcd4d1d0fa01de42d6871fa9e68ff79e`，发布后本地工作树保持干净。
 
@@ -729,7 +737,7 @@ flowchart TD
 
 **回滚：** 未 push 时保留或按用户指示撤销 commit；禁止 reset/checkout 覆盖工作树。
 
-### T44：发布精确 Pages commit
+### T44（历史，已完成）：发布精确 Pages commit
 
 **执行结论（2026-08-10）：** 已完成。push 触发的验证运行 `31403111681` 与 Pages 发布运行 `31403199106` 均成功；`gh-pages` 固定为 `ebee3e674cbed5d7f577509162456823bd9a1da7`，公网根路径指向 `0.2.0`，release manifest 为 80 assets / SHA-256 `ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175`。
 
@@ -745,9 +753,11 @@ flowchart TD
 
 **回滚：** Pages 服务继续指向最后已验证版本或恢复设置；禁止覆盖/删除历史版本。
 
-### T45：验证公开字节并更新本地 Worker 固定版本
+### T45（历史，已完成）：验证公开字节并更新本地 Worker 固定版本
 
 **执行结论（2026-08-10）：** 已完成。`gh-pages` 与公网 release manifest 字节一致，80/80 公开资产 SHA-256 匹配；本地 Worker 已固定到 Pages `0.2.0`、commit `75b3dfbc20fbcfbd8d298056e57f3c34ab65539b` 和 manifest SHA-256 `ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175`。Worker 不信任 GitHub Pages 的上游 MIME 表达，而在资产哈希通过后使用已固定 manifest 的 MIME；定向合同 16/16 通过。未 commit、未部署 Worker。
+
+**当前解释（2026-08-11）：** 上述 pin 是历史事实，不再是目标状态。T49-T53 将以新的版本兼容合同替代它；不得把历史 SHA 复制到新的 Worker、manifest、文档或发布门。
 
 **范围：** 先只读验证 T44 的 Actions artifact→`gh-pages` tree→公网字节链，再最小更新 `_worker.js` 的固定 Pages 版本、Pages commit/tree 和 manifest SHA；尚不 commit 或部署 Worker。
 
@@ -761,47 +771,121 @@ flowchart TD
 
 **回滚：** 逐行恢复旧 pin 常量和版本说明；不修改 Pages 公共字节或 D1。
 
-### T46：冻结精确 Worker commit、部署字节与 schema 身份（HOLD）
+### 原 T46-T48：旧精确身份/部署流程（已取代，不执行）
 
-**范围：** 仅在用户明确授权 UXUVideo commit 后，提交 T45 精确候选；从该 Git object 物化 `_worker.js` 部署字节并计算 SHA-256，同时冻结 Worker 内 schema/migration 合同哈希；禁止在远端测试前继续修改。
+原任务依赖 Worker 固定 Pages commit、manifest SHA 和版本，因此与 2026-08-11 的兼容发布合同冲突。它们从未获得执行授权，也不得继续作为当前待办；历史文本由 Git 保留，当前执行从 T49 开始。
 
-**验收标准：** commit tree 与 T45 本地全门候选一致；记录 Worker commit/tree SHA、Git object `_worker.js` 字节 SHA-256、压缩哈希、schema/migration 哈希、Pages commit/manifest 和上一 Worker 身份。
+### T49：先建立 Pages 兼容发布 RED 合同
 
-**验证：** 在干净临时工作区重跑 Worker 全量、语法、大小、秘密和 Pages 完整性测试；重新从 commit 物化字节/schema 并核对哈希；任何差异回 T45。
+**范围：** 只改两仓 `work-products/tests/`。UXUVideo 用内存构造的 manifest/stream 替代对固定 `origin/gh-pages` 字节和 SHA 的单元测试依赖；UXUV-Pages 先把发布清单、根目录产物和 workflow 的新合同写成可执行失败断言。不改业务代码、脚本或 workflow。
 
-**依赖：** T45、显式 commit 授权。
+**验收标准：** RED 至少证明当前实现仍依赖 `PAGES_VERSION`、`PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256`、`gitCommit`、资产 `sha256`/`sri`、版本输出目录和 `expectedCommit`；并覆盖兼容 `pagesVersion` 可变、非法 semver、API Contract 不匹配、Worker range 不兼容、危险路径、错误 MIME、缺失 404、超限/无长度资产、无 Pages 密钥以及动态版本头/运行时配置。
 
-**可能涉及：** UXUVideo Git commit、`work-products/worker-candidate-identity.md`；不再改业务代码。
+**验证：** 分别运行 UXUVideo `node --test work-products/tests/pages-integrity.test.mjs work-products/tests/worker-route-contract.test.mjs work-products/tests/worker-only-boundary.test.mjs` 与 UXUV-Pages `node --test work-products/tests/release-manifest.test.mjs work-products/tests/pages-deployment.test.mjs work-products/tests/pwa-contract.test.mjs`；保存预期失败测试名和失败原因，确认失败来自旧合同而非 fixture/环境损坏。
 
-**回滚：** 未部署时保留或按用户指示撤销 commit；禁止 reset/checkout 覆盖工作树。
+**依赖：** T45 历史基线、已修订 SPEC 第 7/14/15/16 节。
 
-### T47：执行精确 Worker 的远端与完整兼容回滚门（HOLD）
+**可能涉及：** UXUVideo `work-products/tests/pages-integrity.test.mjs`、`work-products/tests/worker-route-contract.test.mjs`、`work-products/tests/worker-only-boundary.test.mjs`；UXUV-Pages `work-products/tests/release-manifest.test.mjs`、`work-products/tests/pages-deployment.test.mjs`、`work-products/tests/pwa-contract.test.mjs`。测试从最终位置用 `../../...` 或 `../../../UXUV-Pages/...` 相对引用仓库文件。
 
-**范围：** 仅在用户另行授权后，上传 T46 从 Git object 物化并已哈希的精确 Worker 字节，记录 Cloudflare deployment/version ID、上传 digest 与响应；冻结远端规范化 `sqlite_master` schema 哈希。再对“上一 Worker 精确字节 + Pages 0.1.2 manifest + 同一当前 schema”执行完整状态读写合同。
+**回滚：** 只撤销本任务新增的失败断言；不恢复或改写现有产品文件。
 
-**验收标准：** 新部署的 ID/digest 与 T46 字节哈希有可审计绑定且远端 schema 哈希一致；候选无持续 1102/1027、超预算或泄漏；旧组合在同一 schema 上完成登录/撤销、账户角色、Premium 授权、config/library 读写、ETag/CAS 409、tombstone、搜索、媒体和配额错误合同。
+### T50：让 Worker 按版本兼容加载 Pages
 
-**验证：** SPEC 14.3 全部门、上传请求字节哈希→deployment ID/digest 记录、远端版本/探针、规范化 schema 哈希、旧组合完整状态合同和回滚演练；响应版本头仅作辅助，不单独证明身份。
+**范围：** 最小修改 UXUVideo `_worker.js`：删除 `PAGES_VERSION`、`PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256` 和 `PAGES_RELEASE`；保留固定公共 `PAGES_BASE_URL`。manifest 只校验 `schemaVersion`、合法 `pagesVersion`、相同 `apiContract`、覆盖当前 Worker 的 `workerRange`、安全 route/asset 映射、允许 MIME 和 404；忽略旧 manifest 中多余的 commit/SHA/SRI 字段，以便一次性迁移期间继续服务当前 Pages。
 
-**依赖：** T46、显式 Cloudflare/测试资源授权。
+**验收标准：** 同一 Worker 可接受两个不同且兼容的 Pages 版本以及“同版本、不同内容”的合法清单；拒绝非法版本/API/range/路径/MIME/缺失资源。资产上游必须为 200、拒绝重定向、`Content-Type` 与 manifest 一致，并提供不超过上限的有效 `Content-Length`；响应体通过计数流返回，实际字节超限时取消上游，不为 SHA 缓冲整份资产。静态响应和 `/api/config` 使用该次已验证 manifest 的 `pagesVersion`；其他未读取 manifest 的 API 响应不得回报伪造或过期 Pages 版本。Pages 请求不发送 Cookie、Authorization、Secret、Token 或任何对接密钥。
 
-**可能涉及：** `work-products/remote-gate.md`、`work-products/rollback-compatibility.md`；测试 Cloudflare/D1 资源，不修改生产资源。
+**验证：** T49 UXUVideo RED 全部转 GREEN；源码定向扫描确认不存在三项 pin 常量及 Pages 资产 SHA/SRI 比较；测试验证 `/api/config`、静态响应头和结构化日志中的版本来自 manifest，不来自 Worker 字面量。
 
-**回滚：** 恢复测试 Worker 到记录的旧 SHA，清理授权创建的临时测试资源/Token；D1 schema 只向后兼容。
+**依赖：** T49。
 
-### T48：给出最终 GO/NO-GO（HOLD）
+**可能涉及：** UXUVideo `_worker.js` 及 T49 已列 UXUVideo 测试；不改 D1 schema、认证、媒体代理或其他 API。
 
-**范围：** 对 T46 Worker commit/tree/部署字节/schema 哈希、T43/T44 Pages commit/tree/artifact/公网 manifest、T47 deployment ID/digest 与旧组合完整状态证据执行最终 `@uxu-code:ship`；GO 不自动授权生产部署。
+**回滚：** 恢复本任务前的 Worker 文件即可；尚未远端更新时不触碰 Pages 或 D1。
 
-**验收标准：** 所有 ID/视觉/安全/本地/远端/旧组合完整状态回滚门齐全才可 GO；任一 commit/tree/字节/deployment/schema/manifest 身份漂移、证据过期或未授权差异均 NO-GO。
+### T51：把 UXUV-Pages 简化为单一根目录发布
 
-**验证：** 重跑身份/哈希只读检查，核对 deployment ID/digest、旧 Worker 字节 SHA、Pages 0.1.2 manifest、规范化当前 schema 哈希、完整状态兼容证据和回滚演练时间。
+**范围：** 修改 UXUV-Pages 发布脚本与 workflow：manifest 仅保留 `schemaVersion`、`pagesVersion`、`apiContract`、`workerRange`、`routes`、资产 `path/contentType`；生成单一当前产物目录，允许同一语义版本在内容修订后重建；workflow 直接发布该目录到 `gh-pages` 根，不再生成/保护版本目录，不要求 `expectedCommit`，并删除只服务 SHA 身份固定的脚本与测试。Git 历史和 Actions artifact 仍可作为审计/回滚记录，但不进入运行时 manifest 或 Worker 判断。
 
-**依赖：** T47、用户调用 `@uxu-code:ship`。
+**验收标准：** release manifest 不含 `gitCommit`、`sha256`、`sri` 或密钥；同版本内容变更能替换当前本地产物；workflow 无 `release/${PAGES_VERSION}`、`protect /0.2.0`、`EXPECTED_COMMIT` 或自定义 commit-SHA 校验；构建仍拒绝缺文件、危险路径、未知 MIME、Secret 文本和不合法版本/API/range。
+
+**验证：** T49 UXUV-Pages RED 全部转 GREEN；连续两次相同输入产物一致，同版本内容修改后当前产物更新；静态扫描确认 workflow/发布脚本不再支持公开版本目录或 SHA 身份字段，且测试仍覆盖根目录 `.nojekyll`、`rsync --delete` 和 Actions 最小权限。
+
+**依赖：** T49。可与 T50 分仓实施，但在 T53 前合并验证。
+
+**可能涉及：** UXUV-Pages `scripts/build-release.mjs`、`scripts/verify-release-identity.mjs`（删除）、`.github/workflows/pages.yml`、`package.json` 及 T49 已列 UXUV-Pages 测试。
+
+**回滚：** 恢复旧脚本/workflow；本任务不运行 Actions、不改 `gh-pages`、不删除公开目录。
+
+### T52：同步文档、版本诊断与仓库边界
+
+**范围：** 只更新两仓与本轮合同直接相关的 README/CHANGELOG/边界测试：说明这是一次性 Worker 迁移，之后兼容 Pages 可独立发布；公开 Pages 无对接密钥；API Contract 或 `workerRange` 变化才要求 Worker 更新；回滚为重新发布上一兼容 Pages artifact。清除把 Pages commit/SHA/固定版本描述成运行时必要条件的文字。
+
+**验收标准：** 文档不再要求用户复制 Pages SHA/commit 或为 Pages 配密钥；明确 `DB`、`ADMIN_PASSWORD`、`AUTH_SECRET` 仍是 Worker 私有配置，未被本轮放宽；版本目录、`main/latest` 拼接和生产状态声明均无回归。
+
+**验证：** 文档/边界合同 GREEN；扫描 `PAGES_GIT_COMMIT|PAGES_MANIFEST_SHA256|release/0.2.0|UXUV-Pages/0.2.0` 仅允许出现在历史证据或明确的反向测试中；秘密扫描零新增命中，`git diff --check` 通过。
+
+**依赖：** T50、T51。
+
+**可能涉及：** UXUVideo `README.md`、`CHANGELOG.md`、`work-products/tests/worker-only-boundary.test.mjs`；UXUV-Pages 现有变更日志/发布合同文档和相应测试。
+
+**回滚：** 只恢复本任务文档和边界断言；不改变已验证代码。
+
+### T53：闭合两仓本地兼容与迁移顺序
+
+**范围：** 不新增功能。按矩阵验证“新 Worker + 当前旧字段 manifest”“新 Worker + 新精简 manifest”“新 Worker + 同版本修订内容”“新 Worker + 新兼容版本”“不兼容 API/range”五种组合；把一次性远端顺序固定为先 Worker、后 Pages。不得用“旧 Worker + 新 manifest”作为可发布组合。
+
+**验收标准：** 前四种合法组合按合同成功，不兼容组合失败关闭；当前旧 manifest 的多余 SHA/commit 字段不会阻止新 Worker，精简 manifest 不再依赖这些字段；本地候选不含 Secret，Worker gzip 小于 3 MiB，两仓工作树差异均可审阅。
+
+**验证：** UXUVideo `node --check _worker.js`、`npm test`、`npm run check:size`、秘密扫描、`git diff --check`；UXUV-Pages `npm test`、`npm run lint`、`npm run build`、`npm run test:e2e`、秘密扫描、`git diff --check`。任何因环境而未运行的门必须单列，不得以其他绿色结果替代。
+
+**依赖：** T52。
+
+**可能涉及：** 两仓既有 `work-products/tests/` 和本计划/清单状态；不修改生产业务逻辑。
+
+**回滚：** 若矩阵失败，退回对应 T50/T51/T52；不执行远端动作。
+
+### T54：一次性更新 Worker（HOLD）
+
+**范围：** 仅在用户另行授权复制或部署后，把 T53 已验证的新 Worker 先更新到目标 Cloudflare；此时公开 Pages 仍保持当前旧字段 manifest，禁止同时切 Pages。
+
+**验收标准：** 目标 Worker 能通过当前公开根 manifest 服务首页、设置和静态资产，`/api/config`/版本头显示 manifest 版本，既有认证/D1/API 冒烟无退化；未发送 Pages 密钥。
+
+**验证：** 记录用户复制或经授权部署的 Worker 版本/deployment ID，以及当前 Pages 根目录只读探测。不得用本地测试冒充远端完成。
+
+**依赖：** T53、显式 Worker 复制/部署授权。
+
+**可能涉及：** 用户 Cloudflare Worker；不改 Pages、D1 schema 或 Secret 值。
+
+**回滚：** 恢复上一 Worker；Pages 尚未改变，因此无需同步回滚 Pages。
+
+### T55：发布精简 Pages 并清理旧版本目录（HOLD）
+
+**范围：** 仅在 T54 远端证据通过且用户另行授权 push/Pages 发布后，发布 T51 的根目录产物。先只读确认生产 HTML/JS/manifest 已无 `/UXUV-Pages/0.2.0/` 或其他版本路径引用，再让 `rsync --delete` 删除 `gh-pages` 的遗留版本目录；不配置任何对接密钥。
+
+**验收标准：** 公开根 manifest 为精简字段，八个路由和关键资产经 Worker 正常返回；旧版本目录已不存在或返回 404，且生产页面无旧路径请求；兼容 Pages 再次小改时无需修改 Worker 即能显示新 `pagesVersion`/内容。
+
+**验证：** Actions、`gh-pages` tree、公开根 manifest、浏览器网络请求和 Worker 版本头分层记录；旧目录删除前后路径清单可审阅。删除仅限已确认的 `gh-pages` 版本目录。
+
+**依赖：** T54、显式 UXUV-Pages commit/push/Pages 发布与远端目录清理授权。
+
+**可能涉及：** UXUV-Pages `main`/`gh-pages` 和 GitHub Pages；不修改 Worker、D1 或 Cloudflare Secret。
+
+**回滚：** 把上一兼容 Pages artifact 重新发布到根目录；Worker 保持不变。若兼容判断错误，先恢复上一根 artifact，再决定是否回滚 Worker。
+
+### T56：给出最终 GO/NO-GO（HOLD）
+
+**范围：** 用户调用 `@uxu-code:ship` 后，对 T53 本地门、T54 一次性 Worker 顺序、T55 根目录发布/旧目录清理和兼容 Pages 独立更新证据给出 GO/NO-GO；GO 不自动授权新的部署。
+
+**验收标准：** 无运行时 commit/SHA/Pages 密钥，兼容更新无需 Worker，API/range 不兼容失败关闭，回滚只需重新发布上一 Pages artifact；任一证据缺失即 NO-GO。
+
+**验证：** 重跑只读配置/路径/版本探测并核对证据层级、时间与回滚点。
+
+**依赖：** T55、用户调用 `@uxu-code:ship`。
 
 **可能涉及：** `work-products/release-gate.md`、`work-products/todo.md`；不修改业务代码。
 
-**回滚：** 若后续生产部署异常，恢复 T47 已验证的旧 Worker 精确字节与 Pages 0.1.2 pin；保持同一向后兼容 D1 schema，不做破坏性回滚。
+**回滚：** 按 T55 回滚 Pages；只有一次性 Worker 本身发生独立回归时才按 T54 回滚 Worker，D1 schema 不变。
 
 ## 5. 检查点
 
@@ -840,13 +924,14 @@ flowchart TD
 
 ### CP7：本地候选（T40-T42）
 
-- 功能矩阵零 `unverified`，视觉阈值全绿，新不可变候选可复现。
+- 功能矩阵零 `unverified`，视觉阈值全绿，历史 `0.2.0` 候选可复现。
 - 这里只能称为本地发布候选，不能称为已发布或生产可用。
-- **执行结论（2026-08-10）：** CP7 GREEN；随后 T43-T45 已完成，当前本地 Worker 已固定到公开发布的 `0.2.0`。T46-T48 继续 HOLD，因此该 Worker 尚未 commit 或部署；用户需重新复制本地 `_worker.js` 才能获得新界面。
+- **执行结论（2026-08-10）：** CP7 GREEN；随后 T43-T45 完成了当时的精确身份发布与本地 Worker pin。该 pin 已被 2026-08-11 新合同取代，不能继续进入旧 T46-T48。
 
-### CP8：精确身份与远端发布（T43-T48；T46-T48 HOLD）
+### CP8：Pages 兼容发布迁移（T49-T56；T54-T56 HOLD）
 
-- 只有 Pages commit/tree/artifact/公网 manifest、Worker commit/tree/部署字节/deployment ID/schema 哈希、旧 Worker + Pages 0.1.2 + 当前 schema 完整状态合同和最终 `@ship` 均闭合后才可能 GO。
+- T49-T53 必须证明无 runtime commit/SHA/Pages 密钥、动态版本正确、五组合兼容矩阵和两仓本地门；这只形成本地候选。
+- T54 必须先完成一次性 Worker 更新；T55 才能发布精简根目录并删除旧版本目录。只有这一顺序、兼容小改无需 Worker、Pages-only 回滚和最终 `@ship` 均闭合后才可能 GO。
 
 ## 6. 计划测试文件
 
@@ -863,6 +948,12 @@ flowchart TD
 
 UXUVideo 只在 RED 证明 Worker 合同缺口时扩展既有 `work-products/tests/`；不得为了前端复刻复制第二套 Worker 或恢复 Next API。
 
+T49-T53 的定向合同固定复用：
+
+- UXUVideo `work-products/tests/pages-integrity.test.mjs`、`worker-route-contract.test.mjs`、`worker-only-boundary.test.mjs`。
+- UXUV-Pages `work-products/tests/release-manifest.test.mjs`、`pages-deployment.test.mjs`、`pwa-contract.test.mjs`。
+- 不新增固定公网 commit/SHA fixture；manifest/stream 单元测试使用内存 fixture，公开根目录只读探测仅属于 T55 远端证据。
+
 ## 7. 风险与门
 
 | 风险 | 影响 | 缓解 / 门 |
@@ -876,7 +967,9 @@ UXUVideo 只在 RED 证明 Worker 合同缺口时扩展既有 `work-products/tes
 | TV/Cast/PiP 无法完全自动化 | 隐藏缺陷 | 能力 mock + 可复验人工设备步骤，未执行不得标 pass |
 | 视觉基线被实现覆盖 | 回归被掩盖 | 基线更新 Ask first；固定 commit/hash；双重审阅 |
 | Worker 安全因兼容 UI 被放宽 | 认证/SSRF/配额风险 | 现有合同为不可退化门；UI 解释限制，不删除安全控制 |
-| 双仓发布身份漂移 | Worker 加载错误 UI | Pages 先发布和逐字节验证，Worker 后 pin；不跟随可变分支 |
+| 旧 Worker 无法读取精简 manifest | Pages 先发布会让现网 UI 503 | 一次性迁移严格先 T54 Worker、后 T55 Pages；T53 证明新 Worker 可读旧/新两种 manifest |
+| 兼容 Pages 内容发生非预期变化 | 无运行时 SHA 可识别内容漂移 | 保护仓库/Pages 权限，保留 Git/Actions artifact，发布前全门；异常时只重新发布上一兼容根 artifact |
+| Pages 版本或合同伪造 | Worker 加载不兼容 UI | 合法 semver、精确 API Contract、Worker range、安全路径/MIME/大小失败关闭；不拼接 `main/latest` |
 
 ## 8. 并行与冲突约束
 
@@ -886,20 +979,21 @@ UXUVideo 只在 RED 证明 Worker 合同缺口时扩展既有 `work-products/tes
 - T22/T23 可并行研究但不能并发修改共享播放器状态；T24 合并后才能做 T25/T26。
 - T27 与 T29 可并行；T28/T30 分别等待其前置。
 - T31 与 T32 可在各自前置完成后并行；T33/T34 共享同步基础但按不同文档类型串行合并，T35/T36 各自独立回滚。
-- T37 与 T38 在各自前置完成后可独立验证；T39 是独立授权 HOLD；T40-T48 必须串行。任何并行任务合并后都要重跑对应检查点。
+- T37 与 T38 在各自前置完成后可独立验证；T39 是独立授权 HOLD。T49 后 T50/T51 可分仓并行，T52-T56 必须串行；任何并行任务合并后都要重跑对应检查点。
 
 ## 9. 当前未决项
 
 - 首次视觉基线已获用户批准；后续仍禁止无批准更新基线或修改阈值。
 - 真实 Cast、PiP、PWA 安装、TV 与 Cloudflare 环境由用户部署后验收；本地证据不得冒充真实设备或生产证明。
-- 新 Pages 版本号在 T42 根据变更范围确定，但必须高于且不得覆盖 `0.1.2`。
+- `pagesVersion` 继续来自 UXUV-Pages `package.json`，只用于用户可见版本与兼容诊断；同版本允许内容修订。是否升版由 Pages 变更语义决定，不再触发 Worker 更新。
+- 公开 `gh-pages` 遗留版本目录的实际删除只在 T55 执行；必须先确认 T54 目标 Worker 已更新且生产请求不再引用旧路径。
 - 任何固定提交中可达、但当前矩阵未覆盖的行为都自动扩大矩阵，而不是静默删减；若它需要非 13.3 架构差异，停止并请求修订 SPEC。
 
 ## 10. 完成与授权边界
 
 - 本计划获批后，只有用户明确调用 `@uxu-code:build`（或 `@uxu-code:build auto`）才允许开始本地实现。
 - 本地实现授权不包含 commit、push、Pages 发布、Worker 部署、真实 D1/Secret/Analytics Token 或生产切换。
-- T39 已按用户明确的单文件 Worker 交付边界完成本地/受控真实房间验证；T43-T45 已经独立授权并完成。T46、T47、T48 仍是独立 HOLD；本地功能全绿不自动授权 Worker commit、push 或部署。
+- T39 已按用户明确的单文件 Worker 交付边界完成本地/受控真实房间验证；T43-T45 是历史已完成事实。原 T46-T48 已取代且禁止执行；T54、T55、T56 分别是新的 Worker 更新、Pages 发布/远端目录删除和最终发布门 HOLD。
 - 计划完成不等于产品完成；产品完成必须满足 SPEC 15.A-G 和本计划 CP8。
 
 ## 11. 单模型对抗审查修订记录
@@ -939,3 +1033,13 @@ UXUVideo 只在 RED 证明 Worker 合同缺口时扩展既有 `work-products/tes
 | T35 未依赖 T33 | 增加 T33→T35，并验证所有文档类型的离线/冲突/配额/恢复状态 |
 | 真实 Cast/VideoTogether 可能未经授权启用 | T23/T38 只允许 mock/禁用态；新增 T39 独立 HOLD，真实脚本/设备/房间证据须单独授权 |
 | 多个切片缺 TV/遥控验收 | T16/T19/T20/T29/T30/T38 增加遥控焦点/陷阱/方向键 E2E；T37 仍只汇总 |
+
+2026-08-11 用户以 CfGfwAX 的固定公共根地址模式取代运行时精确身份固定；本次规划修订不重写上述历史审查结论，只声明其中 T42-T48 的 pin/逐字节发布建议已不再规范当前执行：
+
+| 新约束 | 计划处理 |
+| --- | --- |
+| Pages 小改不得要求 Worker 更新 | T50 只按 `pagesVersion`/API Contract/Worker range/安全映射判断兼容，T53 验证同版本修订和新兼容版本 |
+| Worker/manifest 不使用 commit 或 SHA 固定 | T49 先 RED，T50/T51 删除 runtime/published identity 字段；Git/Actions 只留作外部审计记录 |
+| 公开 Pages 不配置对接密钥 | T49/T50/秘密扫描证明 Worker→Pages 请求无 Cookie、Authorization、Token 或 Secret |
+| 移除多版本目录 | T51 本地删除版本目录逻辑；T55 在先更新 Worker并确认零引用后才删除远端遗留目录 |
+| 一次性迁移不能中断现网 | T50 新 Worker兼容当前旧字段 manifest，T54 先更新 Worker，T55 后发布精简 manifest |

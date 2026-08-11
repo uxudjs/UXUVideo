@@ -6,7 +6,7 @@
 
 > 2026-08-08 验收纠偏：已发布的 UXUV-Pages `0.1.2` 只覆盖了简化页面和部分功能，未满足本规范原有“迁移不是视觉重设计”和“功能类别完整”的要求。本次重开把 KVideo 4.9.19 的完整 UI 与用户可见行为升级为硬性发布门；此前 `work-products/plan.md`、`work-products/todo.md` 中关于 UI 已全面接管的结论失效，须在本规范获批后重新规划。
 
-> 2026-08-11 定向修订：用户明确要求调整顶部导航、用户设置入口、品牌图标、版本更新入口与语言布局，并降低卡片套卡片等模板化“AI 感”。第 20 节若获批准，将只在这些表面覆盖原“视觉完全复刻”条款；其余 KVideo 功能、Worker/D1/会话安全、固定 Pages 发布和审批边界继续有效。
+> 2026-08-11 定向修订：用户明确要求调整顶部导航、用户设置入口、品牌图标、版本更新入口与语言布局，并降低卡片套卡片等模板化“AI 感”。第 20 节若获批准，将只在这些表面覆盖原“视觉完全复刻”条款；其余 KVideo 功能、Worker/D1/会话安全、Pages 兼容发布和审批边界继续有效。
 
 ## 1. 决策摘要
 
@@ -18,25 +18,25 @@
 | UI 与功能 | 除第 20 节待批准的定向 UI 修订外，完整保留固定基准中的视觉设计、页面结构、组件、文案、交互、设置项和用户功能；禁止以简化页面、原生控件或无关新设计替代 |
 | 唯一允许差异 | 已批准差异为 Worker API、D1 数据/同步和登录/会话安全架构所必需的差异；第 20 节获批后再增加其明确列出的导航、图标、版本入口、语言布局和结构减层，不得外推为全站重设计 |
 | Worker 路由 | Worker 原生实现现有 21 个 `app/api/**/route.ts` 的 Web API 合同，并新增 1 个 Cloudflare 用量路由，共 22 个；禁止复制 `NextRequest`、`NextResponse`、Node 文件系统或 Next 缓存语义 |
-| 静态资源 | Worker 固定代理一个明确的 Pages 发布版本；禁止在运行时跟随 `main`、`latest` 或可变分支 |
+| 静态资源 | Worker 固定代理 UXUV-Pages 的公开根地址；同一兼容版本内允许 Pages 独立更新，禁止拼接 `main`、`latest` 或其他分支 URL |
 | 认证与同步存储 | **已确认：** D1 是 v1 唯一权威存储；KV 与 Upstash 不进入 v1 运行时 |
 | 认证边界 | 登录、会话、Premium 授权、账户管理、同步与所有高成本代理 API 均发生在用户自己的 Worker 域名 |
 | Free 套餐 | **已确认：** 支持完整功能类别，但采用保守上限；媒体代理、IPTV 和长流为尽力而为，不承诺无限时长或生产 SLA |
 | 安全基线 | 默认必须配置认证；同源 API、严格 Cookie/CSRF、SSRF 防护、无通配 CORS、CSP、安全日志和应用级限流 |
-| 兼容发布 | Pages 版本、Pages 提交、资源清单 SHA-256、Worker 版本和 API Contract 必须一起验证；不兼容时失败关闭 |
+| 兼容发布 | Worker 只校验 Pages 版本、API Contract、Worker 兼容范围和清单结构；不固定 Git commit 或资源 SHA，不兼容时失败关闭 |
 | 用量与提醒 | 主设置页向 `super_admin` 显示 Workers 账户/本脚本及 D1 账户/本数据库用量；项目警戒线、官方额度和 UTC 重置时间分开标识，接近官方上限时显示全局提醒 |
 
-本规范选择“固定静态发布 + 用户私有 API Worker”，而不是把完整前后端一起复制到每个 Cloudflare 账户。它保留单文件部署体验，也避免公共 Pages 接触密码、Cookie、D1 或用户同步数据。
+本规范选择“兼容版本的公共静态发布 + 用户私有 API Worker”，而不是把完整前后端一起复制到每个 Cloudflare 账户。它保留单文件部署体验，允许 Pages 小步更新而无需用户重发 Worker，也避免公共 Pages 接触密码、Cookie、D1 或用户同步数据。
 
 ## 2. 假设与确认项
 
 以下假设与决策均已确认：
 
-1. **已确认：** 用户所称 `../CfCdnAX` 与 `../CFAX-Pages` 指本机实际存在的 `../CfGfwAX` 与 `../CGAX-Pages`。前者的 Worker 固定代理 Pages 基址、后者只保存静态 UI，是本规范的职责参考，但本规范不会复制其“跟随 Pages 最新内容”的弱版本契约。
+1. **已确认：** 用户所称 `../CfCdnAX` 与 `../CFAX-Pages` 指本机实际存在的 `../CfGfwAX` 与 `../CGAX-Pages`。本规范采用其“Worker 固定公开 Pages 根地址、前端可独立更新”的职责与维护模型，并增加 manifest 版本、API Contract、Worker 兼容范围和安全路由结构校验；不增加 commit 或 SHA 固定。
 2. 目标用户是个人、家庭或小规模可信用户群；不是公开匿名视频代理服务或大规模 SaaS。
 3. “单一 `_worker.js`”指部署产物只有一个可复制粘贴的模块 Worker 文件；仓库仍可保留 README、许可证、验证脚本和 `work-products/tests/`。
 4. **已确认：** “全部功能支持 Free 套餐”指所有功能类别均有可验证的小规模路径，不等于无限并发、无限流量、第三方源可用性保证或生产 SLA。
-5. **已确认：** 新公共仓库为 `uxudjs/UXUV-Pages`；本机 `../UXUV-Pages` 已是 Git 工作区，`origin` 指向 `https://github.com/uxudjs/UXUV-Pages.git`。Pages 最终公开 URL 与可选自定义域名在发布时由仓库配置确定，不改变固定发布合同。
+5. **已确认：** 新公共仓库为 `uxudjs/UXUV-Pages`；本机 `../UXUV-Pages` 已是 Git 工作区，`origin` 指向 `https://github.com/uxudjs/UXUV-Pages.git`。Worker 使用固定公开根地址；同一兼容版本内的 Pages 发布不要求修改 Worker。
 6. **已确认：** D1 完整模式要求用户创建一个 D1 数据库并配置两个 Worker Secret。仅复制代码但不配置这些项时，Worker 必须显示安全的设置错误，而不是退化为匿名开放代理。
 7. **已确认：** 数据模型、查询、限流和同步必须按 Free 配额留出显著余量；不得把“额度够用”建立在未索引扫描、每媒体分片写 D1 或忽略索引写放大的假设上。
 8. **已确认：** 精确显示 Cloudflare 账户实际用量需要额外配置一个仅含 `Account Analytics: Read` 的 API Token Secret，以及 Account ID、Worker script name、D1 database ID 三个普通变量。未配置时全部业务功能仍可用，但设置页只能显示配置说明与运行时发现的配额错误，不能伪造精确计数。
@@ -72,7 +72,7 @@
 - KVideo 的 Liquid Glass 设计系统、导航、卡片、设置区块、播放器控件、图标、动效、主题和响应式行为被直接迁移，不被当前 UXUV-Pages 的通用深色卡片设计替代。
 - 现有 21 个 API 路由的用户可见功能均有 Worker 原生路由和合同测试，并新增 1 个只读用量路由。
 - 浏览器地址栏始终是用户 Worker 域名；密码、会话 Cookie 和写操作不会发送到 `github.io`。
-- Worker 只能加载规范中固定的 Pages 发布，且能拒绝清单哈希错误、资源不完整或 API Contract 不兼容的发布。
+- Worker 只能从固定的 Pages 公开根地址加载前端，且能拒绝版本、API Contract、Worker 兼容范围或路由结构不兼容的发布；不对 Git commit 或资源 SHA 做运行时固定。
 - D1 支持账户、可撤销会话、Premium 授权、配置、历史和收藏跨设备同步，并发写入不会静默覆盖较新版本。
 - D1 Free 最坏情形预算模型、逐查询 `meta.rows_read`/`meta.rows_written` 和远端验收均低于 8.6 的项目警戒线。
 - 主设置页能区分本项目用量、Cloudflare 账户额度、Analytics 延迟和数据不可用；达到分级阈值或收到 D1 配额错误时显示可执行提醒。
@@ -90,7 +90,7 @@
 - 把根布局中的运行时文件/环境读取改为浏览器启动后从同源 Worker 获取公共配置。
 - 在 `_worker.js` 中以 Fetch API、Web Streams、Web Crypto 和 D1 binding 重写现有 21 个 API 路由，并原生实现 1 个只读用量路由。
 - 建立 D1 schema、自举、兼容迁移、配额预算、限流、会话和同步冲突合同。
-- 建立 Pages/Worker 版本、资源完整性、安全响应头、日志和端到端回归合同。
+- 建立 Pages/Worker 版本兼容、发布结构、安全响应头、日志和端到端回归合同。
 - 保留 MIT 许可证和原作者版权声明；公开 Pages 分发必须包含相同许可证要求。
 
 ### 4.2 非目标
@@ -133,8 +133,8 @@
 
 不可直接复用：
 
-- 直接固定到 GitHub Pages 可变 `main` 内容。
-- 缺少发布清单、资源 SHA-256 和兼容范围。
+- 运行时拼接 GitHub `main`、`latest` 或任意分支 URL。
+- 缺少发布清单、Pages 版本、API Contract 或 Worker 兼容范围。
 - 仅靠本地 Node 测试宣称 Cloudflare/真实长流可用。
 - 参考项目的用量接口从浏览器 query string 接收 Account ID/API Token，并兼容 Global API Key；UXUVideo 必须改为 Worker Secret + 固定 GraphQL endpoint，凭据永不进入 URL 或前端。
 
@@ -143,7 +143,7 @@
 ```mermaid
 flowchart LR
   B[浏览器] -->|同源 HTML/JS/API| W[用户私有 Cloudflare Worker]
-  W -->|固定 Pages 版本| P[公共 UXUV-Pages / GitHub Pages]
+  W -->|固定根地址与兼容版本| P[公共 UXUV-Pages / GitHub Pages]
   W -->|账户 会话 同步 低频限流| D[(用户 D1: DB)]
   W -->|受控 fetch / stream| U[用户配置的公开上游]
   P -.不接收密码 Cookie D1.-> B
@@ -197,21 +197,20 @@ Worker 必须按以下顺序处理：
 1. 规范化 URL、方法和请求 ID。
 2. `/api/*` 进入 API 路由表；未知 API 返回结构化 404，绝不回退 HTML。
 3. 非 API 只接受 `GET`/`HEAD`；其他方法返回 405。
-4. 根据固定的 Pages release manifest 精确映射静态路由；禁止任意上游路径拼接。
-5. HTML 添加安全头和必要 nonce；哈希静态资产使用长期缓存。
-6. 未知页面返回固定版本的 `404.html`；不把任意路径当首页。
+4. 根据当前 Pages release manifest 的兼容版本与安全映射精确路由；禁止任意上游路径拼接。
+5. HTML 添加安全头和必要 nonce；带内容哈希文件名的静态资产使用长期缓存，其他资产按发布策略重验证。
+6. 未知页面返回当前兼容版本的 `404.html`；不把任意路径当首页。
 
-## 7. Pages 发布、兼容与资源完整性合同
+## 7. Pages 独立发布、兼容与资源映射合同
 
 ### 7.1 发布标识
 
-每个 Pages 发布必须生成不可变清单，例如：
+每个 Pages 发布必须在公开根目录生成当前兼容清单，例如：
 
 ```json
 {
   "schemaVersion": 1,
   "pagesVersion": "1.0.0",
-  "gitCommit": "40-character-full-commit-sha",
   "apiContract": 1,
   "workerRange": ">=1.0.0 <2.0.0",
   "routes": {
@@ -221,7 +220,6 @@ Worker 必须按以下顺序处理：
   "assets": {
     "/_next/static/example.js": {
       "path": "_next/static/example.js",
-      "sha256": "base64-sha256",
       "contentType": "text/javascript; charset=utf-8"
     }
   }
@@ -232,31 +230,31 @@ Worker 源码固定以下常量：
 
 - `WORKER_VERSION`
 - `API_CONTRACT_VERSION`
-- `PAGES_VERSION`
 - `PAGES_BASE_URL`
-- `PAGES_MANIFEST_SHA256`
-- 可选的同 API Contract 上一版回退清单
 
-### 7.2 不可变与校验规则
+Worker 源码不得固定 `PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256` 或任何 Pages 资产 SHA。
 
-- `PAGES_BASE_URL` 必须包含明确版本目录，不能含 `main`、`master`、`latest` 或可变查询参数。
-- 发布流水线拒绝覆盖已存在且字节不同的版本目录。
-- Worker 获取清单后先校验清单 SHA-256，再校验 `apiContract` 与 `workerRange`。
-- HTML 必须在 Worker 中校验 SHA-256 后再返回；首方 JS/CSS 使用内容哈希文件名和 SRI，且 SRI 值来自已验证清单。
-- 小型首方公共资源可在 Worker cache miss 时校验 SHA-256；大资源不得为了哈希而无界缓冲。
-- 清单、HTML 或兼容校验失败时返回安全的内置 503 页面，并记录 `frontend_integrity_error`；禁止静默加载最新 Pages。
-- GitHub Pages 429/5xx 时，只能使用同一 API Contract、已固定并已验证的回退版本；没有安全回退则 503。
+### 7.2 独立更新与校验规则
+
+- `PAGES_BASE_URL` 固定为 UXUV-Pages 发布根目录，不含版本目录、`main`、`master`、`latest` 或可变查询参数。
+- Worker 校验 `schemaVersion`、`pagesVersion` 为合法语义版本、`apiContract === API_CONTRACT_VERSION`、`workerRange` 接受当前 `WORKER_VERSION`、安全路由映射、允许的内容类型和大小上限；不得用固定 `PAGES_VERSION` 要求精确相等。
+- Worker 不读取或比较 Pages Git commit、manifest SHA、资产 SHA 或 SRI；公开仓库和版本号不是 Secret，Pages 也不得接收任何对接密钥。
+- 只要 API Contract 与 `workerRange` 仍兼容，Pages 可独立变更 `pagesVersion` 并覆盖公开根目录；Worker 下一次请求直接使用当前清单和资产，不要求用户更新 `_worker.js`。
+- `X-UXUV-Pages-Version`、运行时配置和诊断信息必须使用当前清单的 `pagesVersion`，不得回报 Worker 内硬编码的旧值。
+- 资产在状态、路径、内容类型和大小边界通过后以流方式返回，不为哈希校验缓冲完整文件。
+- 清单结构、版本或兼容范围校验失败时返回安全的内置 503 页面并记录稳定的 Pages 失败阶段；不得把不兼容发布当成当前版本。
+- GitHub Pages 429/5xx 时直接返回 503，不回退旧版本。
 - HTML：`Cache-Control: no-cache, must-revalidate`。内容哈希资产：`public, max-age=31536000, immutable`。认证/API 响应：`no-store`。
 
 ### 7.3 发布顺序与回滚
 
-1. 先发布新的、不可变的 Pages 版本并完成公开字节/SHA 验证。
-2. 再更新 `_worker.js` 的 Pages 固定常量、Worker 版本和 CHANGELOG。
-3. 运行两个仓库的本地合同测试。
-4. 本地身份、字节、回滚和安全门通过后，把精确 `_worker.js` 标为可复制候选。
-5. 用户自行复制到 Cloudflare、绑定 `DB` 并配置两个必需 Secret；Cloudflare、真实媒体与真实设备结果作为用户验收证据，不反向伪装成本地已验证结论。
+1. 在 UXUV-Pages 运行静态构建与清单合同测试，再把当前版本发布到唯一公开根目录。
+2. 若 `apiContract` 和 `workerRange` 仍兼容，无论 `pagesVersion` 是否变化，都只验证公开页面与 Worker 代理，不修改或重发 `_worker.js`。
+3. 只有 API Contract 变化或 `workerRange` 不再接受当前 Worker 时，才更新 `_worker.js` 的兼容常量、Worker 版本和 CHANGELOG。
+4. 运行两个仓库的本地合同测试；生产 Pages 与 Worker 验收必须与本地证据分开记录。
+5. 用户自行复制需要更新的 Worker、绑定 `DB` 并配置两个必需 Secret；Pages 小步更新不触发这一步。
 
-回滚只需恢复上一版 `_worker.js`。D1 迁移在同一 API major 内必须只增不删并保持上一版可读；若做不到，发布门必须 NO-GO，另写迁移/回滚规范。
+兼容范围内的前端回滚只需把上一版 Pages artifact 重新发布到根目录并验证清单版本与路由；Worker 保持不变。只有后端或兼容合同同时变化时才回滚 Worker。D1 迁移在同一 API major 内必须只增不删并保持上一版可读；若做不到，发布门必须 NO-GO，另写迁移/回滚规范。
 
 ## 8. 存储与认证决策
 
@@ -405,7 +403,7 @@ Cloudflare 当前 Free 上限是每日 500 万行读、10 万行写、单数据�
 | `CF_WORKER_SCRIPT_NAME` | 空 | 当前 UXUVideo Worker 的 script name，用于区分本脚本与账户总用量 |
 | `CF_D1_DATABASE_ID` | 空 | `DB` 对应的 D1 database ID，用于区分本数据库与账户总用量 |
 
-`PAGES_BASE_URL`、Pages 版本和清单哈希不是用户变量，必须固化在发布的 `_worker.js` 中，避免把不受验证的前端注入用户实例。
+`PAGES_BASE_URL` 和 API Contract 兼容版本不是用户变量，必须固化在发布的 `_worker.js` 中；当前 Pages 版本从已校验清单读取，不在 Worker 中精确锁定，也不要求任何 Pages 对接密钥。
 
 四项 `CF_*` 用量配置是一个可选整体：Token 必须保存为 Worker Secret，其他三项是非敏感标识。任何一项缺失时 `/api/admin/usage` 返回 `configured: false` 和缺失的变量名，不返回 5xx，也不影响登录、同步、媒体或其他 API。不得把 Token 写入普通变量、URL、请求查询参数、D1、Pages、浏览器存储、响应或日志。
 
@@ -709,7 +707,7 @@ upstreamClass, errorCode
 - 每个对照项必须至少有一个能够先在当前 UXUV-Pages `0.1.2` 上失败的 RED 证据，再以迁移实现转为 GREEN；测试不能只断言源码含某个字符串。
 - 对需要真实媒体或浏览器能力的功能，先用确定性 fixture 证明首方实现和平台 API 合同；能在内置浏览器安全验证的第三方流程再单独记录真实证据。Cast、PiP、PWA 安装、TV 和 Cloudflare 实例由用户部署后按可复验步骤验收，不阻塞“可复制 `_worker.js`”本地交付，也不得被表述为已在真实设备或生产环境验证。
 - 任一页面仍使用非 KVideo 且非第 20 节批准项的替代信息架构、任一矩阵项为 `unverified`/缺失/部分完成、任一关键视觉区域超阈值或任一安全门失败，发布结论均为 NO-GO。
-- UXUV-Pages `0.1.2` 不得覆盖。完整复刻必须发布新的不可变语义版本，先验证公开 Pages 字节，再在获得单独部署授权后更新 Worker 固定版本。
+- UXUV-Pages `0.1.2` 历史产物不得作为当前生产根目录。完整复刻先发布新的兼容语义版本；同一版本的小步修订可独立发布，只有兼容合同变化才更新 Worker。
 - 固定 KVideo 源码仍可通过 Git 提交恢复。实施不得使用 reset/checkout 覆盖当前工作树，也不得在复刻门完成前删除唯一可复验的基准 fixture、矩阵或截图。
 
 ## 14. 测试策略与发布证据
@@ -725,7 +723,7 @@ upstreamClass, errorCode
 - `work-products/tests/sync-cas.test.mjs`：ETag、CAS、409、合并和 tombstone。
 - `work-products/tests/d1-free-budget.test.mjs`：查询计划、逐路由 row metrics、账户/会话/同步上限和最坏情形日预算。
 - `work-products/tests/security-boundary.test.mjs`：SSRF、重定向、Cookie/Authorization 不外泄、CSRF、CORS、CSP。
-- `work-products/tests/pages-integrity.test.mjs`：清单哈希、SRI、固定版本、兼容范围、失败关闭和安全回退。
+- `work-products/tests/pages-integrity.test.mjs`：根目录版本、API Contract、Worker 兼容范围、安全路由映射、流式资产、无 commit/SHA 固定和失败关闭。
 - `work-products/tests/free-budget.test.mjs`：每条路径的外部子请求与并发连接上限。
 - `work-products/tests/media-stream.test.mjs`：Range、HLS 重写、签名 token、字节一致、取消与无界缓冲防护。
 - `work-products/tests/structured-logging.test.mjs`：字段、D1 row metrics、脱敏和错误分类。
@@ -734,8 +732,8 @@ upstreamClass, errorCode
 ### 14.2 UXUV-Pages 合同测试
 
 - 静态导出成功且不存在 API route/server-only/fs/Secret。
-- release manifest 覆盖每个 HTML/JS/CSS/公共资源；SHA-256/SRI 可重算。
-- 已发布版本目录不可被不同字节覆盖。
+- release manifest 覆盖每个 HTML/JS/CSS/公共资源并提供安全路径、内容类型和当前兼容版本；运行时合同不要求 SHA/SRI。
+- 公开根目录只包含当前兼容版本，不使用版本目录；同一版本内允许发布修订内容。
 - 所有 API 调用都是同源相对 `/api/*`，不存在固定 Worker 域名或 GitHub Pages 认证提交。
 - `work-products/tests/kvideo-feature-parity.test.mjs` 校验固定基准身份、对照矩阵完整性、每项测试映射和零未审批差异；从测试位置引用 UXUVideo 时只能使用 `../../../UXUVideo/...`。
 - `work-products/tests/kvideo-visual-parity.e2e.spec.ts` 使用已审阅 fixture 和截图覆盖八路由、四断点、关键状态及 13.4 阈值。
@@ -752,7 +750,7 @@ upstreamClass, errorCode
 本地证据：
 
 - 两仓单元/合同测试、Lint、静态构建、Worker 语法和 `git diff --check`。
-- 固定 Pages 公开 URL 的字节、清单 SHA 和 MIME 校验。
+- Pages 公开根 URL 的版本、API Contract、路由、MIME 与关键页面浏览器验证；不把字节 SHA 作为 Worker 更新门。
 
 Cloudflare 远端证据：
 
@@ -817,9 +815,10 @@ git diff --check
 ### D. Pages/Worker 合同
 
 - [ ] Worker 不含可变 Pages 分支 URL。
-- [ ] 清单/HTML 篡改、丢资源和版本不兼容都被自动测试拒绝。
-- [ ] Pages 与 Worker 版本头、清单和 CHANGELOG 一致。
-- [ ] 上一版 Worker 可用上一版固定 Pages 和向后兼容的 D1 schema 回滚。
+- [ ] Worker 不含 `PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256` 或 Pages 资产 SHA 校验。
+- [ ] 清单结构、丢资源、非法路径和版本/API 不兼容都被自动测试拒绝。
+- [ ] `pagesVersion` 变化但 API Contract 与 `workerRange` 仍兼容时，无需修改 Worker 即可加载；版本头与清单一致。
+- [ ] 上一版兼容 Pages artifact 可单独重新发布到根目录；后端合同未变时 Worker 与 D1 均不回滚。
 
 ### E. Free 能力
 
@@ -832,7 +831,7 @@ git diff --check
 
 - [ ] CSP、CSRF、同源 CORS、SSRF、限流和安全头均有回归测试。
 - [ ] 日志可关联 requestId、路由、版本和错误，但秘密/用户内容扫描为零命中。
-- [ ] 429、502、503、完整性失败和流中断均有稳定错误码与 UI 状态。
+- [ ] 429、502、503、Pages 兼容/上游失败和流中断均有稳定错误码与 UI 状态。
 - [ ] 用量接口只允许 `super_admin` 同源访问，Token 只通过 Bearer header 发往固定 GraphQL 地址；URL、响应、Pages、D1、Cache 内容、浏览器和日志均零泄漏。
 - [ ] 用量卡能区分账户总量、本项目量、项目警戒线、官方额度与 Analytics 延迟；70/85/95/100 及 D1 项目警戒线边界都有自动测试。
 - [ ] D1 配额错误触发 `STORAGE_QUOTA_EXCEEDED` 和保留本地数据的 UI；Worker 请求耗尽限制被明确呈现为提前预警而非保证事后通知。
@@ -847,7 +846,7 @@ git diff --check
 - [ ] IPTV 的导入、分组、搜索、分页、三级导航、多线路、自动切源、UA/Referer、HEVC 兼容、缓存、超时和播放状态达到固定基准行为。
 - [ ] PWA、离线缓存、D1 同步、冲突、账户隔离、移动触摸、TV 空间导航、WCAG 与三种语言满足固定基准或 13.3 的明确架构差异。
 - [ ] 当前 UXUV-Pages 通用深色卡片替代设计和原生播放器不再作为生产主界面；架构新增 UI 使用 KVideo 视觉组件增量呈现。
-- [ ] 新候选使用新的不可变 Pages 版本；未覆盖 `0.1.2`，且没有把本地绿色证据表述为已提交、已推送或已部署。
+- [ ] 新候选跟随公开根目录的当前兼容 Pages 版本；历史 `0.1.2` 不作为生产根目录，且没有把本地绿色证据表述为已提交、已推送或已部署。
 
 ## 16. 工作边界
 
@@ -856,7 +855,7 @@ git diff --check
 - 先固定合同测试，再迁移一个垂直功能切片。
 - 先从固定 KVideo 提交建立对照 ID、RED 行为证据和视觉基准，再修改对应 UXUV-Pages 切片。
 - 除第 20 节获批的定向修订外，直接复用 KVideo 组件、样式和纯浏览器逻辑；只有静态导出或 Worker/D1/登录安全冲突才做局部适配。
-- 先发布并验证 Pages，再更新 Worker 固定版本。
+- 先发布并验证 Pages；只有版本或 API 兼容合同变化时才更新 Worker。
 - 对外部响应、用户 URL、持久化 JSON 和环境变量做边界校验。
 - 保留未提交工作与 MIT 归属。
 - 区分本地、GitHub Pages、Cloudflare 远端和真实第三方源证据。
@@ -879,7 +878,7 @@ git diff --check
 - 把 Secret、密码、Cookie、真实账户或完整订阅/媒体 URL 提交到仓库。
 - 从浏览器接收 Cloudflare API 凭据，支持 Global API Key，或把 Analytics Token 放入 query/body/普通变量。
 - 让公共 Pages 接收认证或同步请求。
-- 加载未固定的 Pages `main/latest`。
+- 拼接或加载 GitHub `main/latest` 等分支 URL，而不是固定 UXUV-Pages 公开根地址。
 - 缺少 D1 binding/Secret 时退化为匿名开放代理。
 - 为通过 Free CPU 门降低认证安全性或删除失败测试。
 - 把本地测试称为生产、真实媒体或 Free 套餐稳定性证明。
@@ -889,7 +888,8 @@ git diff --check
 | 风险 | 后果 | 缓解 |
 | --- | --- | --- |
 | Free 10 ms CPU 对 PBKDF2/大 JSON 不足 | 登录或聚合 1102 | 远端 CPU 门；不降低哈希；减少缓冲/聚合；失败则 Paid 或重新审批 |
-| GitHub Pages 可用性/429 | UI 无法加载 | 固定并验证的兼容回退；Cache API；无安全回退则 503 |
+| GitHub Pages 可用性/429 | UI 无法加载 | 固定公开根地址；当前兼容清单不可用时 503，不回退旧版本 |
+| 同一版本的 Pages 内容发生非预期变化 | Worker 不再通过 commit/SHA 识别内容漂移 | 保护公开仓库与 Pages 发布权限；保留 Actions artifact 和 Git 历史；发布前测试，异常时只回滚 Pages 根目录 |
 | GitHub Pages 不适合敏感交易 | 密码暴露风险 | 浏览器 origin 必须是 Worker；Pages 直接入口无登录；同源 API |
 | 公共媒体代理被滥用 | 配额/条款/上游封禁 | 强制认证、签名短期 token、SSRF、限流、无通配 CORS、清晰使用政策 |
 | HLS 产生大量 Worker 请求 | Free 100,000/日很快耗尽 | 短期 token、合理客户端缓存、UI 展示 profile 限制；高负载要求 Paid/专用媒体服务 |
