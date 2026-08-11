@@ -24,6 +24,7 @@ const ROUTES = [
   ['/api/probe-resolution', ['POST']],
   ['/api/proxy', ['GET', 'OPTIONS']],
   ['/api/search-parallel', ['POST']],
+  ['/api/source-import', ['POST']],
   ['/api/user/config', ['GET', 'POST']],
   ['/api/user/sync', ['GET', 'POST']],
   ['/api/admin/usage', ['GET']],
@@ -50,6 +51,7 @@ const IMPLEMENTED_PATHS = new Set([
   '/api/probe-resolution',
   '/api/proxy',
   '/api/search-parallel',
+  '/api/source-import',
   '/api/user/config',
   '/api/user/sync',
   '/api/admin/usage',
@@ -78,7 +80,7 @@ function assertVersionHeaders(response) {
   const requestId = response.headers.get('X-Request-Id');
   assert.match(requestId ?? '', REQUEST_ID_PATTERN);
   assert.equal(response.headers.get('X-UXUV-Worker-Version'), '1.0.0');
-  assert.equal(response.headers.get('X-UXUV-Pages-Version'), '0.1.2');
+  assert.equal(response.headers.get('X-UXUV-Pages-Version'), '0.2.0');
   assert.equal(response.headers.get('X-UXUV-API-Contract'), '1');
   return requestId;
 }
@@ -106,8 +108,8 @@ async function assertStructuredError(response, expectedStatus, expectedCode, isS
   assert.equal(body.error.details, null);
 }
 
-test('registers all 22 implemented API contracts', () => {
-  assert.equal(ROUTES.length, 22);
+test('registers all 23 implemented API contracts', () => {
+  assert.equal(ROUTES.length, 23);
   const pendingRoutes = ROUTES.filter(([path]) => !IMPLEMENTED_PATHS.has(path));
   assert.deepEqual(pendingRoutes, []);
 });
@@ -132,6 +134,41 @@ test('non-API methods fail with 405 without reaching the Pages release', async (
   assert.equal(post.response.headers.get('Allow'), 'GET, HEAD');
 });
 
+test('GET /api/config enables the built-in VideoTogether integration without extra variables', async () => {
+  const env = { DB: createAuthD1Stub().db };
+  const response = await worker.fetch(new Request('https://worker.example/api/config'), env, {});
+
+  assert.equal(response.status, 200);
+  const config = await response.json();
+  assert.deepEqual(config.thirdPartyScripts.videoTogether, {
+    enabled: true,
+    scriptUrl: 'https://fastly.jsdelivr.net/gh/VideoTogether/VideoTogether@5bf6d155db7bdd19f02e7867036e98eee21f62fc/release/extension.website.user.js',
+    settingUrl: 'https://2gether.video/zh-cn/guide/website_setting.html',
+  });
+
+  const disabledResponse = await worker.fetch(new Request('https://worker.example/api/config'), {
+    ...env,
+    VIDEOTOGETHER_ENABLED: 'false',
+  }, {});
+  const disabledConfig = await disabledResponse.json();
+  assert.deepEqual(disabledConfig.thirdPartyScripts.videoTogether, {
+    enabled: false,
+    scriptUrl: null,
+    settingUrl: null,
+  });
+
+  const invalidOverrideResponse = await worker.fetch(new Request('https://worker.example/api/config'), {
+    ...env,
+    VIDEOTOGETHER_SCRIPT_URL: 'https://user:password@scripts.example/video-together.js',
+  }, {});
+  const invalidOverrideConfig = await invalidOverrideResponse.json();
+  assert.deepEqual(invalidOverrideConfig.thirdPartyScripts.videoTogether, {
+    enabled: false,
+    scriptUrl: null,
+    settingUrl: null,
+  });
+});
+
 test('GET /api/config separates public runtime metadata from authenticated sources', async () => {
   const env = {
     DB: createAuthD1Stub().db,
@@ -154,7 +191,7 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
   const publicResponse = await worker.fetch(new Request('https://worker.example/api/config'), env, {});
   assert.equal(publicResponse.status, 200);
   const publicConfig = await publicResponse.json();
-  assert.deepEqual(publicConfig.release, { worker: '1.0.0', pages: '0.1.2', apiContract: 1 });
+  assert.deepEqual(publicConfig.release, { worker: '1.0.0', pages: '0.2.0', apiContract: 1 });
   assert.deepEqual(publicConfig.site, {
     name: 'Family Video',
     title: 'Family Video Library',

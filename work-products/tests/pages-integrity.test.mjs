@@ -8,12 +8,12 @@ import worker, { validatePagesManifest } from '../../_worker.js';
 
 const PAGES_REPOSITORY = fileURLToPath(new URL('../../../UXUV-Pages/', import.meta.url));
 const RELEASE_REF = 'origin/gh-pages';
-const RELEASE_VERSION = '0.1.2';
+const RELEASE_VERSION = '0.2.0';
 const RELEASE_BASE_URL = `https://uxudjs.github.io/UXUV-Pages/${RELEASE_VERSION}/`;
 const RELEASE = {
   version: RELEASE_VERSION,
-  gitCommit: '4bc847affa76755a5c99ce249d793aa43e0b83bb',
-  manifestSha256: '27c06d4a2d3de542da0d6685fc89d8bf6d4d01f34ac52000fb8f1f3f8ec6f10c',
+  gitCommit: '75b3dfbc20fbcfbd8d298056e57f3c34ab65539b',
+  manifestSha256: 'ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175',
 };
 
 function releaseBlob(path) {
@@ -81,7 +81,7 @@ async function dispatch(path, options = {}) {
         Authorization: 'Bearer must-not-leak',
         Cookie: 'session=must-not-leak',
       },
-    }), {}, {});
+    }), options.env ?? {}, {});
     return { response, requests, redirectModes, messages };
   } finally {
     globalThis.fetch = originalFetch;
@@ -98,7 +98,7 @@ test('pins and validates the exact published release manifest bytes', async () =
   assert.equal(validated.gitCommit, RELEASE.gitCommit);
   assert.equal(validated.apiContract, 1);
   assert.equal(Object.keys(validated.routes).length, 8);
-  assert.equal(Object.keys(validated.assets).length, 71);
+  assert.equal(Object.keys(validated.assets).length, 80);
 });
 
 test('serves verified HTML with fixed-version headers and no-cache policy', async () => {
@@ -112,6 +112,10 @@ test('serves verified HTML with fixed-version headers and no-cache policy', asyn
   assert.equal(response.headers.get('Content-Type'), 'text/html; charset=utf-8');
   assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
   assert.equal(response.headers.get('Referrer-Policy'), 'no-referrer');
+  const csp = response.headers.get('Content-Security-Policy');
+  assert.match(csp, /script-src 'self' 'unsafe-inline'/);
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.doesNotMatch(csp, /scripts\.example/);
   assert.equal(response.headers.get('X-UXUV-Pages-Version'), RELEASE_VERSION);
   assert.deepEqual(requests, [
     `${RELEASE_BASE_URL}release-manifest.json`,
@@ -127,6 +131,47 @@ test('serves verified HTML with fixed-version headers and no-cache policy', asyn
   assert.equal(entry.status, 200);
   assert.equal(entry.pagesVersion, RELEASE_VERSION);
   assert.equal(entry.upstreamClass, 'github-pages');
+});
+
+test('allows only an explicitly enabled query-free VideoTogether script through static CSP', async () => {
+  const enabled = await dispatch('/', { env: {
+    VIDEOTOGETHER_ENABLED: 'true',
+    VIDEOTOGETHER_SCRIPT_URL: 'https://scripts.example/video-together.js',
+  } });
+  const enabledCsp = enabled.response.headers.get('Content-Security-Policy');
+  assert.match(enabledCsp, /script-src[^;]*https:\/\/scripts\.example\/video-together\.js/);
+  assert.match(enabledCsp, /connect-src[^;]*https:\/\/scripts\.example[^;]*wss:\/\/scripts\.example/);
+  assert.match(enabledCsp, /frame-src[^;]*https:\/\/scripts\.example/);
+
+  const unsafe = await dispatch('/', { env: {
+    VIDEOTOGETHER_ENABLED: 'true',
+    VIDEOTOGETHER_SCRIPT_URL: 'https://scripts.example/video-together.js?token=must-not-leak',
+  } });
+  const unsafeCsp = unsafe.response.headers.get('Content-Security-Policy');
+  assert.doesNotMatch(unsafeCsp, /scripts\.example|must-not-leak/);
+
+  const credentialed = await dispatch('/', { env: {
+    VIDEOTOGETHER_ENABLED: 'true',
+    VIDEOTOGETHER_SCRIPT_URL: 'https://user:password@scripts.example/video-together.js',
+  } });
+  assert.doesNotMatch(credentialed.response.headers.get('Content-Security-Policy'), /scripts\.example|password/);
+});
+
+test('allows the built-in VideoTogether room service by default and supports explicit disable', async () => {
+  const officialScript = 'https://fastly.jsdelivr.net/gh/VideoTogether/VideoTogether@5bf6d155db7bdd19f02e7867036e98eee21f62fc/release/extension.website.user.js';
+  const enabled = await dispatch('/');
+  const csp = enabled.response.headers.get('Content-Security-Policy');
+  assert.match(csp, new RegExp(`script-src[^;]*${officialScript.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+  assert.match(csp, /connect-src[^;]*https:\/\/fastly\.jsdelivr\.net/);
+  assert.match(csp, /connect-src[^;]*https:\/\/videotogether\.oss-cn-hangzhou\.aliyuncs\.com/);
+  assert.match(csp, /connect-src[^;]*https:\/\/vt\.panghair\.com:5000/);
+  assert.match(csp, /connect-src[^;]*wss:\/\/vt\.panghair\.com:5000/);
+  assert.doesNotMatch(csp, /'unsafe-eval'/);
+
+  const disabled = await dispatch('/', { env: {
+    VIDEOTOGETHER_ENABLED: 'false',
+  } });
+  assert.doesNotMatch(disabled.response.headers.get('Content-Security-Policy'), /panghair|aliyuncs|jsdelivr/);
 });
 
 test('maps only the fixed Pages prefix and gives hashed assets immutable caching', async () => {

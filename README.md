@@ -3,7 +3,7 @@
 UXUVideo 现在由一个自包含的 Cloudflare Worker 与一个不可变的静态前端组成：
 
 - 后端与静态入口：[`_worker.js`](./_worker.js)，版本 `1.0.0`，API Contract `1`。
-- 前端：UXUV-Pages `0.1.2`，固定基址 `https://uxudjs.github.io/UXUV-Pages/0.1.2/`。
+- 前端：UXUV-Pages `0.2.0`，固定基址 `https://uxudjs.github.io/UXUV-Pages/0.2.0/`。
 - 数据：Cloudflare D1；不再使用 Next.js、Node 服务端或 Upstash Redis。
 
 Worker 会校验 Pages release manifest 与资产 SHA-256，再从自身域名提供页面和 API。直接访问 GitHub Pages 只显示部署指引，不建立认证会话。
@@ -48,7 +48,10 @@ Cloudflare 用量功能采用全有或全无配置。设置 `CF_ANALYTICS_API_TO
 | `MERGE_SOURCES` | `true` 或 `1` 时默认合并同名来源 |
 | `AD_KEYWORDS` | 逗号或换行分隔的广告关键词 |
 | `PERSIST_SESSION` | 设为 `false` 时使用非持久会话 Cookie |
-| `VIDEOTOGETHER_ENABLED` / `VIDEOTOGETHER_SCRIPT_URL` / `VIDEOTOGETHER_SETTING_URL` | 可选一起看集成；脚本 URL 必须为 HTTPS |
+| `VIDEOTOGETHER_ENABLED` | 一起看默认可用；设为 `false` 或 `0` 时由部署管理员关闭 |
+| `VIDEOTOGETHER_SCRIPT_URL` / `VIDEOTOGETHER_SETTING_URL` | 可选 HTTPS 自定义覆盖；留空时使用 `_worker.js` 内置的固定官方入口，账户内开关仍默认关闭 |
+
+VideoTogether 无需用户另找脚本 URL。账户管理员在应用的播放器设置中开启“一起看”后才会加载第三方脚本。官方入口的顶层文件已固定到 Git commit，但其上游 loader 仍可能请求 VideoTogether 自己维护的动态资源，因此不属于首方 Pages 完整性保证；不接受该边界时请设置 `VIDEOTOGETHER_ENABLED=false`。
 
 ## Cloudflare Free 与用量
 

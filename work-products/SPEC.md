@@ -1,8 +1,10 @@
-# UXUVideo Worker / UXUV-Pages 分仓迁移规范
+# UXUVideo Worker / UXUV-Pages 分仓迁移与 KVideo 4.9.19 完整复刻规范
 
-状态：**Approved，可进入 `@uxu-code:plan`；不授权实现、提交、推送或部署**
-日期：2026-08-07
+状态：**Approved for planning；用户于 2026-08-08 在收到本修订后直接调用 `@uxu-code:plan`。仍不授权实现、提交、推送或部署**
+日期：2026-08-08（基于 2026-08-07 已批准架构重开）
 目标版本：Worker API Contract v1
+
+> 2026-08-08 验收纠偏：已发布的 UXUV-Pages `0.1.2` 只覆盖了简化页面和部分功能，未满足本规范原有“迁移不是视觉重设计”和“功能类别完整”的要求。本次重开把 KVideo 4.9.19 的完整 UI 与用户可见行为升级为硬性发布门；此前 `work-products/plan.md`、`work-products/todo.md` 中关于 UI 已全面接管的结论失效，须在本规范获批后重新规划。
 
 ## 1. 决策摘要
 
@@ -10,6 +12,9 @@
 | --- | --- |
 | 仓库职责 | `UXUVideo` 最终只交付单文件模块 Worker `_worker.js`；新增公共 `UXUV-Pages` 保存并发布静态前端 |
 | 前端交付 | Next.js 使用 `output: 'export'` 与 `images.unoptimized: true`；公共 Pages 不运行 API、认证或用户数据逻辑 |
+| 复刻基准 | KVideo 4.9.19 的权威源码基准固定为 `UXUVideo` Git commit `28334f41407082ae1028fa4a4180bcc46d31c52a`；`https://kvideo.uxudjs.dpdns.org/` 只作辅助人工对照，不替代固定提交 |
+| UI 与功能 | 完整保留固定基准中的视觉设计、页面结构、组件、文案、交互、设置项和用户功能；禁止以简化页面、原生控件或新设计替代 |
+| 唯一允许差异 | 仅允许 Worker API、D1 数据/同步和登录/会话安全架构所必需的差异；这些差异必须保持原功能入口和用户能力，并使用 KVideo 视觉语言呈现 |
 | Worker 路由 | Worker 原生实现现有 21 个 `app/api/**/route.ts` 的 Web API 合同，并新增 1 个 Cloudflare 用量路由，共 22 个；禁止复制 `NextRequest`、`NextResponse`、Node 文件系统或 Next 缓存语义 |
 | 静态资源 | Worker 固定代理一个明确的 Pages 发布版本；禁止在运行时跟随 `main`、`latest` 或可变分支 |
 | 认证与同步存储 | **已确认：** D1 是 v1 唯一权威存储；KV 与 Upstash 不进入 v1 运行时 |
@@ -33,6 +38,9 @@
 6. **已确认：** D1 完整模式要求用户创建一个 D1 数据库并配置两个 Worker Secret。仅复制代码但不配置这些项时，Worker 必须显示安全的设置错误，而不是退化为匿名开放代理。
 7. **已确认：** 数据模型、查询、限流和同步必须按 Free 配额留出显著余量；不得把“额度够用”建立在未索引扫描、每媒体分片写 D1 或忽略索引写放大的假设上。
 8. **已确认：** 精确显示 Cloudflare 账户实际用量需要额外配置一个仅含 `Account Analytics: Read` 的 API Token Secret，以及 Account ID、Worker script name、D1 database ID 三个普通变量。未配置时全部业务功能仍可用，但设置页只能显示配置说明与运行时发现的配额错误，不能伪造精确计数。
+9. **已确认：** 完整复刻对象是 KVideo 4.9.19，固定源码提交为 `28334f41407082ae1028fa4a4180bcc46d31c52a`。该提交中的用户可观察行为高于当前 UXUV-Pages `0.1.2`，后者不是验收基准。
+10. **已确认：** “完整 UI/功能复刻”不是仅保留同名路由或功能类别，而是保留用户能够看到、点击、配置和操作的具体界面与行为；只有后端 API 存在不能视为前端功能已迁移。
+11. **已确认：** Worker、D1 和登录安全架构可以改变数据来源、认证方式、错误状态和保守上限，但不得借此删除 KVideo 控件、设置、页面区块或正常小规模成功路径。
 
 ## 3. 目标、用户与成功定义
 
@@ -57,6 +65,9 @@
 
 - `UXUVideo/_worker.js` 是可直接粘贴的 ES Module Worker，运行时无 npm 包、无构建产物依赖、无本地文件依赖。
 - `UXUV-Pages` 能由 GitHub Actions 完成静态导出，发布物不含 `app/api/`、服务端模块、Secret 或用户数据。
+- 固定基准提交中的每一项用户可见功能都有迁移实现、自动化行为证据和可追溯的对照项；对照矩阵不存在 `missing`、`partial` 或未审批差异。
+- 八个页面入口及其关键加载、空、错误、内容、弹窗、菜单和播放器状态在 320、768、1024、1440 px 与固定基准保持结构和视觉一致。
+- KVideo 的 Liquid Glass 设计系统、导航、卡片、设置区块、播放器控件、图标、动效、主题和响应式行为被直接迁移，不被当前 UXUV-Pages 的通用深色卡片设计替代。
 - 现有 21 个 API 路由的用户可见功能均有 Worker 原生路由和合同测试，并新增 1 个只读用量路由。
 - 浏览器地址栏始终是用户 Worker 域名；密码、会话 Cookie 和写操作不会发送到 `github.io`。
 - Worker 只能加载规范中固定的 Pages 发布，且能拒绝清单哈希错误、资源不完整或 API Contract 不兼容的发布。
@@ -70,8 +81,10 @@
 
 ### 4.1 范围内
 
-- 新建 `UXUV-Pages` 公共静态前端仓库并配置 GitHub Pages 发布。
+- 继续使用现有 `UXUV-Pages` 公共静态前端仓库，并以新的不可变版本发布完整复刻候选。
 - 将现有浏览器 UI、样式、PWA 资源和浏览器安全逻辑迁移到 `UXUV-Pages`。
+- 从固定 KVideo 4.9.19 提交直接迁移浏览器组件、样式、状态管理和交互；仅在与静态导出或 Worker/D1/登录安全边界冲突的位置做适配。
+- 建立逐功能、逐页面、逐状态的 KVideo 对照矩阵，以及固定浏览器环境下的视觉基准与交互回归。
 - 把根布局中的运行时文件/环境读取改为浏览器启动后从同源 Worker 获取公共配置。
 - 在 `_worker.js` 中以 Fetch API、Web Streams、Web Crypto 和 D1 binding 重写现有 21 个 API 路由，并原生实现 1 个只读用量路由。
 - 建立 D1 schema、自举、兼容迁移、配额预算、限流、会话和同步冲突合同。
@@ -87,19 +100,26 @@
 - 不提供匿名开放媒体代理。
 - 不承诺 Free 套餐的无限流量、持续高并发或长流 SLA。
 - 不在本规范阶段实现业务代码、创建远端仓库、部署或迁移生产数据。
+- 不重新设计 KVideo UI，不以“现代化”“简洁化”“更适合静态站点”为由改变视觉、导航或交互。
+- 不以原生 `<video controls>` 替代 KVideo 自定义播放器，不以单一名称/URL 表单替代完整设置与来源管理。
+- 不把 UXUV-Pages `0.1.2` 的现状当作应继续兼容的产品基准；它只保留为不可变、可回滚的历史发布。
 - v1 不自动迁移现有 Upstash 数据；迁移工具需单独审批和规范。
 - v1 不发送邮件、系统推送或后台定时告警；提醒只在用户打开应用时显示。需要离线告警时另立通知渠道、调度和隐私规范。
 
 ## 5. 当前基线与迁移约束
 
-### 5.1 当前证据
+### 5.1 固定 KVideo 基线与当前迁移证据
 
-- 当前仓库有 21 个 `app/api/**/route.ts` 文件，共约 2,200 行路由代码。
-- 当前认证与同步使用 Upstash Redis；账户被保存为单一数组 key，更新是读-改-写，存在并发覆盖窗口。
-- 当前根布局读取文件系统、环境变量、Redis 能力和服务端图标，阻止真正的共享静态前端。
-- 当前 `/api/proxy` 会把浏览器 `cookie` 转发给任意上游，这是迁移时必须消除的安全缺陷，不能视为兼容行为。
-- 当前并行搜索、分辨率探测和 Premium 聚合没有统一的 Cloudflare 子请求预算；直接移植会超过 Free 套餐硬限制。
-- 当前工作树已有大量未提交的 Web-only 改动。实施不得 reset、checkout、覆盖或丢弃这些变更。
+- 固定 KVideo 4.9.19 提交有 21 个 `app/api/**/route.ts` 文件，共约 2,200 行路由代码；这些服务端实现是功能语义参考，不会原样恢复为 Pages 运行时。
+- 固定基准的认证与同步使用 Upstash Redis；账户被保存为单一数组 key，更新是读-改-写，存在并发覆盖窗口。该存储实现由已批准的 D1/CAS 架构替代。
+- 固定基准根布局读取文件系统、环境变量、Redis 能力和服务端图标，阻止共享静态前端；只允许适配这些服务端边界，不允许借机改写浏览器 UI。
+- 固定基准 `/api/proxy` 会把浏览器 `cookie` 转发给任意上游，这是必须消除的安全缺陷，不能视为兼容行为。
+- 固定基准的并行搜索、分辨率探测和 Premium 聚合没有统一的 Cloudflare 子请求预算；Worker 可以施加已批准上限，但 UI 和小规模成功路径必须保留。
+- 2026-08-08 当前 UXUVideo 提交为 `e7e397e520f90433f98eb1f929fc5d135bacfec0`，已收敛为 Worker 1.0.0；当前 UXUV-Pages 提交为 `4bc847affa76755a5c99ce249d793aa43e0b83bb`，发布版本为 `0.1.2`。
+- 原 KVideo UI 已从当前树移除，但固定提交仍在 Git 历史中可读取。实施必须用增量补丁迁移，禁止 reset/checkout 覆盖当前工作树或破坏用户改动。
+- 2026-08-08 审计显示：固定 KVideo 基准的 `app`、`components`、`lib`、`public` 相关源码共 296 个文件，UXUV-Pages `0.1.2` 对应目录仅 48 个；文件数量本身不是验收指标，但与播放器、设置、首页、IPTV、推荐、弹幕、主题和 TV 行为缺失相互印证。
+- 当前 UXUV-Pages `MediaPlayer` 使用原生 `<video controls>`，当前来源设置主要提供名称、URL、启停和删除；它们不满足固定基准中的自定义播放器和完整设置合同。
+- 当前生产页面与 KVideo 生产页面的同浏览器对照确认视觉系统、信息密度和交互入口显著不同。线上页面可用于人工发现问题，但自动验收必须依赖固定提交和无敏感数据的确定性 fixture。
 
 ### 5.2 参考项目中可复用与不可复用的模式
 
@@ -231,8 +251,8 @@ Worker 源码固定以下常量：
 1. 先发布新的、不可变的 Pages 版本并完成公开字节/SHA 验证。
 2. 再更新 `_worker.js` 的 Pages 固定常量、Worker 版本和 CHANGELOG。
 3. 运行两个仓库的本地合同测试。
-4. 在独立测试 Worker 上执行 Cloudflare 远端与浏览器 E2E。
-5. 只有全部通过才把新的 `_worker.js` 标为可复制版本。
+4. 本地身份、字节、回滚和安全门通过后，把精确 `_worker.js` 标为可复制候选。
+5. 用户自行复制到 Cloudflare、绑定 `DB` 并配置两个必需 Secret；Cloudflare、真实媒体与真实设备结果作为用户验收证据，不反向伪装成本地已验证结论。
 
 回滚只需恢复上一版 `_worker.js`。D1 迁移在同一 API major 内必须只增不删并保持上一版可读；若做不到，发布门必须 NO-GO，另写迁移/回滚规范。
 
@@ -374,8 +394,8 @@ Cloudflare 当前 Free 上限是每日 500 万行读、10 万行写、单数据�
 | `MERGE_SOURCES` | `false` | 默认源合并策略 |
 | `DANMAKU_API_URL` | 空 | 默认弹幕 API |
 | `AD_KEYWORDS` | 空 | 广告关键词；不支持 `AD_KEYWORDS_FILE` |
-| `VIDEOTOGETHER_ENABLED` | `false` | 第三方脚本默认关闭 |
-| `VIDEOTOGETHER_SCRIPT_URL` / `VIDEOTOGETHER_SETTING_URL` | 空 | 仅 HTTPS、显式启用时生效 |
+| `VIDEOTOGETHER_ENABLED` | `true` | 内置一起看能力；设为 `false` 或 `0` 时由部署管理员关闭 |
+| `VIDEOTOGETHER_SCRIPT_URL` / `VIDEOTOGETHER_SETTING_URL` | 固定官方入口 | 可选 HTTPS 自定义覆盖；非法显式脚本 URL 失败关闭，不回退官方地址 |
 | `UPDATE_REPOSITORY` / `UPDATE_BRANCH` | 项目默认 | 更新检查来源 |
 | `DEPLOYMENT_PROFILE` | `free` | `free` 或 `paid`，选择保守上限 |
 | `DEBUG` | `false` | 结构化调试日志；仍必须脱敏 |
@@ -574,7 +594,7 @@ Content-Security-Policy:
   object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 ```
 
-并设置 `X-Content-Type-Options: nosniff`、`Referrer-Policy: no-referrer`、合理的 `Permissions-Policy` 和 HTTPS 下的 HSTS。第三方 Google Cast/VideoTogether 脚本默认关闭或明确允许；它们不属于首方 Pages 完整性保证，UI 必须说明这一边界。
+并设置 `X-Content-Type-Options: nosniff`、`Referrer-Policy: no-referrer`、合理的 `Permissions-Policy` 和 HTTPS 下的 HSTS。VideoTogether 的固定官方入口由 Worker 默认允许，但账户内功能开关默认关闭，部署管理员也可显式禁用；Google Cast 与 VideoTogether 均不属于首方 Pages 完整性保证，UI 必须说明这一边界。
 
 ### 12.4 限流
 
@@ -620,6 +640,75 @@ upstreamClass, errorCode
 10. 用量卡包含 Workers 账户请求（附本脚本请求）、D1 账户读、D1 账户写、D1 本数据库存储四个主要进度项；D1 项同时标出本数据库值和项目警戒线。颜色不能作为唯一状态信息，必须同时显示文字、数值和可访问标签。
 11. 根级 `UsageAlertProvider` 只在确认当前 session 为 `super_admin` 后读取用量；普通用户仅在业务 API 返回 `STORAGE_QUOTA_EXCEEDED` 时看到不含账户数值的通用错误。Pages 直接入口不请求用量 API。
 
+### 13.1 权威基准与判定优先级
+
+验收证据按以下优先级判定：
+
+1. 固定 Git 提交 `28334f41407082ae1028fa4a4180bcc46d31c52a` 中的 KVideo 4.9.19 源码、静态资源、文案和既有测试，是功能与设计的权威基准。
+2. 从该提交以固定依赖、固定 Chromium、固定字体、`zh-CN` locale、`Asia/Taipei` 时区和无敏感 fixture 生成的截图、DOM 与交互清单，是自动化验收基准。
+3. `https://kvideo.uxudjs.dpdns.org/` 是辅助人工对照，只用于发现基准清单可能遗漏的用户行为；该 URL 可变，不能单独批准发布。
+4. 当前 UXUV-Pages `0.1.2` 不是兼容基准。与 KVideo 不同且不属于 13.3 明确允许差异的行为，一律视为缺陷。
+
+如果 README、测试和源码描述不一致，以固定提交中真实可达的用户行为为准；若行为是否应保留仍有争议，停止实施并修订本规范，不能由实现者自行删减。
+
+### 13.2 完整功能对照矩阵
+
+下表中的每个分号分隔项都是独立验收能力。规划阶段必须在 `work-products/kvideo-parity-matrix.md` 中拆成稳定 ID，并为每项填写固定基准入口、目标实现、自动测试和状态。状态只允许 `unverified`、`pass`、`approved-difference`；发布时不得存在 `unverified`，`approved-difference` 只能引用 13.3。
+
+| 领域 | 必须复刻的用户能力 |
+| --- | --- |
+| 全局设计与导航 | Liquid Glass 设计系统；原导航结构与模式切换；站点图标和文案；深色/浅色/跟随系统；主题过渡；滚动位置恢复；返回顶部；加载动画；原有图标、焦点、悬停、模态框和确认框行为 |
+| 首页与豆瓣 | 电影/电视剧切换；豆瓣标签和分类浏览；推荐内容；标签添加、删除、恢复默认、拖拽排序；无限滚动；海报失败占位；演员/导演可点击搜索；普通与 Premium 首页行为隔离 |
+| 搜索 | 多源 SSE 增量结果；取消；搜索历史查看、复用、单项删除和清空；繁简转换；普通/合并同名展示；来源与类型筛选；分组标签展开状态持久化；来源/类型/语言/清晰度徽章；内容类目屏蔽；实时延迟；相关性、延迟、发布时间、评分、名称等原有排序 |
+| 来源与订阅 | 系统源、个人源和 Premium 源；添加、编辑、启停、删除、上移、下移；折叠/显示全部；JSON 粘贴导入；文件导入；链接导入；订阅导入、更新和管理；源校验；账户隔离；原有默认字段和错误提示 |
+| 收藏 | 搜索页和播放页一键收藏；收藏网格/列表；收藏侧边栏；单项删除；普通/Premium 隔离；每模式容量提示；账户隔离；空状态和继续播放入口 |
+| 观看历史 | 自动记录剧集、进度和时长；断点续播；同标题去重；单项删除；清空全部；最多 50 条的可见行为；历史侧边栏；普通/Premium 隔离；账户隔离 |
+| 播放器外观 | KVideo 自定义播放器、顶部导航、元数据、源选择器、选集与错误/空状态；播放器和选集顶部对齐；剧集列表/网格切换；每 50 集分页；来源前五条折叠、展开和按类型分组；短链接/sessionStorage 行为 |
+| 播放器控制 | 播放/暂停；进度拖动；音量和静音；倍速；快进/快退；系统全屏和网页全屏；PiP；Chromecast；控制栏自动隐藏；桌面与移动控件；双击手势；屏幕方向；光标隐藏；键盘快捷键；实际分辨率徽章 |
+| 播放策略 | HLS.js 生命周期；直连/智能重试/总是代理；Range；自动跳过片头/片尾；自动连播；切集保持正确状态；断点续播；卡顿检测；当前源失败自动切换；来源延迟排序；全源实际分辨率探测 |
+| 弹幕 | 聚合 API；多个用户弹幕 API 管理和优先级；Canvas 渲染；滚动/顶部/底部轨道；开关；透明度、字号和显示区域；暂停/跳转/全屏联动；无数据和错误状态 |
+| 广告过滤 | 关闭、关键词、智能启发式和激进四种模式；播放器内切换；自定义关键词；HLS 清单过滤行为与安全失败 |
+| IPTV | M3U/M3U8 与 JSON 频道源；自定义源管理；逐源缓存；最多三源并发；分组、搜索和分页；源→分类→频道三级导航；多线路前三条折叠；频道自动切源和延迟选择；UA/Referer；HLS 代理与 URL 重写；重定向、超时和重试；HEVC/H.264 兼容选择；播放器快捷键；权限状态 |
+| Premium | 独立 `/premium` 入口；服务端授权状态；独立来源、设置、收藏、历史和推荐；分类模糊合并；多源交错排列；搜索；失效后重新验证；与普通模式物理隔离 |
+| 设置 | 原设置页分区、层级和顺序；账户；来源；订阅；搜索排序；显示；主题；播放器；片头片尾；代理模式；弹幕；屏蔽分类；数据导入导出；版本检查；语言；Premium 独立设置；新增 Cloudflare 用量卡和 D1 同步状态按 KVideo 视觉结构插入，不得替换原区块 |
+| PWA 与同步 | manifest、图标、安装模式和 Service Worker；静态资源离线缓存；浏览器/PWA/多设备间配置、来源、订阅、收藏和历史同步；本地优先；冲突合并；离线/等待/配额/错误状态；恢复后重试 |
+| 响应式与设备 | 320、768、1024、1440 px；桌面、平板、手机；触摸交互；TV 浏览器检测；10 英尺 UI；遥控器空间导航；焦点高亮；播放器区域方向键隔离；旧 WebView 83 的既有可解析边界，除非另行批准提高浏览器基线 |
+| 无障碍与国际化 | 语义化 HTML；ARIA；焦点管理与焦点陷阱；键盘完整操作；不只靠颜色；简体中文、繁体中文和英语界面及持久化语言选择；原有可访问名称和提示 |
+| 数据管理与更新 | 全设置 JSON 导出/导入；来源批量导入；账户数据隔离；容量和配额提示；应用版本检查；更新成功、无需更新和检查失败状态 |
+| 第三方可选功能 | VideoTogether 创建/加入房间及配置状态；Google Cast；均默认服从 Worker 配置和 CSP，禁用时保留符合 KVideo 视觉的可解释状态，不静默删除入口 |
+
+矩阵必须继续覆盖固定提交中可达但 README 未列出的行为。实现者不得把“领域存在一个成功路径”当作该领域全部通过。
+
+### 13.3 唯一允许差异
+
+| 差异类别 | 允许改变 | 必须保持 |
+| --- | --- | --- |
+| Worker 运行时 | Next API 改为同源 Worker Web API；受控子请求、流、限流和结构化错误 | 原功能入口、正常小规模成功路径、取消/重试和用户可理解错误；不得因 API 已迁移而删除 UI |
+| D1 与同步 | D1 替代 Upstash；CAS、tombstone、离线队列、配额错误和账户隔离 | KVideo 的本地即时响应、跨设备同步、导入导出、历史/收藏/设置能力及界面；同步状态只允许增量呈现 |
+| 登录与会话 | 用户名/密码、HttpOnly Cookie、角色/权限、Premium 服务端授权、账户管理 | 登录页使用 KVideo 视觉语言；登录后页面与功能不缩水；会话失效、无权限和重新登录状态明确 |
+| 安全边界 | SSRF、CSRF、无 Cookie/Authorization 上游泄漏、无匿名代理、CSP、保守 Free 上限 | 所有安全允许的功能仍可使用；达到限制时显示原因、上限和重试方式，不能把限制伪装成功能不存在 |
+| 静态发布 | GitHub Pages 静态导出、Worker 同源代理、不可变版本、完整性校验；直接访问 `github.io` 只显示说明 | 从 Worker 域名访问时的 KVideo UI/功能；PWA 与路由入口；发布失败安全关闭 |
+| 架构新增 UI | 账户管理、Cloudflare 用量、D1 同步/冲突/配额状态 | 必须复用 KVideo 的 `SettingsSection`、卡片、按钮、排版和响应式规则，以增量区块加入，不得重排或删除原设置 |
+
+以下明确不属于允许差异：通用深色仪表板重设计、删减设置、删减推荐/筛选/历史/弹幕/TV/主题、使用原生播放器替代自定义播放器、改变信息架构、用一个简化表单代替原管理流程、只实现后端而省略前端入口。
+
+### 13.4 UI 与视觉验收合同
+
+- 视觉基准必须从固定提交生成并存入 UXUV-Pages 的 `work-products/tests/fixtures/kvideo-4.9.19/`；不得保存真实账户、真实源 URL、Cookie 或观看数据。
+- Playwright 截图使用锁定版本 Chromium、固定字体、禁用非确定性动画、确定性时钟和 fixture。基准覆盖八个路由、四个断点及关键内容/空/错误/弹窗/菜单/播放器状态。
+- 全页截图 `maxDiffPixelRatio` 不高于 `0.01`；导航、播放器控制层、设置区块、来源行、搜索过滤器和模态框等关键区域不高于 `0.005`。任何超过阈值的更新都必须由用户审阅新旧截图并修改本规范或批准基准更新。
+- 自动测试同时核对主要元素边界、层级、可见文案、角色、可访问名称、交互数量和设计 token。主布局边界误差不超过 2 CSS px；字号、行高、圆角、颜色和间距来自 KVideo token，不用像素阈值掩盖组件替换。
+- 动效通过最终状态、持续时间区间、`prefers-reduced-motion` 和焦点行为测试；不得因为截图禁用动画而省略生产动效。
+- “视觉测试通过”不能替代功能测试；“功能测试通过”也不能替代视觉测试。
+
+### 13.5 完成定义与停止条件
+
+- 每个对照项必须至少有一个能够先在当前 UXUV-Pages `0.1.2` 上失败的 RED 证据，再以迁移实现转为 GREEN；测试不能只断言源码含某个字符串。
+- 对需要真实媒体或浏览器能力的功能，先用确定性 fixture 证明首方实现和平台 API 合同；能在内置浏览器安全验证的第三方流程再单独记录真实证据。Cast、PiP、PWA 安装、TV 和 Cloudflare 实例由用户部署后按可复验步骤验收，不阻塞“可复制 `_worker.js`”本地交付，也不得被表述为已在真实设备或生产环境验证。
+- 任一页面仍使用非 KVideo 的替代信息架构、任一矩阵项为 `unverified`/缺失/部分完成、任一关键视觉区域超阈值或任一安全门失败，发布结论均为 NO-GO。
+- UXUV-Pages `0.1.2` 不得覆盖。完整复刻必须发布新的不可变语义版本，先验证公开 Pages 字节，再在获得单独部署授权后更新 Worker 固定版本。
+- 固定 KVideo 源码仍可通过 Git 提交恢复。实施不得使用 reset/checkout 覆盖当前工作树，也不得在复刻门完成前删除唯一可复验的基准 fixture、矩阵或截图。
+
 ## 14. 测试策略与发布证据
 
 所有本次工作新增的测试文件放在各仓库 `work-products/tests/`。测试引用仓库文件时必须从测试最终位置使用相对路径：例如 UXUVideo 测试用 `new URL('../../_worker.js', import.meta.url)`；跨仓引用 UXUV-Pages 用 `../../../UXUV-Pages/...`，不得写 `C:\\Code`。
@@ -645,7 +734,13 @@ upstreamClass, errorCode
 - release manifest 覆盖每个 HTML/JS/CSS/公共资源；SHA-256/SRI 可重算。
 - 已发布版本目录不可被不同字节覆盖。
 - 所有 API 调用都是同源相对 `/api/*`，不存在固定 Worker 域名或 GitHub Pages 认证提交。
-- Playwright 覆盖登录、搜索、详情、设置、账户、Premium、IPTV、错误/空/加载状态和响应式断点。
+- `work-products/tests/kvideo-feature-parity.test.mjs` 校验固定基准身份、对照矩阵完整性、每项测试映射和零未审批差异；从测试位置引用 UXUVideo 时只能使用 `../../../UXUVideo/...`。
+- `work-products/tests/kvideo-visual-parity.e2e.spec.ts` 使用已审阅 fixture 和截图覆盖八路由、四断点、关键状态及 13.4 阈值。
+- `work-products/tests/kvideo-home-search-parity.e2e.spec.ts` 覆盖首页、豆瓣、标签、推荐、搜索历史、筛选、徽章、排序、收藏和错误/取消。
+- `work-products/tests/kvideo-player-parity.e2e.spec.ts` 覆盖自定义控件、来源、选集、断点、跳过、连播、全屏、PiP、快捷键、弹幕、分辨率、代理模式和失败切源。
+- `work-products/tests/kvideo-settings-parity.e2e.spec.ts` 覆盖普通/Premium 全部设置区块、来源 CRUD/排序/导入/订阅、主题、播放器、弹幕、数据、版本、账户、用量和同步状态。
+- `work-products/tests/kvideo-iptv-device-parity.e2e.spec.ts` 覆盖 IPTV 层级/线路/筛选/播放、移动触摸、TV 空间导航、PWA 和 WebView 83 静态语法边界。
+- Playwright 还必须覆盖登录、详情、账户、Premium、错误/空/加载状态和响应式断点；相同流程可以与上述文件合并，但不得删减对照 ID。
 - axe-core 无新增严重/关键问题；控制台无错误；网络中密码只发往测试 Worker origin。
 - 用量卡位置、`super_admin` 可见性、四项进度、项目警戒线、全局横幅、UTC 倒计时、未配置/延迟/陈旧/失败状态和移动端布局均有 Playwright 回归；DOM、URL、网络记录和浏览器存储中没有 Analytics Token。
 
@@ -672,7 +767,8 @@ UXUVideo：
 
 ```powershell
 node --check _worker.js
-node --test
+npm test
+npm run check:size
 git diff --check
 ```
 
@@ -682,25 +778,13 @@ UXUV-Pages：
 npm ci
 npm test
 npm run lint
+npx tsc --noEmit
 npm run build
+npm run test:e2e
 git diff --check
 ```
 
-当前仓库迁移期间仍需保持现有门：
-
-```powershell
-npm test
-npm run lint
-npm run build
-```
-
-以及 Bash/WSL：
-
-```bash
-./verification/run
-```
-
-命令绿色只证明对应环境；不自动授权 commit、push、创建远端仓库、部署或生产切换。
+两个仓库还必须执行不包含真实值的秘密扫描；视觉回归必须使用 UXUV-Pages 锁文件所确定的 Playwright/Chromium 环境。命令绿色只证明对应环境；不自动授权 commit、push、创建远端仓库、部署或生产切换。
 
 ## 15. 可测验收标准
 
@@ -750,11 +834,25 @@ npm run build
 - [ ] 用量卡能区分账户总量、本项目量、项目警戒线、官方额度与 Analytics 延迟；70/85/95/100 及 D1 项目警戒线边界都有自动测试。
 - [ ] D1 配额错误触发 `STORAGE_QUOTA_EXCEEDED` 和保留本地数据的 UI；Worker 请求耗尽限制被明确呈现为提前预警而非保证事后通知。
 
+### G. KVideo 4.9.19 UI 与功能完整复刻
+
+- [ ] `work-products/kvideo-parity-matrix.md` 覆盖固定提交的全部可达用户行为，所有条目均为 `pass` 或引用 13.3 的 `approved-difference`，不存在缺失、部分完成或未验证项。
+- [ ] 八个路由、四个断点和关键状态通过 13.4 的视觉、DOM、交互数量和设计 token 门；任何基准更新均有用户明确审批。
+- [ ] 首页、豆瓣、标签、推荐、搜索历史、筛选、排序、徽章、收藏与历史达到固定基准行为。
+- [ ] KVideo 自定义播放器及其来源、选集、断点、跳过、连播、桌面/移动控件、全屏、PiP、Cast、快捷键、分辨率、弹幕、广告过滤和失败切源全部达到固定基准行为。
+- [ ] 普通/Premium 来源管理、订阅、JSON/文件/链接导入、编辑、启停、排序、删除，以及显示、主题、播放器、弹幕、数据、版本和语言设置全部存在并可操作。
+- [ ] IPTV 的导入、分组、搜索、分页、三级导航、多线路、自动切源、UA/Referer、HEVC 兼容、缓存、超时和播放状态达到固定基准行为。
+- [ ] PWA、离线缓存、D1 同步、冲突、账户隔离、移动触摸、TV 空间导航、WCAG 与三种语言满足固定基准或 13.3 的明确架构差异。
+- [ ] 当前 UXUV-Pages 通用深色卡片替代设计和原生播放器不再作为生产主界面；架构新增 UI 使用 KVideo 视觉组件增量呈现。
+- [ ] 新候选使用新的不可变 Pages 版本；未覆盖 `0.1.2`，且没有把本地绿色证据表述为已提交、已推送或已部署。
+
 ## 16. 工作边界
 
 ### Always
 
 - 先固定合同测试，再迁移一个垂直功能切片。
+- 先从固定 KVideo 提交建立对照 ID、RED 行为证据和视觉基准，再修改对应 UXUV-Pages 切片。
+- 直接复用 KVideo 组件、样式和纯浏览器逻辑；只有静态导出或 Worker/D1/登录安全冲突才做局部适配。
 - 先发布并验证 Pages，再更新 Worker 固定版本。
 - 对外部响应、用户 URL、持久化 JSON 和环境变量做边界校验。
 - 保留未提交工作与 MIT 归属。
@@ -762,6 +860,8 @@ npm run build
 
 ### Ask first
 
+- 修改固定 KVideo 基准提交、视觉差异阈值、对照矩阵范围或把任何非 13.3 差异标记为已批准。
+- 更新已审阅的视觉基准截图，即使新截图来自当前实现。
 - 创建或发布 `UXUV-Pages` 远端仓库。
 - commit、push、部署 Worker/Pages、创建或修改真实 D1。
 - 更改 Free profile 上限、密码哈希强度、公开访问策略或日志留存。
@@ -771,6 +871,8 @@ npm run build
 
 ### Never
 
+- 以路由存在、页面能打开、后端 API 存在或少量 E2E 通过替代完整 UI/功能复刻证明。
+- 为减少工作量而重设计、合并、隐藏或删除 KVideo 控件、设置、页面区块、设备行为或状态。
 - 把 Secret、密码、Cookie、真实账户或完整订阅/媒体 URL 提交到仓库。
 - 从浏览器接收 Cloudflare API 凭据，支持 Global API Key，或把 Analytics Token 放入 query/body/普通变量。
 - 让公共 Pages 接收认证或同步请求。
@@ -795,10 +897,14 @@ npm run build
 | 同账户其他 D1 项目消耗共享额度 | UXUVideo 预算仍可能不足 | Dashboard 监控实际 Row Metrics；明确项目预算不能约束外部工作负载 |
 | 双仓版本漂移 | UI/API 不兼容 | 清单 `apiContract`/range、固定版本、跨仓测试、发布顺序 |
 | 迁移中删除 Next 过早 | 功能丢失 | 在静态 Pages、Worker、E2E 全绿前禁止删除原实现 |
+| 只按路由/功能类别做烟雾测试 | 大量 UI 与交互缺失却全绿 | 固定提交对照矩阵、逐项 RED/GREEN、行为 E2E 和视觉回归四重门 |
+| 用通用组件重写而不是迁移 KVideo | 视觉和信息架构失真 | 直接复用固定基准组件/样式；非 13.3 差异一律 NO-GO |
+| 线上 KVideo 页面漂移 | 自动基准不可复验 | 以固定 Git 提交和确定性 fixture 为权威；线上只作人工辅助 |
+| 视觉截图含真实账户或来源 | 敏感数据进入仓库 | 只使用无敏感确定性 fixture；秘密与真实 URL 扫描为零命中 |
 
 ## 18. 审批记录
 
-以下事项均已获得批准。本状态允许进入 `@uxu-code:plan`，但不自动授权 `@uxu-code:build`、commit、push、部署或真实 Cloudflare/D1 变更：
+下表第 1 至 7 项需求已由用户确认；用户于 2026-08-08 在收到本修订后直接调用 `@uxu-code:plan`，视为批准本规范进入规划。该批准不自动授权 `@uxu-code:build`、commit、push、部署或真实 Cloudflare/D1 变更：
 
 | # | 状态 | 审批项 |
 | --- | --- | --- |
@@ -808,6 +914,7 @@ npm run build
 | 4 | **已确认** | 默认强制登录、取消匿名代理；Premium 权限由服务端 session 授权。 |
 | 5 | **已确认** | 仓库为 `uxudjs/UXUV-Pages`；本机 `../UXUV-Pages` 的 `origin` 已指向该 GitHub 地址。未授权前仍不 commit、push 或部署。 |
 | 6 | **已确认** | 精确用量采用 Worker Secret `CF_ANALYTICS_API_TOKEN`（仅目标账户 `Account Analytics: Read`）和三个普通 `CF_*` 标识；不复制参考项目把凭据放进 URL 的方式。未配置时业务功能完整，但不显示精确计数。 |
+| 7 | **已确认** | KVideo 4.9.19 的 UI 和用户功能必须完整复刻；唯一允许差异是 Worker、D1 与登录/会话安全架构所必需的改变。固定源码基准为 `28334f41407082ae1028fa4a4180bcc46d31c52a`。 |
 
 ## 19. 官方约束来源（2026-08-07 核验）
 

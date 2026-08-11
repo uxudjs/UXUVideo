@@ -128,6 +128,29 @@ test('proxy preserves Range bytes and cancelling the response cancels upstream w
   assert.equal(upstreamError?.errorCode, 'UPSTREAM_STREAM_ERROR');
 });
 
+test('proxy applies bounded ad filtering before same-origin child rewriting and propagates the selected mode', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await login(env);
+  const target = 'https://media.example/filtered.m3u8';
+  const manifest = '#EXTM3U\n#EXTINF:10,\nmain.ts\n#EXTINF:2,\nsponsor-ad.ts\n#EXT-X-ENDLIST';
+  const response = await withFetchStub(async () => new Response(manifest, {
+    headers: { 'Content-Type': 'application/vnd.apple.mpegurl' },
+  }), () => worker.fetch(new Request(
+    `${ORIGIN}/api/proxy?url=${encodeURIComponent(target)}&ad=keyword&adkw=sponsor`,
+    { headers: { Cookie: cookie } },
+  ), env, {}));
+
+  assert.equal(response.status, 200);
+  const filtered = await response.text();
+  assert.doesNotMatch(filtered, /sponsor-ad/);
+  const child = filtered.split('\n').find((line) => line.startsWith('/api/proxy?'));
+  assert.ok(child);
+  const childUrl = new URL(child, ORIGIN);
+  assert.equal(childUrl.searchParams.get('ad'), 'keyword');
+  assert.deepEqual(childUrl.searchParams.getAll('adkw'), ['sponsor']);
+});
+
 test('IPTV playlist requires iptv_access, validates headers, and uses a bounded isolate cache', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db);

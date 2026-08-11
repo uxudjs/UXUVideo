@@ -91,18 +91,41 @@ test('danmaku proxies bounded JSON without forwarding credentials or wildcard CO
   const env = environment(db);
   const cookie = await login(env);
   const calls = [];
-  const response = await withFetchStub(async (url, init) => {
-    calls.push({ url, headers: Object.fromEntries(init.headers) });
-    return Response.json({ animes: [{ animeTitle: '测试' }] });
-  }, () => worker.fetch(request('/api/danmaku?action=search&keyword=test&apiUrl=https%3A%2F%2Fdanmaku.example', cookie), env, {}));
+  const cacheCalls = [];
+  const originalCaches = globalThis.caches;
+  globalThis.caches = { default: {
+    match: async (cacheRequest) => { cacheCalls.push({ action: 'match', url: cacheRequest.url }); return undefined; },
+    put: async (cacheRequest, cacheResponse) => cacheCalls.push({
+      action: 'put', url: cacheRequest.url, cacheControl: cacheResponse.headers.get('Cache-Control'),
+    }),
+  } };
+  let responses;
+  try {
+    responses = await withFetchStub(async (url, init) => {
+      calls.push({ url, headers: Object.fromEntries(init.headers) });
+      return Response.json({ animes: [{ animeTitle: '测试' }] });
+    }, async () => {
+      const first = await worker.fetch(request('/api/danmaku?action=search&keyword=test&apiUrl=https%3A%2F%2Fdanmaku.example', cookie), env, {});
+      const second = await worker.fetch(request('/api/danmaku?action=search&keyword=test&apiUrl=https%3A%2F%2Fdanmaku.example', cookie), env, {});
+      return [first, second];
+    });
+  } finally {
+    if (originalCaches === undefined) delete globalThis.caches;
+    else globalThis.caches = originalCaches;
+  }
 
-  assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { animes: [{ animeTitle: '测试' }] });
+  assert.deepEqual(responses.map(({ status }) => status), [200, 200]);
+  assert.deepEqual(await responses[0].json(), { animes: [{ animeTitle: '测试' }] });
+  assert.deepEqual(await responses[1].json(), { animes: [{ animeTitle: '测试' }] });
+  assert.equal(calls.length, 1);
   assert.equal(calls[0].url, 'https://danmaku.example/api/v2/search/episodes?anime=test');
   assert.equal(calls[0].headers.accept, 'application/json');
   assert.equal(calls[0].headers.cookie, undefined);
   assert.equal(calls[0].headers.authorization, undefined);
-  assert.equal(response.headers.has('Access-Control-Allow-Origin'), false);
+  assert.deepEqual(cacheCalls.map(({ action }) => action), ['match', 'put']);
+  assert.equal(cacheCalls[1].cacheControl, 'public, max-age=3600');
+  assert.doesNotMatch(cacheCalls[1].url, /danmaku\.example|keyword|test/);
+  assert.equal(responses[0].headers.has('Access-Control-Allow-Origin'), false);
 });
 
 test('detail parses the preferred m3u8 episode list and strips source credentials', async () => {

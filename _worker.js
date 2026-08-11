@@ -1,9 +1,9 @@
 const WORKER_VERSION = '1.0.0';
 const API_CONTRACT_VERSION = '1';
-const PAGES_VERSION = '0.1.2';
-const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/0.1.2/';
-const PAGES_GIT_COMMIT = '4bc847affa76755a5c99ce249d793aa43e0b83bb';
-const PAGES_MANIFEST_SHA256 = '27c06d4a2d3de542da0d6685fc89d8bf6d4d01f34ac52000fb8f1f3f8ec6f10c';
+const PAGES_VERSION = '0.2.0';
+const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/0.2.0/';
+const PAGES_GIT_COMMIT = '75b3dfbc20fbcfbd8d298056e57f3c34ab65539b';
+const PAGES_MANIFEST_SHA256 = 'ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175';
 const MAX_STATIC_ASSET_BYTES = 5 * 1024 * 1024;
 const PAGES_PUBLIC_PREFIX = new URL(PAGES_BASE_URL).pathname.replace(/\/$/, '');
 const FRONTEND_UNAVAILABLE_HTML = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>UXUVideo 暂不可用</title><body><h1>UXUVideo 暂不可用</h1><p>FRONTEND_INTEGRITY_ERROR</p></body></html>';
@@ -1446,6 +1446,7 @@ const ROUTES = [
   { id: 'probe-resolution', pattern: /^\/api\/probe-resolution$/, methods: ['POST'], sse: true },
   { id: 'proxy', pattern: /^\/api\/proxy$/, methods: ['GET', 'OPTIONS'] },
   { id: 'search-parallel', pattern: /^\/api\/search-parallel$/, methods: ['POST'], sse: true },
+  { id: 'source-import', pattern: /^\/api\/source-import$/, methods: ['POST'] },
   { id: 'user-config', pattern: /^\/api\/user\/config$/, methods: ['GET', 'POST'] },
   { id: 'user-sync', pattern: /^\/api\/user\/sync$/, methods: ['GET', 'POST'] },
   { id: 'admin-usage', pattern: /^\/api\/admin\/usage$/, methods: ['GET'] },
@@ -1462,7 +1463,7 @@ const AUTH_ROUTE_IDS = new Set([
 const DOCUMENT_ROUTE_IDS = new Set(['user-config', 'user-sync']);
 const ADMIN_ROUTE_IDS = new Set(['admin-usage']);
 const LOW_FANOUT_ROUTE_IDS = new Set([
-  'app-update', 'danmaku', 'detail', 'douban-image', 'douban-recommend', 'douban-tags', 'ping',
+  'app-update', 'danmaku', 'detail', 'douban-image', 'douban-recommend', 'douban-tags', 'ping', 'source-import',
 ]);
 
 function normalizePath(pathname) {
@@ -1536,10 +1537,50 @@ function httpsUrl(value) {
   if (typeof value !== 'string' || !value.trim()) return null;
   try {
     const parsed = new URL(value.trim());
-    return parsed.protocol === 'https:' ? parsed.href : null;
+    return parsed.protocol === 'https:' && !parsed.username && !parsed.password ? parsed.href : null;
   } catch {
     return null;
   }
+}
+
+function thirdPartyPublicUrl(value) {
+  const normalized = httpsUrl(value);
+  if (!normalized) return null;
+  const parsed = new URL(normalized);
+  return parsed.search || parsed.hash ? null : parsed.href;
+}
+
+const VIDEOTOGETHER_OFFICIAL_SCRIPT_URL = 'https://fastly.jsdelivr.net/gh/VideoTogether/VideoTogether@5bf6d155db7bdd19f02e7867036e98eee21f62fc/release/extension.website.user.js';
+const VIDEOTOGETHER_OFFICIAL_SETTING_URL = 'https://2gether.video/zh-cn/guide/website_setting.html';
+const VIDEOTOGETHER_OFFICIAL_CONNECT_SOURCES = [
+  'https://videotogether.oss-cn-hangzhou.aliyuncs.com',
+  'https://vt.panghair.com:5000',
+  'wss://vt.panghair.com:5000',
+  'https://api.begin0114.wiki',
+  'https://release.begin0114.wiki',
+  'https://api.2gether.video',
+  'https://api.panghair.com',
+  'https://2gether.video',
+];
+
+function videoTogetherRuntime(env = {}) {
+  const disabled = ['false', '0'].includes(String(env.VIDEOTOGETHER_ENABLED ?? '').trim().toLowerCase());
+  const scriptOverride = typeof env.VIDEOTOGETHER_SCRIPT_URL === 'string'
+    && env.VIDEOTOGETHER_SCRIPT_URL.trim().length > 0;
+  const settingOverride = typeof env.VIDEOTOGETHER_SETTING_URL === 'string'
+    && env.VIDEOTOGETHER_SETTING_URL.trim().length > 0;
+  const scriptUrl = scriptOverride
+    ? thirdPartyPublicUrl(env.VIDEOTOGETHER_SCRIPT_URL)
+    : VIDEOTOGETHER_OFFICIAL_SCRIPT_URL;
+  const settingUrl = settingOverride
+    ? thirdPartyPublicUrl(env.VIDEOTOGETHER_SETTING_URL)
+    : VIDEOTOGETHER_OFFICIAL_SETTING_URL;
+  const enabled = !disabled && !!scriptUrl;
+  return {
+    enabled,
+    scriptUrl: enabled ? scriptUrl : null,
+    settingUrl: enabled ? settingUrl : null,
+  };
 }
 
 function siteIconUrl(value) {
@@ -1565,8 +1606,7 @@ function canAccessIptv(session) {
 
 async function handleRuntimeConfig(request, env, requestId) {
   const session = await getAuthSession(request, env, requestId);
-  const videoTogetherScriptUrl = httpsUrl(env.VIDEOTOGETHER_SCRIPT_URL);
-  const videoTogetherEnabled = env.VIDEOTOGETHER_ENABLED === 'true' && !!videoTogetherScriptUrl;
+  const videoTogether = videoTogetherRuntime(env);
   const response = {
     release: {
       worker: WORKER_VERSION,
@@ -1586,11 +1626,7 @@ async function handleRuntimeConfig(request, env, requestId) {
     },
     adKeywords: adKeywords(env.AD_KEYWORDS),
     thirdPartyScripts: {
-      videoTogether: {
-        enabled: videoTogetherEnabled,
-        scriptUrl: videoTogetherEnabled ? videoTogetherScriptUrl : null,
-        settingUrl: videoTogetherEnabled ? httpsUrl(env.VIDEOTOGETHER_SETTING_URL) : null,
-      },
+      videoTogether,
     },
     authenticated: !!session,
   };
@@ -1894,6 +1930,7 @@ async function handleUserDocument(request, env, requestId, route) {
 }
 
 const LOW_FANOUT_JSON_BYTES = 1024 * 1024;
+const SOURCE_IMPORT_BYTES = 512 * 1024;
 const DOUBAN_IMAGE_BYTES = 10 * 1024 * 1024;
 const DOUBAN_IMAGE_MIRRORS = ['img9.doubanio.com', 'img3.doubanio.com', 'img2.doubanio.com'];
 const DOUBAN_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36';
@@ -1910,6 +1947,34 @@ function lowFanoutFailure(requestId, routeId, error) {
       code: upstream ? error.code : 'UPSTREAM_INVALID_RESPONSE',
       message: upstream ? error.message : 'Upstream response is invalid.',
     }),
+  };
+}
+
+async function handleSourceImport(request, requestId) {
+  if (!jsonRequest(request)) {
+    throw new UpstreamError('UNSUPPORTED_MEDIA_TYPE', 'JSON is required.', 415);
+  }
+  const body = await readJsonBody(request);
+  if (!body || typeof body.url !== 'string' || !body.url.trim() || body.url.length > 2048) {
+    throw new UpstreamError('INVALID_REQUEST', 'A valid subscription URL is required.', 400);
+  }
+  const target = validateUpstreamUrl(body.url.trim());
+  const response = await controlledFetch(target.href, {
+    signal: request.signal,
+    timeoutMs: 10_000,
+    headers: { Accept: 'application/json, text/plain;q=0.9' },
+    budget: createRequestBudget({ maxSubrequests: 4, maxWaiting: 1 }),
+  });
+  if (!response.ok) {
+    await response.body?.cancel();
+    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${response.status}.`, 502);
+  }
+  const text = new TextDecoder().decode(await readLimitedBody(response, SOURCE_IMPORT_BYTES));
+  return {
+    routeId: 'source-import',
+    errorCode: null,
+    upstreamClass: 'controlled-fetch',
+    response: jsonResponse({ text }, requestId),
   };
 }
 
@@ -2018,6 +2083,52 @@ async function handleAppUpdate(env, requestId) {
   };
 }
 
+const DANMAKU_CACHE = new Map();
+const DANMAKU_CACHE_TTL_MS = 60 * 60 * 1000;
+
+function danmakuMemoryCache(key) {
+  const cached = DANMAKU_CACHE.get(key);
+  if (!cached || cached.expiresAt <= Date.now()) {
+    DANMAKU_CACHE.delete(key);
+    return null;
+  }
+  return { hit: true, value: cached.value };
+}
+
+async function readDanmakuCache(key) {
+  const memory = danmakuMemoryCache(key);
+  if (memory) return memory;
+  const cache = globalThis.caches?.default;
+  if (!cache) return null;
+  try {
+    const response = await cache.match(new Request(`https://uxuv.invalid/.danmaku-cache/${key}`));
+    if (!response) return null;
+    const value = await response.json();
+    storeDanmakuMemoryCache(key, value);
+    return { hit: true, value };
+  } catch {
+    return null;
+  }
+}
+
+function storeDanmakuMemoryCache(key, value) {
+  if (DANMAKU_CACHE.size >= 64) DANMAKU_CACHE.delete(DANMAKU_CACHE.keys().next().value);
+  DANMAKU_CACHE.set(key, { value, expiresAt: Date.now() + DANMAKU_CACHE_TTL_MS });
+}
+
+async function storeDanmakuCache(key, value) {
+  storeDanmakuMemoryCache(key, value);
+  const cache = globalThis.caches?.default;
+  if (!cache) return;
+  try {
+    await cache.put(new Request(`https://uxuv.invalid/.danmaku-cache/${key}`), new Response(JSON.stringify(value), {
+      headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+    }));
+  } catch {
+    // The bounded in-isolate cache remains available when Cache API storage fails.
+  }
+}
+
 async function handleDanmaku(request, requestId) {
   if (request.method === 'OPTIONS') {
     return { routeId: 'danmaku', errorCode: null, response: new Response(null, { status: 204 }) };
@@ -2042,9 +2153,15 @@ async function handleDanmaku(request, requestId) {
     base.pathname = `${basePath}/api/v2/comment/${encodeURIComponent(episodeId)}`;
     base.search = '?withRelated=true';
   }
+  const cacheKey = bytesToHex(await sha256(new TextEncoder().encode(base.href)));
+  const cached = await readDanmakuCache(cacheKey);
+  if (cached) {
+    return { routeId: 'danmaku', errorCode: null, upstreamClass: 'danmaku-cache', response: jsonResponse(cached.value, requestId) };
+  }
   const data = await upstreamJson(base.href, createRequestBudget({ maxSubrequests: 4 }), {
     headers: { Accept: 'application/json' }, userAgent: 'KVideo/1.0', maximumBytes: 2 * 1024 * 1024,
   });
+  await storeDanmakuCache(cacheKey, data);
   return { routeId: 'danmaku', errorCode: null, upstreamClass: 'danmaku', response: jsonResponse(data, requestId) };
 }
 
@@ -2272,6 +2389,7 @@ async function handleLowFanoutRoute(request, env, requestId, route) {
       return await handleDoubanJson(request, requestId, route.id);
     }
     if (route.id === 'ping') return await handlePing(request, requestId);
+    if (route.id === 'source-import') return await handleSourceImport(request, requestId);
   } catch (error) {
     return lowFanoutFailure(requestId, route.id, error);
   }
@@ -2523,6 +2641,47 @@ function storeAggregate(key, value, ttlMs) {
   AGGREGATE_CACHE.set(key, { value, expiresAt: Date.now() + ttlMs });
 }
 
+function cleanPremiumCategoryLabel(label) {
+  return label.normalize('NFKC').toLocaleLowerCase().replace(/[\s\p{P}\p{S}视频片区专]/gu, '');
+}
+
+export function mergePremiumCategories(categories) {
+  const merged = [];
+  for (const category of categories) {
+    if (!category || typeof category.label !== 'string') continue;
+    const label = category.label.trim().slice(0, 100);
+    const value = `${category.sourceId}:${category.typeId}`;
+    if (!label || !/^[A-Za-z0-9_.:-]{1,160}$/.test(String(category.sourceId)) || value.length > 256) continue;
+    const cleaned = cleanPremiumCategoryLabel(label);
+    const match = merged.find((entry) => {
+      const existing = cleanPremiumCategoryLabel(entry.label);
+      if (cleaned.length < 4 || existing.length < 4) return cleaned === existing;
+      const chars = new Set(existing);
+      let overlap = 0;
+      for (const character of cleaned) if (chars.has(character)) overlap += 1;
+      return overlap >= 4;
+    });
+    if (match) {
+      if (!match.values.includes(value)) match.values.push(value);
+    } else {
+      merged.push({ label, values: [value] });
+    }
+  }
+  return merged;
+}
+
+export function interleavePremiumResults(results, limit) {
+  const videos = [];
+  const longest = Math.max(0, ...results.map((items) => items.length));
+  for (let item = 0; item < longest && videos.length < limit; item += 1) {
+    for (const result of results) {
+      if (result[item]) videos.push(result[item]);
+      if (videos.length >= limit) break;
+    }
+  }
+  return videos;
+}
+
 async function premiumSources(request, env, requestId, session, body, profile) {
   const raw = request.method === 'POST' ? body?.sources : await accountVideoSources(env, requestId, session.account_id);
   return normalizeSources(raw, profile);
@@ -2550,13 +2709,8 @@ async function handlePremiumTypes(request, env, requestId, session, body, profil
       // A partial aggregate remains useful.
     }
   });
-  const merged = new Map();
-  for (const category of categories) {
-    if (!category.label) continue;
-    if (!merged.has(category.label)) merged.set(category.label, []);
-    merged.get(category.label).push(`${category.sourceId}:${category.typeId}`);
-  }
-  const tags = [{ id: 'recommend', label: '今日推荐', value: '' }, ...Array.from(merged, ([label, values]) => ({
+  const merged = mergePremiumCategories(categories);
+  const tags = [{ id: 'recommend', label: '今日推荐', value: '' }, ...merged.map(({ label, values }) => ({
     id: bytesToBase64(new TextEncoder().encode(label)).replace(/=+$/, ''), label, value: values.join(','),
   }))];
   const value = { tags, capability: profileCapability(profile) };
@@ -2593,14 +2747,7 @@ async function handlePremiumCategory(request, env, requestId, session, body, pro
       // A partial aggregate remains useful.
     }
   });
-  const videos = [];
-  const longest = Math.max(0, ...results.map((items) => items.length));
-  for (let item = 0; item < longest && videos.length < limit; item += 1) {
-    for (const result of results) {
-      if (result[item]) videos.push(result[item]);
-      if (videos.length >= limit) break;
-    }
-  }
+  const videos = interleavePremiumResults(results, limit);
   const value = { videos, capability: profileCapability(profile) };
   storeAggregate(cacheKey, value, 30 * 60 * 1000);
   return { routeId: 'premium-category', errorCode: null, upstreamClass: 'premium-sources', response: jsonResponse(value, requestId) };
@@ -2780,7 +2927,12 @@ function mediaRequestOptions(request, routeId) {
   const rawReferer = safeMediaText(query.get('referer'), 2_048, 'INVALID_MEDIA_HEADER', 'Media referer is invalid.');
   const referer = rawReferer ? validateUpstreamUrl(rawReferer).href
     : routeId === 'iptv-stream' || routeId === 'iptv' ? `${new URL(target).origin}/` : '';
-  return { target, userAgent, referer, token: query.get('token') ?? '' };
+  const requestedAdMode = query.get('ad');
+  const adFilterMode = ['keyword', 'heuristic', 'aggressive'].includes(requestedAdMode) ? requestedAdMode : 'off';
+  const adKeywords = [...new Set(query.getAll('adkw').map((value) => safeMediaText(
+    value, 40, 'INVALID_AD_FILTER', 'Ad filter keyword is invalid.',
+  ).toLowerCase()).filter(Boolean))].slice(0, 32);
+  return { target, userAgent, referer, token: query.get('token') ?? '', adFilterMode, adKeywords };
 }
 
 function sameOriginCors(request, headers) {
@@ -2863,16 +3015,113 @@ function isMediaManifest(target, contentType) {
     || /(?:mpegurl|x-mpegurl|x-scpls)/i.test(contentType);
 }
 
-async function mediaChildPath(routeId, target, userAgent, referer, secret, expiresAt) {
+async function mediaChildPath(routeId, target, userAgent, referer, secret, expiresAt, adFilterMode, adKeywords) {
   const token = await signMediaToken(secret, routeId, target, userAgent, referer, expiresAt);
   const query = new URLSearchParams({ url: target, token });
   if (userAgent) query.set('ua', userAgent);
   if (referer) query.set('referer', referer);
+  if (adFilterMode !== 'off') {
+    query.set('ad', adFilterMode);
+    for (const keyword of adKeywords) query.append('adkw', keyword);
+  }
   return `/api/${routeId === 'iptv-stream' ? 'iptv/stream' : 'proxy'}?${query}`;
 }
 
-async function rewriteMediaManifest(content, target, routeId, userAgent, referer, secret) {
+const AD_INTERSTITIAL_MARKERS = [
+  'class="com.apple.hls.interstitial"', 'x-asset-uri=', 'x-asset-list=',
+  'x-playout-limit=', 'x-resume-offset=', 'cue="once"',
+];
+const AD_METADATA_PREFIXES = [
+  '#EXT-X-ASSET:', '#EXT-X-CUE-OUT-CONT', '#EXT-X-PLACEMENT-OPPORTUNITY',
+  '#EXT-OATCLS-SCTE35', '#EXT-X-SCTE35',
+];
+const SEGMENT_METADATA_PREFIXES = [
+  '#EXTINF:', '#EXT-X-BYTERANGE:', '#EXT-X-DISCONTINUITY', '#EXT-X-PROGRAM-DATE-TIME:',
+];
+
+function mediaSegments(lines) {
+  const segments = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index].trim();
+    if (!line.startsWith('#EXTINF:')) continue;
+    const duration = Number.parseFloat(line.slice('#EXTINF:'.length));
+    let uriIndex = index + 1;
+    while (uriIndex < lines.length && (!lines[uriIndex].trim() || lines[uriIndex].trim().startsWith('#'))) uriIndex += 1;
+    if (uriIndex < lines.length) segments.push({
+      metadataIndex: index,
+      uriIndex,
+      uri: lines[uriIndex].trim(),
+      duration: Number.isFinite(duration) && duration >= 0 ? duration : 0,
+    });
+  }
+  return segments;
+}
+
+function dominantSegmentDuration(segments) {
+  const counts = new Map();
+  for (const { duration } of segments) {
+    if (duration <= 0) continue;
+    const bucket = Math.round(duration * 2) / 2;
+    counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+  }
+  return [...counts].sort((left, right) => right[1] - left[1] || right[0] - left[0])[0]?.[0] ?? 0;
+}
+
+function stripDanglingDiscontinuities(lines) {
+  const output = [];
+  for (const line of lines) {
+    if (line.trim() === '#EXT-X-DISCONTINUITY'
+      && (output.length === 0 || output.at(-1).trim() === '#EXT-X-DISCONTINUITY')) continue;
+    output.push(line);
+  }
+  while (output.at(-1)?.trim() === '#EXT-X-DISCONTINUITY') output.pop();
+  return output;
+}
+
+export function filterMediaManifest(content, mode = 'off', keywords = []) {
+  if (typeof content !== 'string' || mode === 'off' || !content.startsWith('#EXTM3U')) return content;
+  if (!['keyword', 'heuristic', 'aggressive'].includes(mode)) return content;
+  const normalizedKeywords = [...new Set(keywords.map((value) => String(value).trim().toLowerCase()).filter(Boolean))].slice(0, 32);
   const lines = content.split(/\r?\n/);
+  const segments = mediaSegments(lines);
+  const dominantDuration = dominantSegmentDuration(segments);
+  const removed = new Set();
+  let insideCue = false;
+  for (let index = 0; index < lines.length; index += 1) {
+    const trimmed = lines[index].trim();
+    const lower = trimmed.toLowerCase();
+    if (trimmed.startsWith('#EXT-X-CUE-OUT')) insideCue = true;
+    if (insideCue) removed.add(index);
+    if (trimmed.startsWith('#EXT-X-CUE-IN')) insideCue = false;
+    if (AD_METADATA_PREFIXES.some((prefix) => trimmed.startsWith(prefix))
+      || (trimmed.startsWith('#EXT-X-DATERANGE:') && AD_INTERSTITIAL_MARKERS.some((marker) => lower.includes(marker)))) {
+      removed.add(index);
+    }
+  }
+  for (const segment of segments) {
+    const lowerUri = segment.uri.toLowerCase();
+    const keywordMatch = normalizedKeywords.some((keyword) => lowerUri.includes(keyword));
+    const pathMatch = /(?:^|[\/_\-.])(?:ads?|commercial|promo|preroll|midroll|sponsor)(?:[\/_\-.]|$)/i.test(lowerUri);
+    const durationOutlier = dominantDuration > 0 && segment.duration > 0
+      && (segment.duration < Math.min(2.5, dominantDuration * 0.35) || segment.duration > dominantDuration * 2.5);
+    const score = (pathMatch ? 3.5 : 0) + (durationOutlier ? 2 : 0);
+    const heuristicMatch = mode === 'heuristic' ? score >= 5 : mode === 'aggressive' && score >= 3;
+    if (!keywordMatch && !heuristicMatch && !removed.has(segment.uriIndex)) continue;
+    for (let index = segment.metadataIndex; index <= segment.uriIndex; index += 1) removed.add(index);
+    let previous = segment.metadataIndex - 1;
+    while (previous >= 0 && SEGMENT_METADATA_PREFIXES.some((prefix) => lines[previous].trim().startsWith(prefix))) {
+      removed.add(previous);
+      previous -= 1;
+    }
+  }
+  const keptSegments = segments.filter(({ uriIndex }) => !removed.has(uriIndex)).length;
+  if (segments.length > 0 && keptSegments === 0) return content;
+  const filtered = stripDanglingDiscontinuities(lines.filter((_line, index) => !removed.has(index))).join('\n');
+  return filtered.startsWith('#EXTM3U') ? filtered : content;
+}
+
+async function rewriteMediaManifest(content, target, routeId, userAgent, referer, secret, adFilterMode, adKeywords) {
+  const lines = filterMediaManifest(content, adFilterMode, adKeywords).split(/\r?\n/);
   const expiresAt = Date.now() + MEDIA_TOKEN_TTL_MS;
   let rewrittenUris = 0;
   const child = async (value) => {
@@ -2882,6 +3131,7 @@ async function rewriteMediaManifest(content, target, routeId, userAgent, referer
     }
     return mediaChildPath(
       routeId, validateUpstreamUrl(value, new URL(target)).href, userAgent, referer, secret, expiresAt,
+      adFilterMode, adKeywords,
     );
   };
   const output = [];
@@ -2929,6 +3179,7 @@ async function mediaUpstream(request, requestId, routeId, options, env) {
     const manifest = new TextDecoder().decode(await readLimitedBody(upstream, MEDIA_MANIFEST_BYTES));
     const rewritten = await rewriteMediaManifest(
       manifest, options.target, routeId, options.userAgent, options.referer, env.AUTH_SECRET,
+      options.adFilterMode, options.adKeywords,
     );
     const headers = responseHeaders(requestId, 'application/vnd.apple.mpegurl; charset=utf-8');
     sameOriginCors(request, headers);
@@ -3441,29 +3692,61 @@ function pagesLookupPath(pathname) {
   return normalizePath(path);
 }
 
-function applyStaticSecurityHeaders(headers) {
+function staticContentSecurityPolicy(env = {}) {
+  const directives = [
+    "default-src 'self'",
+    "base-uri 'none'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data:",
+    "media-src 'self' blob:",
+    "connect-src 'self'",
+    "frame-src 'self'",
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
+  ];
+  const { scriptUrl } = videoTogetherRuntime(env);
+  if (scriptUrl) {
+    const parsed = new URL(scriptUrl);
+    directives[5] += ` ${scriptUrl}`;
+    directives[10] += ` ${parsed.origin} wss://${parsed.host}`;
+    directives[11] += ` ${parsed.origin}`;
+    if (scriptUrl === VIDEOTOGETHER_OFFICIAL_SCRIPT_URL) {
+      directives[10] += ` ${VIDEOTOGETHER_OFFICIAL_CONNECT_SOURCES.join(' ')}`;
+      directives[11] += ' https://2gether.video';
+    }
+  }
+  return directives.join('; ');
+}
+
+function applyStaticSecurityHeaders(headers, env) {
   headers.set('X-Content-Type-Options', 'nosniff');
   headers.set('Referrer-Policy', 'no-referrer');
   headers.set('Permissions-Policy', 'camera=(), geolocation=(), microphone=(), payment=(), usb=()');
   headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  headers.set('Content-Security-Policy', staticContentSecurityPolicy(env));
 }
 
-function staticResponse(bytes, asset, requestId, status, head) {
+function staticResponse(bytes, asset, requestId, status, head, env) {
   const isHashedAsset = asset.path.startsWith('_next/static/');
   const cacheControl = isHashedAsset
     ? 'public, max-age=31536000, immutable'
     : 'no-cache, must-revalidate';
   const headers = responseHeaders(requestId, asset.contentType, { cacheControl });
   headers.set('Content-Length', String(bytes.byteLength));
-  applyStaticSecurityHeaders(headers);
+  applyStaticSecurityHeaders(headers, env);
   return new Response(head ? null : bytes, { status, headers });
 }
 
-function frontendUnavailableResponse(requestId, head) {
+function frontendUnavailableResponse(requestId, head, env) {
   const bytes = new TextEncoder().encode(FRONTEND_UNAVAILABLE_HTML);
   const headers = responseHeaders(requestId, 'text/html; charset=utf-8');
   headers.set('Retry-After', '60');
-  applyStaticSecurityHeaders(headers);
+  applyStaticSecurityHeaders(headers, env);
   return new Response(head ? null : bytes, { status: 503, headers });
 }
 
@@ -3504,7 +3787,7 @@ function frontendIntegrityException(error) {
   };
 }
 
-async function servePagesRequest(request, requestId) {
+async function servePagesRequest(request, requestId, env) {
   let failureStage = 'manifest.fetch';
   try {
     const manifestBytes = await fetchReleaseFile('release-manifest.json');
@@ -3532,7 +3815,7 @@ async function servePagesRequest(request, requestId) {
       errorCode: status === 404 ? 'PAGE_NOT_FOUND' : null,
       cacheStatus: 'miss',
       upstreamClass: 'github-pages',
-      response: staticResponse(bytes, asset, requestId, status, request.method === 'HEAD'),
+      response: staticResponse(bytes, asset, requestId, status, request.method === 'HEAD', env),
     };
   } catch (error) {
     return {
@@ -3544,7 +3827,7 @@ async function servePagesRequest(request, requestId) {
       failureStage,
       failureReason: frontendIntegrityReason(failureStage, error),
       ...frontendIntegrityException(error),
-      response: frontendUnavailableResponse(requestId, request.method === 'HEAD'),
+      response: frontendUnavailableResponse(requestId, request.method === 'HEAD', env),
     };
   }
 }
@@ -3675,7 +3958,7 @@ async function routeRequest(request, requestId, env) {
     };
   }
 
-  return servePagesRequest(request, requestId);
+  return servePagesRequest(request, requestId, env);
 }
 
 function logCompletion(request, result, requestId, startedAt) {
