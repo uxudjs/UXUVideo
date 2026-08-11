@@ -58,6 +58,43 @@ const IMPLEMENTED_PATHS = new Set([
 ]);
 const REQUEST_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ROUTE_DB = createD1Stub().db;
+const PAGES_VERSION = '0.4.3';
+const PAGES_MANIFEST = {
+  schemaVersion: 1,
+  pagesVersion: PAGES_VERSION,
+  apiContract: 1,
+  workerRange: '>=1.0.0 <2.0.0',
+  routes: { '/': 'index.html' },
+  assets: {
+    '/404.html': { path: '404.html', contentType: 'text/html; charset=utf-8' },
+    '/index.html': { path: 'index.html', contentType: 'text/html; charset=utf-8' },
+  },
+};
+
+async function withPagesManifest(operation) {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input instanceof Request ? input.url : input);
+    assert.equal(url, 'https://uxudjs.github.io/UXUV-Pages/release-manifest.json');
+    assert.equal(init.redirect, 'manual');
+    const body = `${JSON.stringify(PAGES_MANIFEST)}\n`;
+    return new Response(body, {
+      headers: {
+        'Content-Length': String(Buffer.byteLength(body)),
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
+  };
+  try {
+    return await operation();
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
+function fetchWorker(request, env) {
+  return withPagesManifest(() => worker.fetch(request, env, {}));
+}
 
 async function dispatch(path, method) {
   const messages = [];
@@ -65,10 +102,9 @@ async function dispatch(path, method) {
   console.log = (message) => messages.push(String(message));
 
   try {
-    const response = await worker.fetch(
+    const response = await fetchWorker(
       new Request(`https://worker.example${path}`, { method }),
       { DB: ROUTE_DB },
-      {},
     );
     return { response, messages };
   } finally {
@@ -80,7 +116,7 @@ function assertVersionHeaders(response) {
   const requestId = response.headers.get('X-Request-Id');
   assert.match(requestId ?? '', REQUEST_ID_PATTERN);
   assert.equal(response.headers.get('X-UXUV-Worker-Version'), '1.0.0');
-  assert.equal(response.headers.get('X-UXUV-Pages-Version'), '0.2.0');
+  assert.equal(response.headers.get('X-UXUV-Pages-Version'), null);
   assert.equal(response.headers.get('X-UXUV-API-Contract'), '1');
   return requestId;
 }
@@ -136,20 +172,22 @@ test('non-API methods fail with 405 without reaching the Pages release', async (
 
 test('GET /api/config enables the built-in VideoTogether integration without extra variables', async () => {
   const env = { DB: createAuthD1Stub().db };
-  const response = await worker.fetch(new Request('https://worker.example/api/config'), env, {});
+  const response = await fetchWorker(new Request('https://worker.example/api/config'), env);
 
   assert.equal(response.status, 200);
+  assert.equal(response.headers.get('X-UXUV-Pages-Version'), PAGES_VERSION);
   const config = await response.json();
+  assert.equal(config.release.pages, PAGES_VERSION);
   assert.deepEqual(config.thirdPartyScripts.videoTogether, {
     enabled: true,
     scriptUrl: 'https://fastly.jsdelivr.net/gh/VideoTogether/VideoTogether@5bf6d155db7bdd19f02e7867036e98eee21f62fc/release/extension.website.user.js',
     settingUrl: 'https://2gether.video/zh-cn/guide/website_setting.html',
   });
 
-  const disabledResponse = await worker.fetch(new Request('https://worker.example/api/config'), {
+  const disabledResponse = await fetchWorker(new Request('https://worker.example/api/config'), {
     ...env,
     VIDEOTOGETHER_ENABLED: 'false',
-  }, {});
+  });
   const disabledConfig = await disabledResponse.json();
   assert.deepEqual(disabledConfig.thirdPartyScripts.videoTogether, {
     enabled: false,
@@ -157,10 +195,10 @@ test('GET /api/config enables the built-in VideoTogether integration without ext
     settingUrl: null,
   });
 
-  const invalidOverrideResponse = await worker.fetch(new Request('https://worker.example/api/config'), {
+  const invalidOverrideResponse = await fetchWorker(new Request('https://worker.example/api/config'), {
     ...env,
     VIDEOTOGETHER_SCRIPT_URL: 'https://user:password@scripts.example/video-together.js',
-  }, {});
+  });
   const invalidOverrideConfig = await invalidOverrideResponse.json();
   assert.deepEqual(invalidOverrideConfig.thirdPartyScripts.videoTogether, {
     enabled: false,
@@ -188,10 +226,10 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
     VIDEOTOGETHER_SETTING_URL: 'https://scripts.example/settings',
   };
 
-  const publicResponse = await worker.fetch(new Request('https://worker.example/api/config'), env, {});
+  const publicResponse = await fetchWorker(new Request('https://worker.example/api/config'), env);
   assert.equal(publicResponse.status, 200);
   const publicConfig = await publicResponse.json();
-  assert.deepEqual(publicConfig.release, { worker: '1.0.0', pages: '0.2.0', apiContract: 1 });
+  assert.deepEqual(publicConfig.release, { worker: '1.0.0', pages: PAGES_VERSION, apiContract: 1 });
   assert.deepEqual(publicConfig.site, {
     name: 'Family Video',
     title: 'Family Video Library',
@@ -209,18 +247,18 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
   assert.equal(Object.hasOwn(publicConfig, 'sources'), false);
   assert.doesNotMatch(JSON.stringify(publicConfig), /admin-password|test-auth-secret|source\.example/);
 
-  const login = await worker.fetch(new Request('https://worker.example/api/auth', {
+  const login = await fetchWorker(new Request('https://worker.example/api/auth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Origin: 'https://worker.example' },
     body: JSON.stringify({ username: 'admin', password: 'admin-password' }),
-  }), env, {});
+  }), env);
   assert.equal(login.status, 200);
   const cookie = login.headers.get('Set-Cookie')?.split(';', 1)[0];
   assert.ok(cookie);
 
-  const privateResponse = await worker.fetch(new Request('https://worker.example/api/config', {
+  const privateResponse = await fetchWorker(new Request('https://worker.example/api/config', {
     headers: { Cookie: cookie },
-  }), env, {});
+  }), env);
   assert.equal(privateResponse.status, 200);
   const privateConfig = await privateResponse.json();
   assert.equal(privateConfig.authenticated, true);
@@ -231,7 +269,7 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
     danmakuApiUrl: env.DANMAKU_API_URL,
   });
 
-  const created = await worker.fetch(new Request('https://worker.example/api/auth/accounts', {
+  const created = await fetchWorker(new Request('https://worker.example/api/auth/accounts', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -245,9 +283,9 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
       role: 'viewer',
       customPermissions: [],
     }),
-  }), env, {});
+  }), env);
   assert.equal(created.status, 201);
-  const viewerLogin = await worker.fetch(new Request('https://worker.example/api/auth', {
+  const viewerLogin = await fetchWorker(new Request('https://worker.example/api/auth', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -255,13 +293,13 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
       Origin: 'https://worker.example',
     },
     body: JSON.stringify({ username: 'viewer', password: 'viewer-password' }),
-  }), env, {});
+  }), env);
   assert.equal(viewerLogin.status, 200);
   const viewerCookie = viewerLogin.headers.get('Set-Cookie')?.split(';', 1)[0];
   assert.ok(viewerCookie);
-  const viewerResponse = await worker.fetch(new Request('https://worker.example/api/config', {
+  const viewerResponse = await fetchWorker(new Request('https://worker.example/api/config', {
     headers: { Cookie: viewerCookie },
-  }), env, {});
+  }), env);
   const viewerConfig = await viewerResponse.json();
   assert.equal(viewerConfig.sources.subscriptionSources, env.SUBSCRIPTION_SOURCES);
   assert.equal(viewerConfig.sources.iptvSources, '');

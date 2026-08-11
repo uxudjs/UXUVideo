@@ -422,7 +422,7 @@ Cloudflare 当前 Free 上限是每日 500 万行读、10 万行写、单数据�
 }
 ```
 
-所有响应带 `X-Request-Id`、`X-UXUV-Worker-Version`、`X-UXUV-Pages-Version` 和 `X-UXUV-API-Contract`。SSE 错误使用 `event: error` 加同一 JSON 结构。开始二进制流后发生错误时终止流并记录日志，不伪造第二个 HTTP 响应。
+所有响应带 `X-Request-Id`、`X-UXUV-Worker-Version` 和 `X-UXUV-API-Contract`。只有已读取并验证当前 Pages 清单的静态 Pages 响应与 `/api/config` 才带 `X-UXUV-Pages-Version`；其他 API 不回报未验证、过期或硬编码的 Pages 版本。SSE 错误使用 `event: error` 加同一 JSON 结构。开始二进制流后发生错误时终止流并记录日志，不伪造第二个 HTTP 响应。
 
 | # | 路由 | 方法 | 授权 | Worker v1 行为与上限 |
 | --- | --- | --- | --- | --- |

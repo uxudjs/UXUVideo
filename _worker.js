@@ -1,18 +1,25 @@
 const WORKER_VERSION = '1.0.0';
 const API_CONTRACT_VERSION = '1';
-const PAGES_VERSION = '0.2.0';
 const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
-const PAGES_GIT_COMMIT = '88c83a006832ea49d702df23f9260cd6c9cf7119';
-const PAGES_MANIFEST_SHA256 = 'd3faad191675b4476130dbfe3d6e61913b9a6e44643b4354a9a7761fbbe3e6f8';
+const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
 const MAX_STATIC_ASSET_BYTES = 5 * 1024 * 1024;
-const PAGES_PUBLIC_PREFIX = new URL(PAGES_BASE_URL).pathname.replace(/\/$/, '');
+const PAGES_PUBLIC_PREFIX = PAGES_RELEASE_ROOT.pathname.replace(/\/$/, '');
 const FRONTEND_UNAVAILABLE_HTML = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>UXUVideo 暂不可用</title><body><h1>UXUVideo 暂不可用</h1><p>FRONTEND_INTEGRITY_ERROR</p></body></html>';
-
-const PAGES_RELEASE = {
-  version: PAGES_VERSION,
-  gitCommit: PAGES_GIT_COMMIT,
-  manifestSha256: PAGES_MANIFEST_SHA256,
-};
+const STATIC_CONTENT_TYPES = new Set([
+  'application/json; charset=utf-8',
+  'application/manifest+json; charset=utf-8',
+  'font/woff',
+  'font/woff2',
+  'image/jpeg',
+  'image/png',
+  'image/svg+xml',
+  'image/webp',
+  'image/x-icon',
+  'text/css; charset=utf-8',
+  'text/html; charset=utf-8',
+  'text/javascript; charset=utf-8',
+  'text/plain; charset=utf-8',
+]);
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -334,22 +341,36 @@ function acceptsWorkerVersion(range) {
     && compareSemver(worker.slice(1), match.slice(4, 7)) < 0;
 }
 
-function isSafeAssetPath(path) {
-  return typeof path === 'string'
-    && path.length > 0
-    && !path.startsWith('/')
-    && !path.includes('\\')
-    && !path.includes('?')
-    && !path.includes('#')
-    && !path.split('/').includes('..');
+function pagesReleaseUrl(path) {
+  if (typeof path !== 'string'
+    || path.length === 0
+    || path.startsWith('/')
+    || path.includes('\\')
+    || path.includes(':')
+    || path.includes('?')
+    || path.includes('#')
+    || path.split('/').includes('..')) return null;
+  let url;
+  try {
+    url = new URL(path, PAGES_RELEASE_ROOT);
+  } catch {
+    return null;
+  }
+  return url.origin === PAGES_RELEASE_ROOT.origin
+    && url.pathname.startsWith(PAGES_RELEASE_ROOT.pathname)
+    && !url.username
+    && !url.password
+    && !url.search
+    && !url.hash
+    ? url.href
+    : null;
 }
 
-export async function validatePagesManifest(bytes, expectedRelease = PAGES_RELEASE) {
-  const actualManifestSha256 = bytesToHex(await sha256(bytes));
-  if (actualManifestSha256 !== expectedRelease.manifestSha256) {
-    throw new Error('Pages manifest SHA-256 mismatch.');
-  }
+function isSafeAssetPath(path) {
+  return pagesReleaseUrl(path) !== null;
+}
 
+export async function validatePagesManifest(bytes) {
   let manifest;
   try {
     manifest = JSON.parse(new TextDecoder().decode(bytes));
@@ -358,11 +379,15 @@ export async function validatePagesManifest(bytes, expectedRelease = PAGES_RELEA
   }
 
   if (!isRecord(manifest)
-    || manifest.schemaVersion !== 1
-    || manifest.pagesVersion !== expectedRelease.version
-    || manifest.gitCommit !== expectedRelease.gitCommit
-    || manifest.apiContract !== Number(API_CONTRACT_VERSION)) {
-    throw new Error('Pages manifest release contract mismatch.');
+    || manifest.schemaVersion !== 1) {
+    throw new Error('Pages manifest release contract is invalid.');
+  }
+  if (typeof manifest.pagesVersion !== 'string'
+    || !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(manifest.pagesVersion)) {
+    throw new Error('Pages manifest semantic version is invalid.');
+  }
+  if (manifest.apiContract !== Number(API_CONTRACT_VERSION)) {
+    throw new Error('Pages manifest API contract is incompatible.');
   }
   if (typeof manifest.workerRange !== 'string' || !acceptsWorkerVersion(manifest.workerRange)) {
     throw new Error('Pages manifest worker range is incompatible.');
@@ -375,11 +400,8 @@ export async function validatePagesManifest(bytes, expectedRelease = PAGES_RELEA
     if (!isRecord(asset)
       || !isSafeAssetPath(asset.path)
       || assetKey !== `/${asset.path}`
-      || typeof asset.sha256 !== 'string'
-      || !/^[A-Za-z0-9+/]{43}=$/.test(asset.sha256)
-      || asset.sri !== `sha256-${asset.sha256}`
       || typeof asset.contentType !== 'string'
-      || !/^[\w.+-]+\/[\w.+-]+(?:; charset=utf-8)?$/i.test(asset.contentType)) {
+      || !STATIC_CONTENT_TYPES.has(asset.contentType)) {
       throw new Error('Pages manifest asset metadata is invalid.');
     }
   }
@@ -1477,9 +1499,9 @@ function responseHeaders(requestId, contentType, options = {}) {
     'Content-Type': contentType,
     'X-Request-Id': requestId,
     'X-UXUV-Worker-Version': WORKER_VERSION,
-    'X-UXUV-Pages-Version': PAGES_VERSION,
     'X-UXUV-API-Contract': API_CONTRACT_VERSION,
   });
+  if (options.pagesVersion) headers.set('X-UXUV-Pages-Version', options.pagesVersion);
   if (options.allow) headers.set('Allow', options.allow);
   return headers;
 }
@@ -1605,12 +1627,34 @@ function canAccessIptv(session) {
 }
 
 async function handleRuntimeConfig(request, env, requestId) {
+  let manifest;
+  try {
+    manifest = await loadPagesManifest();
+  } catch (error) {
+    const failureStage = error?.pagesStage ?? 'manifest.validate';
+    return {
+      event: 'frontend_integrity_error',
+      routeId: 'config',
+      errorCode: 'FRONTEND_INTEGRITY_ERROR',
+      cacheStatus: 'bypass',
+      upstreamClass: 'github-pages',
+      failureStage,
+      failureReason: frontendIntegrityReason(failureStage, error),
+      ...frontendIntegrityException(error),
+      response: errorResponse({
+        requestId,
+        status: 503,
+        code: 'FRONTEND_INTEGRITY_ERROR',
+        message: 'Frontend configuration is unavailable.',
+      }),
+    };
+  }
   const session = await getAuthSession(request, env, requestId);
   const videoTogether = videoTogetherRuntime(env);
   const response = {
     release: {
       worker: WORKER_VERSION,
-      pages: PAGES_VERSION,
+      pages: manifest.pagesVersion,
       apiContract: Number(API_CONTRACT_VERSION),
     },
     site: {
@@ -1643,7 +1687,10 @@ async function handleRuntimeConfig(request, env, requestId) {
   return {
     routeId: 'config',
     errorCode: null,
-    response: jsonResponse(response, requestId),
+    pagesVersion: manifest.pagesVersion,
+    response: jsonResponse(response, requestId, 200, {
+      'X-UXUV-Pages-Version': manifest.pagesVersion,
+    }),
   };
 }
 
@@ -3685,12 +3732,34 @@ async function readResponseBytes(response) {
   return bytes;
 }
 
-async function fetchReleaseFile(path) {
-  const response = await globalThis.fetch(new URL(path, PAGES_BASE_URL).href, {
+async function fetchReleaseResponse(path) {
+  const url = pagesReleaseUrl(path);
+  if (!url) throw new Error('Pages release path is unsafe.');
+  const response = await globalThis.fetch(url, {
     redirect: 'manual',
   });
-  if (!response.ok) throw new Error('Pages release file is unavailable.');
-  return readResponseBytes(response);
+  if (response.status !== 200) throw new Error('Pages release file is unavailable.');
+  return response;
+}
+
+function markPagesStage(error, pagesStage) {
+  const failure = error instanceof Error ? error : new Error('Pages request failed.');
+  failure.pagesStage = pagesStage;
+  return failure;
+}
+
+async function loadPagesManifest() {
+  let response;
+  try {
+    response = await fetchReleaseResponse('release-manifest.json');
+  } catch (error) {
+    throw markPagesStage(error, 'manifest.fetch');
+  }
+  try {
+    return await validatePagesManifest(await readResponseBytes(response));
+  } catch (error) {
+    throw markPagesStage(error, 'manifest.validate');
+  }
 }
 
 function pagesLookupPath(pathname) {
@@ -3741,20 +3810,58 @@ function applyStaticSecurityHeaders(headers, env) {
   headers.set('Content-Security-Policy', staticContentSecurityPolicy(env));
 }
 
-function staticResponse(bytes, asset, requestId, status, head, env) {
+function canonicalMediaType(value) {
+  if (typeof value !== 'string') return null;
+  const [rawType, ...parameters] = value.toLowerCase().split(';').map((part) => part.trim());
+  if (parameters.some((parameter) => parameter !== 'charset=utf-8')) return null;
+  const type = rawType === 'application/javascript' ? 'text/javascript' : rawType;
+  return parameters.length === 0 ? type : `${type}; charset=utf-8`;
+}
+
+function validateStaticAssetResponse(response, asset) {
+  if (canonicalMediaType(response.headers.get('Content-Type')) !== canonicalMediaType(asset.contentType)) {
+    throw new Error('Pages asset Content-Type mismatch.');
+  }
+  const rawLength = response.headers.get('Content-Length');
+  if (typeof rawLength !== 'string' || !/^(0|[1-9]\d*)$/.test(rawLength)) {
+    throw new Error('Pages asset Content-Length is invalid.');
+  }
+  const length = Number(rawLength);
+  if (!Number.isSafeInteger(length)) throw new Error('Pages asset Content-Length is invalid.');
+  if (length > MAX_STATIC_ASSET_BYTES) throw new Error('Pages asset exceeds the verified size limit.');
+  return length;
+}
+
+function limitStaticAssetStream(stream) {
+  if (!stream) return null;
+  let total = 0;
+  return stream.pipeThrough(new TransformStream({
+    transform(chunk, controller) {
+      const bytes = chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk);
+      total += bytes.byteLength;
+      if (total > MAX_STATIC_ASSET_BYTES) {
+        controller.error(new Error('Pages asset exceeds the verified size limit.'));
+        return;
+      }
+      controller.enqueue(bytes);
+    },
+  }));
+}
+
+function staticResponse(body, contentLength, asset, requestId, status, head, env, pagesVersion) {
   const isHashedAsset = asset.path.startsWith('_next/static/');
   const cacheControl = isHashedAsset
     ? 'public, max-age=31536000, immutable'
     : 'no-cache, must-revalidate';
-  const headers = responseHeaders(requestId, asset.contentType, { cacheControl });
-  headers.set('Content-Length', String(bytes.byteLength));
+  const headers = responseHeaders(requestId, asset.contentType, { cacheControl, pagesVersion });
+  headers.set('Content-Length', String(contentLength));
   applyStaticSecurityHeaders(headers, env);
-  return new Response(head ? null : bytes, { status, headers });
+  return new Response(head ? null : body, { status, headers });
 }
 
-function frontendUnavailableResponse(requestId, head, env) {
+function frontendUnavailableResponse(requestId, head, env, pagesVersion = null) {
   const bytes = new TextEncoder().encode(FRONTEND_UNAVAILABLE_HTML);
-  const headers = responseHeaders(requestId, 'text/html; charset=utf-8');
+  const headers = responseHeaders(requestId, 'text/html; charset=utf-8', { pagesVersion });
   headers.set('Retry-After', '60');
   applyStaticSecurityHeaders(headers, env);
   return new Response(head ? null : bytes, { status: 503, headers });
@@ -3768,15 +3875,17 @@ function frontendIntegrityReason(stage, error) {
       ? 'UPSTREAM_STATUS_REJECTED'
       : 'UPSTREAM_FETCH_FAILED';
   }
-  if (message === 'Pages manifest SHA-256 mismatch.') return 'MANIFEST_SHA_MISMATCH';
   if (message === 'Pages manifest is not valid JSON.') return 'MANIFEST_JSON_INVALID';
-  if (message === 'Pages manifest release contract mismatch.') return 'MANIFEST_CONTRACT_MISMATCH';
+  if (message === 'Pages manifest release contract is invalid.') return 'MANIFEST_CONTRACT_INVALID';
+  if (message === 'Pages manifest semantic version is invalid.') return 'MANIFEST_VERSION_INVALID';
+  if (message === 'Pages manifest API contract is incompatible.') return 'MANIFEST_API_INCOMPATIBLE';
   if (message === 'Pages manifest worker range is incompatible.') return 'MANIFEST_RANGE_INCOMPATIBLE';
   if (message === 'Pages manifest route or asset map is invalid.') return 'MANIFEST_MAP_INVALID';
   if (message === 'Pages manifest asset metadata is invalid.') return 'MANIFEST_ASSET_METADATA_INVALID';
   if (message === 'Pages manifest route mapping is invalid.') return 'MANIFEST_ROUTE_MAPPING_INVALID';
   if (message === 'Pages manifest is missing the fixed 404 document.') return 'MANIFEST_404_MISSING';
-  if (message === 'Pages asset SHA-256 mismatch.') return 'ASSET_SHA_MISMATCH';
+  if (message === 'Pages asset Content-Type mismatch.') return 'ASSET_CONTENT_TYPE_MISMATCH';
+  if (message === 'Pages asset Content-Length is invalid.') return 'ASSET_LENGTH_INVALID';
   return 'UNEXPECTED_ERROR';
 }
 
@@ -3799,10 +3908,10 @@ function frontendIntegrityException(error) {
 
 async function servePagesRequest(request, requestId, env) {
   let failureStage = 'manifest.fetch';
+  let pagesVersion = null;
   try {
-    const manifestBytes = await fetchReleaseFile('release-manifest.json');
-    failureStage = 'manifest.validate';
-    const manifest = await validatePagesManifest(manifestBytes);
+    const manifest = await loadPagesManifest();
+    pagesVersion = manifest.pagesVersion;
     failureStage = 'asset.resolve';
     const path = pagesLookupPath(new URL(request.url).pathname);
     const routeAsset = Object.hasOwn(manifest.routes, path)
@@ -3813,31 +3922,34 @@ async function servePagesRequest(request, requestId, env) {
     const status = routeAsset || Object.hasOwn(manifest.assets, path) ? 200 : 404;
     const asset = manifest.assets[assetKey];
     failureStage = 'asset.fetch';
-    const bytes = await fetchReleaseFile(asset.path);
+    const upstream = await fetchReleaseResponse(asset.path);
     failureStage = 'asset.validate';
-    const actualSha256 = bytesToBase64(await sha256(bytes));
-    if (actualSha256 !== asset.sha256) {
-      throw new Error('Pages asset SHA-256 mismatch.');
-    }
+    const contentLength = validateStaticAssetResponse(upstream, asset);
+    const head = request.method === 'HEAD';
+    if (head) await upstream.body?.cancel();
+    const body = head ? null : limitStaticAssetStream(upstream.body);
 
     return {
       routeId: 'pages',
       errorCode: status === 404 ? 'PAGE_NOT_FOUND' : null,
+      pagesVersion,
       cacheStatus: 'miss',
       upstreamClass: 'github-pages',
-      response: staticResponse(bytes, asset, requestId, status, request.method === 'HEAD', env),
+      response: staticResponse(body, contentLength, asset, requestId, status, head, env, pagesVersion),
     };
   } catch (error) {
+    failureStage = error?.pagesStage ?? failureStage;
     return {
       event: 'frontend_integrity_error',
       routeId: 'pages',
       errorCode: 'FRONTEND_INTEGRITY_ERROR',
+      pagesVersion,
       cacheStatus: 'bypass',
       upstreamClass: 'github-pages',
       failureStage,
       failureReason: frontendIntegrityReason(failureStage, error),
       ...frontendIntegrityException(error),
-      response: frontendUnavailableResponse(requestId, request.method === 'HEAD', env),
+      response: frontendUnavailableResponse(requestId, request.method === 'HEAD', env, pagesVersion),
     };
   }
 }
@@ -3981,7 +4093,7 @@ function logCompletion(request, result, requestId, startedAt) {
     status: response.status,
     durationMs: Math.max(0, Date.now() - startedAt),
     workerVersion: WORKER_VERSION,
-    pagesVersion: PAGES_VERSION,
+    pagesVersion: result.pagesVersion ?? null,
     apiContract: API_CONTRACT_VERSION,
     cacheStatus: result.cacheStatus ?? 'bypass',
     upstreamClass: result.upstreamClass ?? null,

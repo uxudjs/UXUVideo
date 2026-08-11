@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-- Worker 改为固定并校验 UXUV-Pages `0.2.0` 的 GitHub Pages 根目录清单，不再引用版本目录或提供旧版回退。
-- 对齐已发布 Pages 根清单的 commit 与 SHA-256，并保留清单、HTML 和资产篡改时的失败关闭行为。
+- Worker 改为从 GitHub Pages 根目录动态读取清单，按语义版本、API Contract 与 `workerRange` 判断兼容，不再固定 Pages 版本、commit、manifest SHA-256 或资产 SHA/SRI。
+- UXUV-Pages 发布改为单一 `release/current` 产物并同步到站点根目录；兼容的小修订可独立发布，无需更新 Worker 或配置 Pages 对接密钥。
+- 保留危险路径、错误 MIME、非 200、无效/超限长度、实际流超限和不兼容清单的失败关闭行为；回滚方式为重新发布上一份兼容 Pages artifact。
 
 ## 1.0.0 - 2026-08-07
 

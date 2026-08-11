@@ -1,6 +1,6 @@
 # 实施计划：KVideo 4.9.19 完整 UI/功能复刻
 
-状态：**执行中；T01-T45/CP0-CP7 为历史已完成基线；原 T46-T48 已被取代；T49-T53 待本地实施，T54-T56 保持独立 HOLD**
+状态：**T49-T53/CP8-local 已完成；T01-T45/CP0-CP7 为历史已完成基线；原 T46-T48 已被取代；T54-T56 保持独立 HOLD**
 
 ## 1. 计划依据与充分性
 
@@ -777,6 +777,8 @@ flowchart TD
 
 ### T49：先建立 Pages 兼容发布 RED 合同
 
+**执行结论（2026-08-11）：** 已完成。UXUVideo 聚焦门 18 项中 13 项按预期失败，根因覆盖 manifest SHA、硬编码 Pages 版本、三项 pin 常量和整资产旧校验；UXUV-Pages 聚焦门 15 项中 7 项按预期失败，根因覆盖 commit 必填、SHA/SRI manifest、版本目录、`expectedCommit` 和旧 identity helper。其余既有子合同通过，未发现测试语法或环境损坏。
+
 **范围：** 只改两仓 `work-products/tests/`。UXUVideo 用内存构造的 manifest/stream 替代对固定 `origin/gh-pages` 字节和 SHA 的单元测试依赖；UXUV-Pages 先把发布清单、根目录产物和 workflow 的新合同写成可执行失败断言。不改业务代码、脚本或 workflow。
 
 **验收标准：** RED 至少证明当前实现仍依赖 `PAGES_VERSION`、`PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256`、`gitCommit`、资产 `sha256`/`sri`、版本输出目录和 `expectedCommit`；并覆盖兼容 `pagesVersion` 可变、非法 semver、API Contract 不匹配、Worker range 不兼容、危险路径、错误 MIME、缺失 404、超限/无长度资产、无 Pages 密钥以及动态版本头/运行时配置。
@@ -790,6 +792,8 @@ flowchart TD
 **回滚：** 只撤销本任务新增的失败断言；不恢复或改写现有产品文件。
 
 ### T50：让 Worker 按版本兼容加载 Pages
+
+**执行结论（2026-08-11）：** 已完成。聚焦门 18/18 GREEN；`node --check _worker.js` 通过。Worker 只固定公开 Pages 根地址，动态读取兼容 manifest 版本，拒绝非 200、错误 MIME、无效/超限长度与实际超限流，并且不向 Pages 转发认证信息。定向源码扫描未发现旧版本、commit、manifest SHA 或资产 SHA/SRI pin。
 
 **范围：** 最小修改 UXUVideo `_worker.js`：删除 `PAGES_VERSION`、`PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256` 和 `PAGES_RELEASE`；保留固定公共 `PAGES_BASE_URL`。manifest 只校验 `schemaVersion`、合法 `pagesVersion`、相同 `apiContract`、覆盖当前 Worker 的 `workerRange`、安全 route/asset 映射、允许 MIME 和 404；忽略旧 manifest 中多余的 commit/SHA/SRI 字段，以便一次性迁移期间继续服务当前 Pages。
 
@@ -805,6 +809,8 @@ flowchart TD
 
 ### T51：把 UXUV-Pages 简化为单一根目录发布
 
+**执行结论（2026-08-11）：** 已完成。UXUV-Pages 聚焦门 15/15 GREEN。构建器生成并原子替换 `release/current`，同版本同内容返回 unchanged、同版本内容修订会更新当前产物；manifest 不再包含 commit/SHA/SRI。workflow 不再接收 `expectedCommit`，Actions artifact 以 run ID 区分，并把 `release/current` 同步到 `gh-pages` 根目录；专用 commit 身份脚本已删除。
+
 **范围：** 修改 UXUV-Pages 发布脚本与 workflow：manifest 仅保留 `schemaVersion`、`pagesVersion`、`apiContract`、`workerRange`、`routes`、资产 `path/contentType`；生成单一当前产物目录，允许同一语义版本在内容修订后重建；workflow 直接发布该目录到 `gh-pages` 根，不再生成/保护版本目录，不要求 `expectedCommit`，并删除只服务 SHA 身份固定的脚本与测试。Git 历史和 Actions artifact 仍可作为审计/回滚记录，但不进入运行时 manifest 或 Worker 判断。
 
 **验收标准：** release manifest 不含 `gitCommit`、`sha256`、`sri` 或密钥；同版本内容变更能替换当前本地产物；workflow 无 `release/${PAGES_VERSION}`、`protect /0.2.0`、`EXPECTED_COMMIT` 或自定义 commit-SHA 校验；构建仍拒绝缺文件、危险路径、未知 MIME、Secret 文本和不合法版本/API/range。
@@ -819,6 +825,8 @@ flowchart TD
 
 ### T52：同步文档、版本诊断与仓库边界
 
+**执行结论（2026-08-11）：** 已完成。README 与 Unreleased 变更记录现明确：Pages 公开根无对接密钥，兼容 Pages 可独立发布，只有 API Contract 或 `workerRange` 不兼容时才要求更新 Worker；回滚为重新发布上一份兼容 artifact。Worker 私有 `DB`、`ADMIN_PASSWORD`、`AUTH_SECRET` 等边界保持不变。文档边界门 5/5 GREEN，Pages 聚焦门仍为 15/15 GREEN。
+
 **范围：** 只更新两仓与本轮合同直接相关的 README/CHANGELOG/边界测试：说明这是一次性 Worker 迁移，之后兼容 Pages 可独立发布；公开 Pages 无对接密钥；API Contract 或 `workerRange` 变化才要求 Worker 更新；回滚为重新发布上一兼容 Pages artifact。清除把 Pages commit/SHA/固定版本描述成运行时必要条件的文字。
 
 **验收标准：** 文档不再要求用户复制 Pages SHA/commit 或为 Pages 配密钥；明确 `DB`、`ADMIN_PASSWORD`、`AUTH_SECRET` 仍是 Worker 私有配置，未被本轮放宽；版本目录、`main/latest` 拼接和生产状态声明均无回归。
@@ -832,6 +840,8 @@ flowchart TD
 **回滚：** 只恢复本任务文档和边界断言；不改变已验证代码。
 
 ### T53：闭合两仓本地兼容与迁移顺序
+
+**执行结论（2026-08-11）：** 已完成。五组合矩阵 GREEN：新 Worker 可服务带旧 commit/SHA/SRI 多余字段的 manifest、新精简 manifest、同版本修订内容和新兼容版本，并对不兼容 range 失败关闭。UXUVideo 语法通过、89/89 测试通过、gzip 38,554/3,145,728 bytes；UXUV-Pages lint、静态 build、130/130 单测通过。Playwright 首轮 105/107 暴露两个仍查找旧“搜索 …”链接的过期断言，页面实际已正确显示“播放 …”按钮；按现有直达影片合同修正测试后，失败文件 3/3、全量 107/107 通过。两仓秘密扫描与 `git diff --check` 均通过。证据仅为本地候选，不代表已 commit、push、发布或生产可用。
 
 **范围：** 不新增功能。按矩阵验证“新 Worker + 当前旧字段 manifest”“新 Worker + 新精简 manifest”“新 Worker + 同版本修订内容”“新 Worker + 新兼容版本”“不兼容 API/range”五种组合；把一次性远端顺序固定为先 Worker、后 Pages。不得用“旧 Worker + 新 manifest”作为可发布组合。
 

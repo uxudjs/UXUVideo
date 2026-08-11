@@ -1,6 +1,6 @@
 # KVideo 4.9.19 完整复刻任务清单
 
-状态：**执行中；T01-T45/CP0-CP7 是历史已完成基线；原 T46-T48 已取代；T49-T53 待本地实施，T54-T56 保持独立 HOLD**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
+状态：**T49-T53/CP8-local 已完成；T01-T45/CP0-CP7 是历史已完成基线；原 T46-T48 已取代；T54-T56 保持独立 HOLD**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
 
 旧清单中已完成的 Worker/D1/登录/静态发布迁移继续作为架构基线；T42-T45 的 commit/SHA/pin 只记录 2026-08-10 的历史发布事实，不再是当前运行时发布合同。
 
@@ -87,12 +87,12 @@
 
 ## Phase 9：Pages 兼容发布本地迁移
 
-- [ ] T49 先在两仓建立 RED：删除 Pages commit/manifest SHA/资产 SHA/SRI/版本目录/`expectedCommit`，并覆盖动态版本、API/range、路径/MIME/大小和无密钥合同。
-- [ ] T50 最小修改 `_worker.js`：只固定公开根地址，兼容读取当前旧字段 manifest 与新精简 manifest，动态传播 manifest 版本并流式返回资产。
-- [ ] T51 简化 UXUV-Pages 发布脚本/workflow：单一当前产物、根目录发布、同版本可修订、无 runtime/published commit/SHA/SRI、无版本目录。
-- [ ] T52 同步 README/CHANGELOG/边界测试，明确 Pages 无对接密钥、兼容小改不更新 Worker、API/range 变化才更新 Worker。
-- [ ] T53 跑五组合兼容矩阵与两仓全门，形成可审阅的本地候选；不得执行 commit、push、Pages 发布或 Worker 部署。
-- [ ] CP8-local 无 runtime commit/SHA/Pages 密钥；旧/新 manifest 均可由新 Worker 加载；同版本修订与新兼容版本无需 Worker；不兼容合同失败关闭。
+- [x] T49 已建立两仓 RED：UXUVideo 13/18 预期失败，UXUV-Pages 7/15 预期失败；根因均为旧 pin/旧发布结构，无测试语法或环境故障。
+- [x] T50 已最小修改 `_worker.js`：聚焦门 18/18 GREEN，动态传播兼容 manifest 版本并流式返回资产；旧版本/commit/SHA pin 已移除，Pages 请求不携带对接密钥。
+- [x] T51 已简化 UXUV-Pages 发布脚本/workflow：聚焦门 15/15 GREEN；使用单一 `release/current`、根目录发布和可修订同版本产物，移除 runtime/published commit/SHA/SRI 与版本目录逻辑。
+- [x] T52 已同步 README/CHANGELOG/边界测试：Pages 无对接密钥，兼容小改可独立发布，仅 API Contract/`workerRange` 不兼容才需更新 Worker；文档边界门 5/5 GREEN。
+- [x] T53 已跑五组合兼容矩阵与两仓全门：Worker 89/89、Pages 130/130、Playwright 107/107、lint/build/语法/体积/秘密/diff 门均通过；未执行 commit、push、Pages 发布或 Worker 部署。
+- [x] CP8-local 已闭合：无 runtime commit/SHA/Pages 密钥；旧/新 manifest 均可由新 Worker 加载；同版本修订与新兼容版本无需 Worker；不兼容合同失败关闭。
 
 ## Phase 10：一次性远端迁移与清理
 
@@ -118,7 +118,7 @@
 ## 当前授权边界
 
 - [x] 已批准：2026-08-11 Pages 兼容发布规格进入规划（用户调用 `@uxu-code:plan`）。
-- [ ] 待批准：本修订计划进入 T49-T53 本地实施；需用户调用 `@uxu-code:build` 或 `@uxu-code:build auto`。
+- [x] 已批准并完成：用户调用 `@uxu-code:build auto` 后完成 T49-T53 本地实施。
 - [x] 已批准：T39-T42 本地任务；真实 VideoTogether 脚本/临时房间已测试，真实 Cast 设备改为用户部署后验收，不阻断单文件 Worker 本地交付。
 - [x] 已批准并完成：UXUV-Pages commit、push 与 `0.2.0` Pages 发布（T43-T44）。
 - [ ] 未批准：T49-T53 的 commit/push；T54 Worker 复制/部署、T55 UXUV-Pages commit/push/发布/远端目录删除、T56 最终发布门；本轮不执行。

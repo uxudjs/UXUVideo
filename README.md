@@ -1,12 +1,12 @@
 # UXUVideo Worker
 
-UXUVideo 现在由一个自包含的 Cloudflare Worker 与一个不可变的静态前端组成：
+UXUVideo 现在由一个自包含的 Cloudflare Worker 与一个可独立发布的静态前端组成：
 
 - 后端与静态入口：[`_worker.js`](./_worker.js)，版本 `1.0.0`，API Contract `1`。
-- 前端：UXUV-Pages `0.2.0`，固定根基址 `https://uxudjs.github.io/UXUV-Pages/`，不再使用版本目录。
+- 前端：UXUV-Pages，固定公开根基址 `https://uxudjs.github.io/UXUV-Pages/`，不再使用版本目录。
 - 数据：Cloudflare D1；不再使用 Next.js、Node 服务端或 Upstash Redis。
 
-Worker 会校验 Pages release manifest 与资产 SHA-256，再从自身域名提供页面和 API。直接访问 GitHub Pages 只显示部署指引，不建立认证会话。
+Worker 会校验 Pages release manifest 的语义版本、API Contract、`workerRange`、路由、MIME 与大小边界，再从自身域名流式提供页面和 API。它不固定 Pages commit 或 SHA，也不向公开 Pages 发送 Cookie、Authorization、Token、Secret 或对接密钥。直接访问 GitHub Pages 只显示部署指引，不建立认证会话。
 
 ## 部署
 
@@ -80,9 +80,9 @@ npm run check:size
 
 ## 更新与回滚
 
-Pages 发布产物必须以 GitHub Actions artifact 保持不可变，但 GitHub Pages 根目录只保留当前版本。新前端必须使用新的语义版本和完整 release manifest，先发布到根目录，再把 `_worker.js` 中的 Pages 版本、commit 与 manifest SHA-256 同步到同一个精确候选。
+GitHub Pages 根目录只保留当前兼容产物，每次 GitHub Actions 运行的 artifact 负责审计与回滚。兼容的 Pages 小修订可以独立发布，不要求更新 Worker；`pagesVersion` 必须是语义版本，但同一版本允许修订当前内容。只有 API Contract 或 `workerRange` 不再兼容当前 Worker 时，才必须先更新并验证 Worker。公开 Pages 无需配置任何对接密钥。
 
-发布 Worker 前保存上一版 `_worker.js` 与对应 Pages artifact 的完整字节和 SHA-256。若新版本失败，先把上一版精确 artifact 重新发布到 Pages 根目录并验证公开清单，再恢复上一版 Worker；不能只回滚 Worker。D1 schema 变更必须保持向后兼容，回滚不得依赖破坏性迁移。
+发布前保留上一份兼容 Pages artifact。若前端修订失败，重新发布上一份兼容 artifact 到 Pages 根目录并验证公开清单即可；只有 Worker 自身变更失败或兼容合同变化时才恢复上一版 `_worker.js`。`DB` binding、`ADMIN_PASSWORD`、`AUTH_SECRET` 及其他 Worker 私有配置不进入 Pages，本轮也未放宽其安全边界。D1 schema 变更必须保持向后兼容，回滚不得依赖破坏性迁移。
 
 ## 安全与许可
 
