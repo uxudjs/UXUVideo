@@ -120,6 +120,7 @@ test('danmaku proxies bounded JSON without forwarding credentials or wildcard CO
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, 'https://danmaku.example/api/v2/search/episodes?anime=test');
   assert.equal(calls[0].headers.accept, 'application/json');
+  assert.equal(calls[0].headers['user-agent'], 'UXUVideo/1.0');
   assert.equal(calls[0].headers.cookie, undefined);
   assert.equal(calls[0].headers.authorization, undefined);
   assert.deepEqual(cacheCalls.map(({ action }) => action), ['match', 'put']);
@@ -149,7 +150,7 @@ test('detail parses the preferred m3u8 episode list and strips source credential
     body: {
       id: 'video-1',
       source: {
-        id: 'source-1', name: 'Source', baseUrl: 'https://api.example', detailPath: '/api.php/provide/vod/',
+        id: 'source-1', name: 'Source', baseUrl: 'https://api.example/proxy', detailPath: '/api.php/provide/vod/',
         headers: { Authorization: 'Bearer secret', Cookie: 'secret=value' },
       },
     },
@@ -162,7 +163,7 @@ test('detail parses the preferred m3u8 episode list and strips source credential
     { name: '第一集', url: 'https://media.example/1.m3u8', index: 0 },
     { name: '第二集', url: 'https://media.example/2.m3u8', index: 1 },
   ]);
-  assert.equal(calls[0].url, 'https://api.example/api.php/provide/vod/?ac=detail&ids=video-1');
+  assert.equal(calls[0].url, 'https://api.example/proxy/api.php/provide/vod?ac=detail&ids=video-1');
   assert.equal(calls[0].headers.authorization, undefined);
   assert.equal(calls[0].headers.cookie, undefined);
 });

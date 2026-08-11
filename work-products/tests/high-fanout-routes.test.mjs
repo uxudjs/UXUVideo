@@ -62,16 +62,10 @@ async function sseErrorCode(response) {
   return sseData(await response.text())[0]?.error?.code;
 }
 
-test('free search enforces 12 sources, five-way concurrency, and 500 streamed videos', async () => {
+test('free search caps imported collections at 12 sources, five-way concurrency, and 500 streamed videos', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db);
   const cookie = await viewerSession(env);
-  const tooMany = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
-    body: { query: 'test', sources: Array.from({ length: 13 }, (_, index) => source(index)), page: 1 },
-  }), env, {});
-  assert.equal(tooMany.status, 400);
-  assert.equal(await sseErrorCode(tooMany), 'FREE_LIMIT_EXCEEDED');
-
   let active = 0;
   let maximumActive = 0;
   const result = await withFetchStub(async () => {
@@ -82,7 +76,7 @@ test('free search enforces 12 sources, five-way concurrency, and 500 streamed vi
     return Response.json({ code: 1, pagecount: 1, list: Array.from({ length: 60 }, (_, index) => ({ vod_id: index, vod_name: `Video ${index}` })) });
   }, async () => {
     const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
-      body: { query: 'test', sources: Array.from({ length: 12 }, (_, index) => source(index)), page: 1 },
+      body: { query: 'test', sources: Array.from({ length: 13 }, (_, index) => source(index)), page: 1 },
     }), env, {});
     return { status: response.status, text: await response.text() };
   });
@@ -102,16 +96,10 @@ test('free search enforces 12 sources, five-way concurrency, and 500 streamed vi
   assert.deepEqual(events.at(-1), { type: 'complete', totalVideosFound: 500, totalSources: 12, maxPageCount: 3 });
 });
 
-test('paid search enforces 32 sources, six-way concurrency, and 2000 streamed videos', async () => {
+test('paid search caps imported collections at 32 sources, six-way concurrency, and 2000 streamed videos', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db);
   const cookie = await login(env);
-  const tooMany = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
-    body: { query: 'test', sources: Array.from({ length: 33 }, (_, index) => source(index)), page: 1 },
-  }), env, {});
-  assert.equal(tooMany.status, 400);
-  assert.equal(await sseErrorCode(tooMany), 'PAID_LIMIT_EXCEEDED');
-
   let active = 0;
   let maximumActive = 0;
   const result = await withFetchStub(async () => {
@@ -122,7 +110,7 @@ test('paid search enforces 32 sources, six-way concurrency, and 2000 streamed vi
     return Response.json({ code: 1, pagecount: 1, list: Array.from({ length: 70 }, (_, index) => ({ vod_id: index, vod_name: `Video ${index}` })) });
   }, async () => {
     const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
-      body: { query: 'test', sources: Array.from({ length: 32 }, (_, index) => source(index)), page: 1 },
+      body: { query: 'test', sources: Array.from({ length: 33 }, (_, index) => source(index)), page: 1 },
     }), env, {});
     return { status: response.status, text: await response.text() };
   });
@@ -137,6 +125,50 @@ test('paid search enforces 32 sources, six-way concurrency, and 2000 streamed vi
   assert.equal(videos.length, 2_000);
   assert.ok(maximumActive <= 6, `observed ${maximumActive} concurrent upstreams`);
   assert.deepEqual(events.at(-1), { type: 'complete', totalVideosFound: 2_000, totalSources: 32, maxPageCount: 3 });
+});
+
+test('search treats an imported full endpoint as the request target', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await viewerSession(env);
+  const calls = [];
+  const result = await withFetchStub(async (url) => {
+    calls.push(String(url));
+    return Response.json({ code: 1, pagecount: 1, list: [] });
+  }, async () => {
+    const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
+      body: { query: 'test', sources: [{
+        ...source(1),
+        baseUrl: 'https://api.example/api.php/provide/vod',
+      }], page: 1 },
+    }), env, {});
+    return { status: response.status, text: await response.text() };
+  });
+
+  assert.equal(result.status, 200);
+  assert.equal(calls[0], 'https://api.example/api.php/provide/vod?ac=videolist&wd=test&pg=1');
+});
+
+test('search preserves a custom imported PHP endpoint', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await viewerSession(env);
+  const calls = [];
+  const result = await withFetchStub(async (url) => {
+    calls.push(String(url));
+    return Response.json({ code: 1, pagecount: 1, list: [] });
+  }, async () => {
+    const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
+      body: { query: 'test', sources: [{
+        ...source(1),
+        baseUrl: 'https://api.example/inc/apijson.php',
+      }], page: 1 },
+    }), env, {});
+    return { status: response.status, text: await response.text() };
+  });
+
+  assert.equal(result.status, 200);
+  assert.equal(calls[0], 'https://api.example/inc/apijson.php?ac=videolist&wd=test&pg=1');
 });
 
 test('premium aggregation requires server-side authorization and avoids Node Buffer', async () => {

@@ -2159,7 +2159,7 @@ async function handleDanmaku(request, requestId) {
     return { routeId: 'danmaku', errorCode: null, upstreamClass: 'danmaku-cache', response: jsonResponse(cached.value, requestId) };
   }
   const data = await upstreamJson(base.href, createRequestBudget({ maxSubrequests: 4 }), {
-    headers: { Accept: 'application/json' }, userAgent: 'KVideo/1.0', maximumBytes: 2 * 1024 * 1024,
+    headers: { Accept: 'application/json' }, userAgent: 'UXUVideo/1.0', maximumBytes: 2 * 1024 * 1024,
   });
   await storeDanmakuCache(cacheKey, data);
   return { routeId: 'danmaku', errorCode: null, upstreamClass: 'danmaku', response: jsonResponse(data, requestId) };
@@ -2231,7 +2231,7 @@ async function handleDetail(request, env, requestId, session) {
   }
   const source = normalizeVideoSource(sourceValue);
   if (!source) throw new UpstreamError('INVALID_SOURCE', 'Video source configuration is invalid.', 400);
-  const target = validateUpstreamUrl(`${source.baseUrl}/${source.detailPath.replace(/^\/+/, '')}`);
+  const target = sourceTarget(source, source.detailPath || '/');
   target.searchParams.set('ac', 'detail');
   target.searchParams.set('ids', String(id));
   const data = await upstreamJson(target.href, createRequestBudget({ maxSubrequests: 3 }), {
@@ -2530,8 +2530,17 @@ function normalizeSources(values, profile) {
 }
 
 function sourceTarget(source, path) {
-  const target = validateUpstreamUrl(new URL(path.replace(/^\/+/, ''), `${source.baseUrl}/`).href);
-  return target;
+  const base = validateUpstreamUrl(source.baseUrl);
+  const requestedPath = path.replace(/^\/+|\/+$/g, '');
+  if (!requestedPath) return base;
+  const basePath = base.pathname.replace(/^\/+|\/+$/g, '');
+  const baseIsEndpoint = basePath === requestedPath
+    || basePath.endsWith(`/${requestedPath}`)
+    || /(?:^|\/)(?:provide\/vod|api\/json)$/.test(basePath)
+    || /\.[a-z0-9]+$/i.test(basePath);
+  if (baseIsEndpoint) return base;
+  base.pathname = `${base.pathname.replace(/\/+$/, '')}/${requestedPath}`;
+  return validateUpstreamUrl(base.href);
 }
 
 function videoResult(value, source, latency) {
@@ -2579,7 +2588,8 @@ function handleParallelSearch(request, requestId, session, env, body) {
   if (typeof body?.query !== 'string' || !body.query.trim() || body.query.length > 200) {
     throw new UpstreamError('INVALID_SEARCH_REQUEST', 'Search query is invalid.', 400);
   }
-  const sources = normalizeSources(body.sources, profile);
+  const requestedSources = Array.isArray(body.sources) ? body.sources.slice(0, profile.sources) : body.sources;
+  const sources = normalizeSources(requestedSources, profile);
   const firstPage = Math.min(3, Math.max(1, Number(body.page) || 1));
   if (!SEARCH_RATE_LIMIT.consume(session.token_hash)) {
     throw new UpstreamError('SEARCH_RATE_LIMITED', 'Search rate limit exceeded.', 429);
