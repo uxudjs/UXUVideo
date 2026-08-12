@@ -1,12 +1,12 @@
 # UXUVideo Worker / UXUV-Pages 分仓迁移与 KVideo 4.9.19 完整复刻规范
 
-状态：**第 1—19 节已批准进入规划；第 20 节“顶部导航、品牌图标与全局版本入口增补”处于 Draft，等待用户批准。当前仍不授权实现、提交、推送或部署**
+状态：**第 1—20 节已批准；第 20 节本地实现、四项视觉候选与 T65 本地总门均于 2026-08-11 获授权并完成。当前仍不授权提交、推送或部署**
 日期：2026-08-11（基于 2026-08-08 已批准架构增加 UI 定向修订）
 目标版本：Worker API Contract v1
 
 > 2026-08-08 验收纠偏：已发布的 UXUV-Pages `0.1.2` 只覆盖了简化页面和部分功能，未满足本规范原有“迁移不是视觉重设计”和“功能类别完整”的要求。本次重开把 KVideo 4.9.19 的完整 UI 与用户可见行为升级为硬性发布门；此前 `work-products/plan.md`、`work-products/todo.md` 中关于 UI 已全面接管的结论失效，须在本规范获批后重新规划。
 
-> 2026-08-11 定向修订：用户明确要求调整顶部导航、用户设置入口、品牌图标、版本更新入口与语言布局，并降低卡片套卡片等模板化“AI 感”。第 20 节若获批准，将只在这些表面覆盖原“视觉完全复刻”条款；其余 KVideo 功能、Worker/D1/会话安全、Pages 兼容发布和审批边界继续有效。
+> 2026-08-11 定向修订：用户明确要求调整顶部导航、用户设置入口、品牌图标、版本更新入口与语言布局，并降低卡片套卡片等模板化“AI 感”。第 20 节已获批准，只在这些表面覆盖原“视觉完全复刻”条款；其余 KVideo 功能、Worker/D1/会话安全、Pages 兼容发布和审批边界继续有效。
 
 ## 1. 决策摘要
 
@@ -15,9 +15,9 @@
 | 仓库职责 | `UXUVideo` 最终只交付单文件模块 Worker `_worker.js`；新增公共 `UXUV-Pages` 保存并发布静态前端 |
 | 前端交付 | Next.js 使用 `output: 'export'` 与 `images.unoptimized: true`；公共 Pages 不运行 API、认证或用户数据逻辑 |
 | 复刻基准 | KVideo 4.9.19 的权威源码基准固定为 `UXUVideo` Git commit `28334f41407082ae1028fa4a4180bcc46d31c52a`；`https://kvideo.uxudjs.dpdns.org/` 只作辅助人工对照，不替代固定提交 |
-| UI 与功能 | 除第 20 节待批准的定向 UI 修订外，完整保留固定基准中的视觉设计、页面结构、组件、文案、交互、设置项和用户功能；禁止以简化页面、原生控件或无关新设计替代 |
-| 唯一允许差异 | 已批准差异为 Worker API、D1 数据/同步和登录/会话安全架构所必需的差异；第 20 节获批后再增加其明确列出的导航、图标、版本入口、语言布局和结构减层，不得外推为全站重设计 |
-| Worker 路由 | Worker 原生实现现有 21 个 `app/api/**/route.ts` 的 Web API 合同，并新增 1 个 Cloudflare 用量路由，共 22 个；禁止复制 `NextRequest`、`NextResponse`、Node 文件系统或 Next 缓存语义 |
+| UI 与功能 | 除第 20 节已批准的定向 UI 修订外，完整保留固定基准中的视觉设计、页面结构、组件、文案、交互、设置项和用户功能；禁止以简化页面、原生控件或无关新设计替代 |
+| 唯一允许差异 | 已批准差异为 Worker API、D1 数据/同步和登录/会话安全架构所必需的差异，以及第 20 节明确列出的导航、图标、版本入口、语言布局和结构减层；不得外推为全站重设计 |
+| Worker 路由 | Worker 原生实现迁移的 Web API 合同，并包含 `app-update` 与 Cloudflare 用量路由；当前 `worker-route-contract.test.mjs` 权威清单共 23 个路径合同；禁止复制 `NextRequest`、`NextResponse`、Node 文件系统或 Next 缓存语义 |
 | 静态资源 | Worker 固定代理 UXUV-Pages 的公开根地址；同一兼容版本内允许 Pages 独立更新，禁止拼接 `main`、`latest` 或其他分支 URL |
 | 认证与同步存储 | **已确认：** D1 是 v1 唯一权威存储；KV 与 Upstash 不进入 v1 运行时 |
 | 认证边界 | 登录、会话、Premium 授权、账户管理、同步与所有高成本代理 API 均发生在用户自己的 Worker 域名 |
@@ -102,7 +102,7 @@
 - 不提供匿名开放媒体代理。
 - 不承诺 Free 套餐的无限流量、持续高并发或长流 SLA。
 - 不在本规范阶段实现业务代码、创建远端仓库、部署或迁移生产数据。
-- 除第 20 节待批准的定向修订外，不重新设计 KVideo UI，不以“现代化”“简洁化”“更适合静态站点”为由改变视觉、导航或交互。
+- 除第 20 节已批准的定向修订外，不重新设计 KVideo UI，不以“现代化”“简洁化”“更适合静态站点”为由改变视觉、导航或交互。
 - 不以原生 `<video controls>` 替代 KVideo 自定义播放器，不以单一名称/URL 表单替代完整设置与来源管理。
 - 不把 UXUV-Pages `0.1.2` 的现状当作应继续兼容的产品基准；它只保留为不可变、可回滚的历史发布。
 - v1 不自动迁移现有 Upstash 数据；迁移工具需单独审批和规范。
@@ -165,7 +165,7 @@ UXUVideo/
     tests/
 ```
 
-`_worker.js` 是用户明确要求的单文件例外。内部仍必须以短函数、路由表和明确区域组织，禁止生成式重复或复制 22 份响应样板。
+`_worker.js` 是用户明确要求的单文件例外。内部仍必须以短函数、路由表和明确区域组织，禁止生成式重复或复制 23 份响应样板。
 
 ### 6.2 `UXUV-Pages` 最终职责
 
@@ -407,7 +407,7 @@ Cloudflare 当前 Free 上限是每日 500 万行读、10 万行写、单数据�
 
 四项 `CF_*` 用量配置是一个可选整体：Token 必须保存为 Worker Secret，其他三项是非敏感标识。任何一项缺失时 `/api/admin/usage` 返回 `configured: false` 和缺失的变量名，不返回 5xx，也不影响登录、同步、媒体或其他 API。不得把 Token 写入普通变量、URL、请求查询参数、D1、Pages、浏览器存储、响应或日志。
 
-## 10. 22 个 Worker API 路由合同
+## 10. 23 个 Worker API 路由合同
 
 所有 JSON 错误统一为：
 
@@ -445,9 +445,10 @@ Cloudflare 当前 Free 上限是每日 500 万行读、10 万行写、单数据�
 | 17 | `/api/probe-resolution` | POST | 已登录 | SSE；Free 最多 6 视频/3 并发/每项最多 2 个变体；Paid 最多 50 视频/6 并发 |
 | 18 | `/api/proxy` | GET, OPTIONS | 首次请求已登录；重写子资源使用 10 分钟签名 token | HLS 清单最大 1 MiB；媒体流/Range 直通；不转发浏览器 Cookie/Authorization；无匿名开放代理 |
 | 19 | `/api/search-parallel` | POST | 已登录 | SSE；Free 最多 12 源、5 并发、每源 3 页、500 条；Paid 最多 32 源、6 并发、每源 3 页、2000 条 |
-| 20 | `/api/user/config` | GET, POST | 已登录 | D1 `config` 文档；ETag/CAS；512 KiB；冲突 409；每账户最多每 60 秒写一次 |
-| 21 | `/api/user/sync` | GET, POST | 已登录 | D1 `library` 文档；CAS 与 history/favorite/tombstone 合并；512 KiB；每账户最多每 60 秒写一次 |
-| 22 | `/api/admin/usage` | GET | super_admin | 只读查询 Cloudflare GraphQL；返回 Workers 与 D1 的账户总量及本项目量、阈值、UTC 重置时间和数据新鲜度；成功快照服务端缓存 5 分钟；不写 D1 |
+| 20 | `/api/source-import` | POST | 已登录 | 校验订阅 URL/SSRF；受控拉取 JSON/文本，响应最大 512 KiB；不接受浏览器凭据或任意转发头 |
+| 21 | `/api/user/config` | GET, POST | 已登录 | D1 `config` 文档；ETag/CAS；512 KiB；冲突 409；每账户最多每 60 秒写一次 |
+| 22 | `/api/user/sync` | GET, POST | 已登录 | D1 `library` 文档；CAS 与 history/favorite/tombstone 合并；512 KiB；每账户最多每 60 秒写一次 |
+| 23 | `/api/admin/usage` | GET | super_admin | 只读查询 Cloudflare GraphQL；返回 Workers 与 D1 的账户总量及本项目量、阈值、UTC 重置时间和数据新鲜度；成功快照服务端缓存 5 分钟；不写 D1 |
 
 兼容原则：路由和主要成功数据字段在 API Contract v1 内保持；错误体、认证强制和安全上限是有意的新合同。不得为了保留旧行为继续泄漏 Cookie、允许匿名代理或绕过服务端 Premium 校验。
 
@@ -718,7 +719,7 @@ upstreamClass, errorCode
 
 计划测试：
 
-- `work-products/tests/worker-route-contract.test.mjs`：22 路由、方法、404/405、统一错误体。
+- `work-products/tests/worker-route-contract.test.mjs`：23 路由、方法、404/405、统一错误体。
 - `work-products/tests/auth-d1.test.mjs`：自举、PBKDF2、Cookie、撤销、最后一个 super_admin、Premium 服务端授权。
 - `work-products/tests/sync-cas.test.mjs`：ETag、CAS、409、合并和 tombstone。
 - `work-products/tests/d1-free-budget.test.mjs`：查询计划、逐路由 row metrics、账户/会话/同步上限和最坏情形日预算。
@@ -756,7 +757,7 @@ Cloudflare 远端证据：
 
 - 测试 Worker + 测试 D1 首次自举、登录、撤销和双浏览器同步。
 - 对关键 API 采集实际 `rows_read`/`rows_written`，重放最坏情形预算并验证数据库大小低于 8.6 警戒线。
-- Free profile 运行所有 22 路由的小规模成功/失败用例，确认无 1102/1027、无超子请求。
+- Free profile 运行所有 23 路由的小规模成功/失败用例，确认无 1102/1027、无超子请求。
 - 测试账户以临时只读 Analytics Token 查询真实 Workers/D1 指标；只验证字段、范围、UTC 日界、数据来源和合理变化，不要求与 Dashboard 瞬时数字逐字相等。Token 只由 CI/测试 Worker Secret 注入，不进入 fixture、日志或产物。
 - 并行搜索达到 Free 上限时仍按 SSE 完成，取消后停止上游工作。
 - 受控 HLS fixture 连续播放 30 分钟、Range 正确、客户端取消后上游结束。
@@ -798,7 +799,7 @@ git diff --check
 
 ### B. API 与认证
 
-- [ ] 现有 21 个路由文件对应的路径/方法，加新增 `/api/admin/usage`，共 22 条路径合同全部被 Worker 路由表覆盖。
+- [ ] 当前 `worker-route-contract.test.mjs` 列出的 23 条路径/方法合同全部被 Worker 路由表覆盖；后续增补复用既有路径，不新增第 24 条。
 - [ ] 未认证用户不能使用代理、IPTV、搜索、Premium、同步或账户 API。
 - [ ] Premium API 在服务端拒绝只有前端状态、没有有效 session 授权的请求。
 - [ ] Cookie、Authorization 和完整上游 URL 不出现在上游请求或日志。
@@ -907,7 +908,7 @@ git diff --check
 
 ## 18. 审批记录
 
-下表第 1 至 7 项需求已由用户确认；用户于 2026-08-08 在收到本修订后直接调用 `@uxu-code:plan`，视为批准原规范进入规划。第 8 项为 2026-08-11 新增 UI 修订，仍待批准。任何批准都不自动授权 `@uxu-code:build`、commit、push、部署或真实 Cloudflare/D1 变更：
+下表第 1 至 7 项需求已由用户确认；用户于 2026-08-08 在收到本修订后直接调用 `@uxu-code:plan`，视为批准原规范进入规划。用户于 2026-08-11 再次直接调用 `@uxu-code:plan`，批准第 8 项及第 20 节 20.3 五项解释进入规划。任何批准都不自动授权 `@uxu-code:build`、commit、push、部署或真实 Cloudflare/D1 变更：
 
 | # | 状态 | 审批项 |
 | --- | --- | --- |
@@ -918,7 +919,7 @@ git diff --check
 | 5 | **已确认** | 仓库为 `uxudjs/UXUV-Pages`；本机 `../UXUV-Pages` 的 `origin` 已指向该 GitHub 地址。未授权前仍不 commit、push 或部署。 |
 | 6 | **已确认** | 精确用量采用 Worker Secret `CF_ANALYTICS_API_TOKEN`（仅目标账户 `Account Analytics: Read`）和三个普通 `CF_*` 标识；不复制参考项目把凭据放进 URL 的方式。未配置时业务功能完整，但不显示精确计数。 |
 | 7 | **已确认** | KVideo 4.9.19 的 UI 和用户功能必须完整复刻；唯一允许差异是 Worker、D1 与登录/会话安全架构所必需的改变。固定源码基准为 `28334f41407082ae1028fa4a4180bcc46d31c52a`。 |
-| 8 | **待批准** | 第 20 节列出的顶部导航减项、用户名设置入口、U/V 品牌图标、全局版本更新入口、三列语言布局和定向视觉减层，覆盖第 7 项中相应表面的“完整复刻”，但不扩大到其余功能和页面。 |
+| 8 | **已批准进入规划（2026-08-11）** | 第 20 节列出的顶部导航减项、用户名设置入口、U/V 品牌图标、全局版本更新入口、三列语言布局和定向视觉减层，覆盖第 7 项中相应表面的“完整复刻”，但不扩大到其余功能和页面。 |
 
 ## 19. 官方约束来源（2026-08-07 核验）
 
@@ -937,9 +938,9 @@ git diff --check
 - GitHub Pages limits: https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
 - GitHub Pages custom workflow publishing: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 
-## 20. 顶部导航、品牌图标与全局版本入口增补（2026-08-11，Draft）
+## 20. 顶部导航、品牌图标与全局版本入口增补（2026-08-11，已批准进入规划）
 
-本节响应 2026-08-11 的六项 UI 要求。只有用户明确批准本节后，它才覆盖第 1—19 节中相冲突的视觉复刻条款；批准本节仍不授权业务代码修改、图标生成、测试实现、commit、push、Pages/Worker 发布或真实 Cloudflare/D1 变更。
+本节响应 2026-08-11 的六项 UI 要求。用户已通过直接调用 `@uxu-code:plan` 批准本节，因此它覆盖第 1—19 节中相冲突的视觉复刻条款；该批准仍不授权业务代码修改、图标生成、测试实现、commit、push、Pages/Worker 发布或真实 Cloudflare/D1 变更。
 
 ### 20.1 目标、用户与成功定义
 
@@ -983,14 +984,14 @@ git diff --check
 
 - `GET /api/app-update` 已受会话鉴权，返回本地/远端版本、状态、release/source 信息；其默认行为不得破坏。
 - 自动版本检查不应把完整 `_worker.js` 放进 JSON，也不应让每个路由重复请求大文件。
-- 当前路由合同为 22 个命名路由；本次复制能力必须复用 `app-update` 路由，不新增第 23 个业务路由。
+- 当前权威合同为 23 个 API 路径；本次复制能力必须复用 `app-update` 路由，不新增第 24 个业务路由。
 
 #### CGAX-Pages 参考
 
 - 只复用以下交互逻辑：紧凑版本入口、更新可用状态、点击打开版本弹窗、显示当前/最新版本、按需获取并复制最新 `_worker.js`、复制成功/失败反馈。
 - 不复用以下实现或外观：浏览器无约束地请求任意源、预先缓存整份源码、渐变大卡片、emoji、无限脉冲或与 UXUV-Pages token 不一致的视觉。
 
-### 20.3 待批准假设
+### 20.3 已批准解释
 
 用户批准本节即表示同时确认以下解释；如任一解释不符，应先修订本节再进入规划：
 
@@ -1146,7 +1147,7 @@ git diff --check
 #### UXUVideo Worker 合同测试
 
 - 在既有 low-fanout/app-update 测试中先 RED：默认 metadata GET 向后兼容；`artifact=worker` 未登录拒绝；只允许固定仓库；仅点击路径按需拉取；正确版本返回原字节与安全头。
-- 覆盖 401、409、413、502，源码版本缺失/不一致、超限、重定向/非 HTTPS、上游错误、SHA-256、秘密零回显；确认路由总数仍为 22。
+- 覆盖 401、409、413、502，源码版本缺失/不一致、超限、重定向/非 HTTPS、上游错误、SHA-256、秘密零回显；确认路由总数仍为 23。
 
 #### 浏览器与视觉测试
 
@@ -1193,26 +1194,25 @@ git diff --check
 | “降低 AI 感”演变为全站重写 | diff 失控、回归扩大 | 只改 20.7 文件/表面；新增文件或范围必须先说明；无关 CSS/组件保持 |
 | 现有两仓有未提交改动 | 覆盖用户工作 | 实施前后逐仓 `git status`/定向 diff；不 reset/checkout；重叠处无法安全合并则停止询问 |
 
-任一以下情况必须停止而非自行扩展：待批准假设被否定；需要新增 `.ico`/新依赖/新业务路由；必须修改认证或 D1 schema；最新源码无法与 release 元数据一致；图标或新局部视觉基准未获用户审阅；与现有未提交改动发生不可判定冲突。
+任一以下情况必须停止而非自行扩展：20.3 已批准解释被变更或否定；需要新增 `.ico`/新依赖/新业务路由；必须修改认证或 D1 schema；最新源码无法与 release 元数据一致；图标或新局部视觉基准未获用户审阅；与现有未提交改动发生不可判定冲突。
 
 ### 20.10 验收清单
 
-- [ ] 用户已明确批准第 20 节及 20.3 五项解释。
-- [ ] 顶栏四个指定入口已删除，但收藏、设置、三语、主题、退出、IPTV 和播放器能力未缩水。
-- [ ] 用户设置入口只显示 Unicode 安全首字符，直接文本无多余视觉 wrapper，普通/Premium 目标正确。
-- [ ] 新 `U/V` 图标符合指定蓝灰色、平面几何、40% mask 安全圆和六档尺寸门；运行时自定义图标仍优先。
-- [ ] 八个认证路由共享一个右上角版本入口；非认证界面无入口/无提前 API 请求；无控件遮挡。
-- [ ] 普通/Premium 设置页不再把版本区块放在顶部，版本状态、更新提示、弹窗和一键复制能力完整。
-- [ ] metadata GET 向后兼容；artifact 查询同源鉴权、按需、限长、版本一致、SHA-256、安全头和稳定错误均通过测试。
-- [ ] 三个语言选项一行三等列、无小字说明，三语持久化与可访问性不变。
-- [ ] 新 UI 无卡片套卡片、无无语义渐变/光晕/持续脉冲，overlay 之外不新增明显 elevation。
-- [ ] 单元/合同/E2E/视觉/axe、两仓构建、Worker size、秘密扫描和 `git diff --check` 全绿。
-- [ ] 证据明确区分工作树、本地构建、公开 Pages、Worker 部署和真实浏览器；未授权前不 commit、push 或部署。
+- [x] 用户已通过 2026-08-11 直接调用 `@uxu-code:plan` 明确批准第 20 节及 20.3 五项解释。
+- [x] 顶栏四个指定入口已删除，但收藏、设置、三语、主题、退出、IPTV 和播放器能力未缩水。
+- [x] 用户设置入口只显示 Unicode 安全首字符，直接文本无多余视觉 wrapper，普通/Premium 目标正确。
+- [x] 新 `U/V` 图标符合指定蓝灰色、平面几何、40% mask 安全圆和六档尺寸门；运行时自定义图标仍优先。
+- [x] 八个认证路由共享一个右上角版本入口；非认证界面无入口/无提前 API 请求；无控件遮挡。
+- [x] 普通/Premium 设置页不再把版本区块放在顶部，版本状态、更新提示、弹窗和一键复制能力完整。
+- [x] metadata GET 向后兼容；artifact 查询同源鉴权、按需、限长、版本一致、SHA-256、安全头和稳定错误均通过测试。
+- [x] 三个语言选项一行三等列、无小字说明，三语持久化与可访问性不变。
+- [x] 新 UI 无卡片套卡片、无无语义渐变/光晕/持续脉冲，overlay 之外不新增明显 elevation。
+- [x] 单元/合同/E2E/视觉/axe、两仓构建、Worker size、秘密扫描和 `git diff --check` 全绿。
+- [x] 证据明确区分工作树、本地构建、公开 Pages、Worker 部署和真实浏览器；未授权前不 commit、push 或部署。
 
 ### 20.11 审批门
 
-请用户选择其一：
-
-- **批准：** 明确回复批准第 20 节或直接调用后续 `@uxu-code:plan`；这只授权把本节转成依赖有序计划。
-- **修订：** 指出 20.3 的解释、图标方向、版本入口范围或任一验收项需要修改。
-- **拒绝：** 第 1—19 节继续作为原批准规范，第 20 节不进入规划或实现。
+- **已批准进入规划：** 用户于 2026-08-11 直接调用 `@uxu-code:plan`；这只授权把本节转成依赖有序计划。
+- **已授权并完成：** 用户调用 `@uxu-code:build auto` 授权第 20 节本地实现；随后回复“批准四项候选”，批准 T64 视觉基线并授权 T65 本地总门。
+- **仍未授权：** commit、push、Pages/Worker 发布或真实 Cloudflare/D1 变更。
+- **后续修订：** 若用户改变 20.3 的解释、图标方向、版本入口范围或任一验收项，须先修订本节和计划，再继续实施。

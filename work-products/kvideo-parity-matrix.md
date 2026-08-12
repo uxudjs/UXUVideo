@@ -29,9 +29,9 @@
 | ID | 用户能力 | 固定基准入口 | 目标入口 | 测试映射 | 状态 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
 | GLB-001 | Liquid Glass 设计系统 | `app/styles/variables.css`, `glass.css` | UXUV-Pages:`app/globals.css` | VIS | pass | 全局 token 合同与 33 份固定视觉基线 GREEN |
-| GLB-002 | 原导航结构 | `components/layout/Navbar.tsx` | UXUV-Pages:`components/ContentNavigation.tsx` | VIS, A11Y | pass | 八路由导航、键盘与四断点 E2E GREEN |
+| GLB-002 | 原导航结构 | `components/layout/Navbar.tsx` | UXUV-Pages:`components/ContentNavigation.tsx` | VIS, A11Y | pass | SPEC 20 用户批准的减层顶栏：删除四个重复入口，首字符直达设置；八路由、键盘与四断点 GREEN |
 | GLB-003 | 普通/Premium 模式入口 | `components/layout/Navbar.tsx` | UXUV-Pages:`components/ContentNavigation.tsx` | HS, VIS | pass | 服务端 Premium 授权与模式入口 E2E GREEN |
-| GLB-004 | 站点图标和文案 | `app/layout.tsx`, `SiteIconProvider.tsx` | UXUV-Pages:`app/layout.tsx`, `components/SiteIconProvider.tsx` | APP, VIS | pass | RuntimeConfig 标题、描述和图标合同 GREEN |
+| GLB-004 | 站点图标和文案 | `app/layout.tsx`, `SiteIconProvider.tsx` | UXUV-Pages:`app/layout.tsx`, `components/SiteIconProvider.tsx` | APP, VIS | pass | 蓝灰 U/V 默认图标与 RuntimeConfig 自定义 `site.iconUrl` 优先合同 GREEN |
 | GLB-005 | 深色主题 | `ThemeProvider.tsx` | UXUV-Pages:`components/ThemeProvider.tsx` | SET, VIS | pass | 深色主题持久化与视觉 E2E GREEN |
 | GLB-006 | 浅色主题 | `ThemeProvider.tsx` | UXUV-Pages:`components/ThemeProvider.tsx` | SET, VIS | pass | 浅色主题持久化与视觉 E2E GREEN |
 | GLB-007 | 跟随系统主题 | `ThemeProvider.tsx` | UXUV-Pages:`components/ThemeProvider.tsx` | SET, VIS | pass | system 模式与 prefers-color-scheme E2E GREEN |
@@ -299,7 +299,7 @@
 | SET-005 | 来源设置 | `SourceSettings.tsx` | UXUV-Pages:`SourceSettings.tsx` | SET | pass | `settings-sources-contract.test.mjs`、来源 E2E |
 | SET-006 | 订阅设置 | `useSubscriptionSync.ts` | UXUV-Pages:`components/settings/ImportModal.tsx`, `SourceSettings.tsx` | SET | pass | `source-import-contract.test.mjs`、来源导入 E2E |
 | SET-007 | 搜索排序设置 | `SortSettings.tsx` | UXUV-Pages:`components/settings/SortSettings.tsx` | SET | pass | `settings-preferences-contract.test.mjs`、设置偏好 E2E |
-| SET-008 | 显示设置 | `DisplaySettings.tsx` | UXUV-Pages:`components/settings/DisplaySettings.tsx` | SET | pass | 默认值、即时预览、四断点、账户隔离 E2E |
+| SET-008 | 显示设置 | `DisplaySettings.tsx` | UXUV-Pages:`components/settings/DisplaySettings.tsx` | SET | pass | 三列语言直达、无语言说明小字；默认值、即时预览、四断点与账户隔离 GREEN |
 | SET-009 | 主题设置 | `ThemeSwitcher.tsx` | UXUV-Pages:`components/ThemeSwitcher.tsx`, `ThemeProvider.tsx` | SET | pass | 旧全局值单次迁移、重载与双账户隔离 E2E |
 | SET-010 | 播放器设置 | `PlayerSettings.tsx` | UXUV-Pages:`components/settings/PlayerSettings.tsx`, `lib/hooks/usePlayerSettings.ts` | SET | pass | 原默认值/范围、旧值单次迁移、权限与播放器快照 E2E |
 | SET-011 | 片头片尾设置 | `PlayerSettings.tsx` | UXUV-Pages:`components/settings/PlayerSettings.tsx` | SET | pass | 0-600 秒、禁用依赖、保存/重载/账户隔离 E2E |
@@ -308,8 +308,8 @@
 | SET-014 | 屏蔽分类设置 | `DisplaySettings.tsx` | UXUV-Pages:`components/settings/DisplaySettings.tsx` | SET | pass | `settings-preferences-contract.test.mjs`、设置偏好 E2E |
 | SET-015 | 数据导入 | `ImportModal.tsx` | UXUV-Pages:`SettingsImportModal.tsx`, `DataSettings.tsx` | SET | pass | 标准模式整包校验、预览/取消零写入、敏感/Premium/超限整批拒绝与原子本地替换 E2E |
 | SET-016 | 数据导出 | `ExportModal.tsx` | UXUV-Pages:`ExportModal.tsx`, `settings-transfer.ts` | SET | pass | 标准模式确定性 JSON 字节往返、历史范围选择和敏感字段失败关闭 E2E |
-| SET-017 | 版本检查 | `AppVersionSettings.tsx` | UXUV-Pages:`AppVersionSettings.tsx`, Worker:`/api/app-update` | SET | pass | 同源更新可用/最新/领先/失败状态、三语与安全发布链接 E2E |
-| SET-018 | 语言设置 | `LocaleProvider.tsx` | UXUV-Pages:`components/LocaleProvider.tsx` | SET | pass | 三语即时切换、旧值迁移、重载与双账户隔离 E2E |
+| SET-017 | 版本检查 | `AppVersionSettings.tsx` | UXUV-Pages:`components/AppUpdateControl.tsx`, UXUVideo:`/api/app-update` | SET | pass | 认证 shell 单入口、五状态弹窗、按需校验并复制最新 `_worker.js`；三语与安全链接 E2E GREEN |
+| SET-018 | 语言设置 | `LocaleProvider.tsx` | UXUV-Pages:`components/LocaleProvider.tsx`, `components/settings/DisplaySettings.tsx` | SET | pass | 三语三等列即时切换、旧值迁移、重载与双账户隔离 E2E GREEN |
 | SET-019 | Premium 独立设置 | `app/premium/settings/page.tsx` | UXUV-Pages:`app/premium/settings/page.tsx` | SET | pass | Premium 字段、来源、显示与排序均按 mode 隔离 E2E |
 | SET-020 | Cloudflare 用量卡按原视觉插入 | target architecture addition | UXUV-Pages:`components/settings/CloudflareUsageSettings.tsx` | SET, VIS | pass | 账户后/播放前共享设置卡片；四指标、70/85/95/100、三语、权限/零请求、四断点与 1024px `0.005` 基线 |
 | SET-021 | D1 同步状态按原视觉插入 | target architecture addition | UXUV-Pages:`components/settings/SyncSettings.tsx`, `components/SyncStatus.tsx` | SET, VIS | pass | 共享设置卡片、七种状态、三语、卡片内重试、四断点与 1024px `0.005` 视觉基线 |
@@ -319,7 +319,7 @@
 | ID | 用户能力 | 固定基准入口 | 目标入口 | 测试映射 | 状态 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
 | PWA-001 | Web App manifest | `public/manifest.json` | UXUV-Pages:`public/manifest.json` | APP, IPD | pass | Chromium manifest 解析无错误；scope/start URL/display/orientation 与固定基准一致 |
-| PWA-002 | 应用图标 | `public/icon.png` | UXUV-Pages:`public/icon.png` | VIS | pass | 1024×1024 maskable 图标视觉复核；Chromium 未报告图标安装错误 |
+| PWA-002 | 应用图标 | `public/icon.png` | UXUV-Pages:`public/icon.png` | VIS | pass | 用户批准蓝灰 U/V 候选；1024×1024、六档缩放与圆形/圆角 mask 复核 GREEN |
 | PWA-003 | 安装模式 | `manifest.json`, layout | UXUV-Pages:`public/manifest.json`, `app/layout.tsx` | IPD | pass | manifest/display/作用域与安装事件合同 GREEN；真实安装由用户部署后验收 |
 | PWA-004 | Service Worker 注册 | `ServiceWorkerRegister.tsx` | UXUV-Pages:`ServiceWorkerRegister.tsx` | APP | pass | Worker 同源根作用域注册、直接 Pages 禁止注册、更新检查及等待安装生命周期已验证 |
 | PWA-005 | 静态资源离线缓存 | `public/sw.js` | UXUV-Pages:`public/sw.js` | APP | pass | 版本化 cache、旧版本清理、在线刷新优先、离线壳层回退及缓存写失败降级 E2E |
@@ -378,10 +378,10 @@
 | DAT-004 | 账户数据隔离 | stores/profile-storage | UXUV-Pages:`components/SyncProvider.tsx`, `lib/sync/document-store.ts` | APP, SET | pass | 双账户及 standard/Premium 文档隔离 E2E GREEN |
 | DAT-005 | 容量提示 | data/settings views | UXUV-Pages:`components/SyncStatus.tsx`, `components/settings/DataSettings.tsx` | SET | pass | 文档大小失败与本地数据保留 E2E GREEN |
 | DAT-006 | 配额提示 | sync/settings views | UXUV-Pages:`components/SyncStatus.tsx`, `components/settings/SyncSettings.tsx` | SET, APP | pass | D1 配额、UTC 重置、清理和升级提示 E2E GREEN |
-| DAT-007 | 应用版本检查 | `AppVersionSettings.tsx` | UXUV-Pages:`AppVersionSettings.tsx`, Worker:`/api/app-update` | SET | pass | 已认证同源请求；更新可用/最新/领先/失败状态与四断点 AA E2E |
-| DAT-008 | 更新可用状态 | `AppVersionSettings.tsx` | UXUV-Pages:`components/settings/AppVersionSettings.tsx` | SET | pass | update-available E2E GREEN |
-| DAT-009 | 无需更新状态 | `AppVersionSettings.tsx` | UXUV-Pages:`components/settings/AppVersionSettings.tsx` | SET | pass | up-to-date 与 ahead-of-remote E2E GREEN |
-| DAT-010 | 检查失败状态 | `AppVersionSettings.tsx` | UXUV-Pages:`components/settings/AppVersionSettings.tsx` | SET | pass | 检查失败保留当前版本与重试入口 E2E GREEN |
+| DAT-007 | 应用版本检查 | `AppVersionSettings.tsx` | UXUV-Pages:`components/AppUpdateControl.tsx`, Worker:`/api/app-update` | SET | pass | 认证 shell 全局单入口；更新可用/最新/领先/失败状态与四断点 AA E2E |
+| DAT-008 | 更新可用状态 | `AppVersionSettings.tsx` | UXUV-Pages:`components/AppUpdateControl.tsx` | SET | pass | update-available 提示、弹窗与安全复制 E2E GREEN |
+| DAT-009 | 无需更新状态 | `AppVersionSettings.tsx` | UXUV-Pages:`components/AppUpdateControl.tsx` | SET | pass | up-to-date 与 ahead-of-remote E2E GREEN |
+| DAT-010 | 检查失败状态 | `AppVersionSettings.tsx` | UXUV-Pages:`components/AppUpdateControl.tsx` | SET | pass | 检查失败保留版本、禁用复制并允许手动重试 E2E GREEN |
 
 ## EXT：第三方可选能力
 

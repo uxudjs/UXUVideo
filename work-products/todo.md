@@ -1,6 +1,6 @@
-# KVideo 4.9.19 完整复刻任务清单
+# KVideo 4.9.19 完整复刻与定向 UI/更新任务清单
 
-状态：**T49-T53/CP8-local 已完成；T01-T45/CP0-CP7 是历史已完成基线；原 T46-T48 已取代；T54-T56 保持独立 HOLD**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
+状态：**T54-T65/CP9-local 已完成；用户已批准四项视觉候选；T66-T68 仍为远端/发布 HOLD**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
 
 旧清单中已完成的 Worker/D1/登录/静态发布迁移继续作为架构基线；T42-T45 的 commit/SHA/pin 只记录 2026-08-10 的历史发布事实，不再是当前运行时发布合同。
 
@@ -94,32 +94,60 @@
 - [x] T53 已跑五组合兼容矩阵与两仓全门：Worker 89/89、Pages 130/130、Playwright 107/107、lint/build/语法/体积/秘密/diff 门均通过；未执行 commit、push、Pages 发布或 Worker 部署。
 - [x] CP8-local 已闭合：无 runtime commit/SHA/Pages 密钥；旧/新 manifest 均可由新 Worker 加载；同版本修订与新兼容版本无需 Worker；不兼容合同失败关闭。
 
-## Phase 10：一次性远端迁移与清理
+## Phase 10：第 20 节本地定向 UI/更新增补
 
-- [ ] **HOLD T54** 经独立授权先复制/部署 T53 Worker，保持当前 Pages 不变并完成远端冒烟。
-- [ ] **HOLD T55** T54 通过后，经独立授权发布精简 Pages；只读确认生产零旧路径引用后删除 `gh-pages` 遗留版本目录。
-- [ ] **HOLD T56** 由 `@uxu-code:ship` 对一次性顺序、独立 Pages 更新和 Pages-only 回滚给出 GO/NO-GO。
-- [ ] CP8-remote 公开根 manifest/路由/版本头正确，旧版本目录清理完成，后续兼容 Pages 小改无需重新部署 Worker。
+- [x] T54 只写顶部导航与首字符设置入口 RED，锁定四个删除项、普通/Premium href、Unicode/空名/直接文本和零全名泄露。
+- [x] T55 只写全局更新、三列语言和默认图标 RED，并把新增合同纳入 UXUV-Pages `npm test`。
+- [x] T56 只写 Worker `artifact=worker` RED，保护默认 metadata GET、鉴权和 23 路径合同。
+- [x] CP9A 三组 RED 失败原因明确，既有无关合同仍 GREEN，未修改产品代码。
+- [x] T57 让 `ContentNavigation` 删除 GitHub/收藏/独立设置/语言，只保留首字符设置入口及原品牌/IPTV/主题/退出能力。
+- [x] T58 让普通/Premium 语言设置始终三等列，仅显示简体中文/繁體中文/English，保留三语持久化与其他 helper text。
+- [x] T59 在同一 `/api/app-update` 路由实现鉴权、按需、限长、版本一致、SHA-256 和稳定 401/409/413/502 的 Worker 源码响应。
+- [x] CP9B 顶栏、语言和 Worker artifact 分别 GREEN，三者可独立回滚。
+- [x] T60 把旧版本设置组件迁为唯一全局更新控件，闭合五状态、单 overlay、焦点、重试和安全复制，不保留两份实现。
+- [x] T61 只在认证 `application-shell` 挂载一次更新控件，并从普通/Premium 设置页移除大型版本首块；非认证分支零入口/零请求。
+- [x] T62 闭合四断点、安全区、200% 缩放、reduced-motion、八路由单入口、无障碍和无卡片套卡片 E2E。
+- [x] CP9C 单一全局控件、八路由/非认证边界、四断点与无障碍合同 GREEN。
+- [x] T63 生成固定蓝灰色的 1024 PNG U/V 默认图标与六档/两 mask 审阅 fixture；运行时自定义图标继续优先。
+- [x] T64 用户已审阅并明确批准图标、顶栏、版本入口/弹窗和语言区；第 20 节局部视觉基线已按原阈值冻结。
+- [x] CP9D 用户已审阅并明确批准图标候选与受影响区域局部视觉基线。
+- [x] T65 已运行两仓全门并闭合 SPEC 20.10；结果仅代表本地工作树候选。
+- [x] CP9-local 顶栏、语言、全局更新、按需复制、U/V 图标与局部视觉审批全部闭合，未 commit/push/发布/部署。
+
+## Phase 11：一次性远端迁移与清理
+
+- [ ] **HOLD T66** 经独立授权先复制/部署 T65 Worker，保持当前 Pages 不变并完成默认 metadata、artifact、认证/D1/API 远端冒烟。
+- [ ] **HOLD T67** T66 通过后，经独立授权 commit/push/发布第 20 节 Pages；只读确认生产零旧路径引用后删除 `gh-pages` 遗留版本目录。
+- [ ] **HOLD T68** 由 `@uxu-code:ship` 对一次性顺序、公开 UI/复制证据、独立 Pages 更新和 Pages-only 回滚给出 GO/NO-GO。
+- [ ] CP10-remote 公开根 manifest/路由/版本头和第 20 节 UI 正确，旧版本目录清理完成，后续兼容 Pages 小改无需重新部署 Worker。
 
 ## 每任务固定检查
 
-- [ ] 只处理一个任务或明确的 ≤5 文件子批次，未清理相邻代码。
-- [ ] 产品修改前已有该用户能力 ID 对固定 0.1.2 commit 的可执行 RED；遗漏立即退回 T01/T02。
-- [ ] 当前切片同步闭合三语、键盘/焦点、适用四断点、TV/遥控和错误/空/加载状态。
-- [ ] 新测试位于相应仓库 `work-products/tests/`，仓库文件引用使用相对路径。
-- [ ] 更新对应矩阵 ID 和证据，不以源码字符串、路由存在或页面 200 代替行为证明。
-- [ ] 运行聚焦测试、相关检查点和 `git diff --check`。
-- [ ] 未 reset/checkout/覆盖用户工作；本地实施不删除远端 `0.2.0`，远端清理只在 T55 确认零引用后执行。
-- [ ] 未记录 Secret、密码、Cookie、真实账户、订阅或完整媒体 URL。
-- [ ] 明确本地、第三方 mock/真实、Actions artifact、gh-pages、公开 Pages、Worker deployment、D1 schema、真实媒体/设备证据层级。
-- [ ] Pages 请求未发送 Cookie、Authorization、Token、Secret 或任何对接密钥。
-- [ ] 任何版本头/运行时配置若包含 Pages 版本，都来自已验证 manifest，不来自 Worker 硬编码值。
+- [x] 只处理一个任务或明确的 ≤5 文件子批次，未清理相邻代码。
+- [x] 产品修改前已有该用户能力 ID 对固定 0.1.2 commit 的可执行 RED；遗漏立即退回 T01/T02。
+- [x] 当前切片同步闭合三语、键盘/焦点、适用四断点、TV/遥控和错误/空/加载状态。
+- [x] 新测试位于相应仓库 `work-products/tests/`，仓库文件引用使用相对路径。
+- [x] 更新对应矩阵 ID 和证据，不以源码字符串、路由存在或页面 200 代替行为证明。
+- [x] 运行聚焦测试、相关检查点和 `git diff --check`。
+- [x] 未 reset/checkout/覆盖用户工作；本地实施未删除任何远端发布物。
+- [x] 未记录 Secret、密码、Cookie、真实账户、订阅或完整媒体 URL。
+- [x] 明确本地、第三方 mock/真实、Actions artifact、gh-pages、公开 Pages、Worker deployment、D1 schema、真实媒体/设备证据层级。
+- [x] Pages 请求未发送 Cookie、Authorization、Token、Secret 或任何对接密钥。
+- [x] 任何版本头/运行时配置若包含 Pages 版本，都来自已验证 manifest，不来自 Worker 硬编码值。
+- [x] 第 20 节只改 SPEC 20.7 表面；无 `.ico`、新依赖、新业务路由、认证/D1/media 变更或全站 CSS/组件库重写。
+- [x] 默认 `/api/app-update` JSON 向后兼容；源码只在显式点击后获取，ahead/check-failed/loading 禁止复制，失败不复用陈旧候选。
+- [x] 八个认证路由共享一个版本入口；公开/登录/加载/错误分支零入口、零提前更新请求。
+- [x] T64 的图标和局部视觉基线于 2026-08-11 获用户明确批准，未通过自动快照接受或放宽阈值掩盖差异。
 
 ## 当前授权边界
 
 - [x] 已批准：2026-08-11 Pages 兼容发布规格进入规划（用户调用 `@uxu-code:plan`）。
+- [x] 已批准：2026-08-11 SPEC 第 20 节及 20.3 五项解释进入规划（用户直接调用 `@uxu-code:plan`）。
+- [x] 已批准：用户于 2026-08-11 调用 `@uxu-code:build auto`，批准本次计划修订稿并授权连续本地实施 T54-T63。
 - [x] 已批准并完成：用户调用 `@uxu-code:build auto` 后完成 T49-T53 本地实施。
 - [x] 已批准：T39-T42 本地任务；真实 VideoTogether 脚本/临时房间已测试，真实 Cast 设备改为用户部署后验收，不阻断单文件 Worker 本地交付。
 - [x] 已批准并完成：UXUV-Pages commit、push 与 `0.2.0` Pages 发布（T43-T44）。
-- [ ] 未批准：T49-T53 的 commit/push；T54 Worker 复制/部署、T55 UXUV-Pages commit/push/发布/远端目录删除、T56 最终发布门；本轮不执行。
+- [x] 已批准：T54-T63 的本地产品、测试与图标候选实施；不含 commit、push、发布、部署或真实资源操作。
+- [x] 已批准：用户于 2026-08-11 回复“批准四项候选”，批准图标、顶栏、版本入口/弹窗和语言区，并授权继续 T65 本地总门。
+- [ ] 未批准：现有 T49-T53 或未来 T54-T65 的 commit/push；T66 Worker 复制/部署、T67 UXUV-Pages commit/push/发布/远端目录删除、T68 最终发布门；本轮不执行。
 - [ ] 未批准：真实 D1、Secret、Analytics Token、生产数据迁移或不可逆 schema 变更。

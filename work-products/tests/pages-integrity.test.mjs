@@ -261,7 +261,7 @@ test('streams a compatible asset and reports the manifest version without forwar
   assert.equal(entry.pagesVersion, '0.4.3');
 });
 
-test('fails closed on asset MIME and length boundary violations', async () => {
+test('accepts runtime-managed asset length and fails closed on declared boundary violations', async () => {
   const unexpectedStatus = await dispatch('/', { assetStatus: 201 });
   assert.equal(unexpectedStatus.response.status, 503);
   assert.equal(JSON.parse(unexpectedStatus.messages[0]).failureReason, 'UPSTREAM_STATUS_REJECTED');
@@ -275,8 +275,22 @@ test('fails closed on asset MIME and length boundary violations', async () => {
   assert.equal(JSON.parse(missingCharset.messages[0]).failureReason, 'ASSET_CONTENT_TYPE_MISMATCH');
 
   const missingLength = await dispatch('/', { omitContentLength: true });
-  assert.equal(missingLength.response.status, 503);
-  assert.equal(JSON.parse(missingLength.messages[0]).failureReason, 'ASSET_LENGTH_INVALID');
+  assert.equal(missingLength.response.status, 200);
+  assert.deepEqual(
+    Buffer.from(await missingLength.response.arrayBuffer()),
+    defaultBodies['index.html'],
+  );
+
+  const streamedOversized = await dispatch('/', {
+    bodies: { 'index.html': Buffer.alloc(5 * 1024 * 1024 + 1) },
+    chunkCount: 2,
+    omitContentLength: true,
+  });
+  assert.equal(streamedOversized.response.status, 200);
+  await assert.rejects(
+    streamedOversized.response.arrayBuffer(),
+    /verified size limit/i,
+  );
 
   const oversized = await dispatch('/', { contentLength: 6 * 1024 * 1024 });
   assert.equal(oversized.response.status, 503);

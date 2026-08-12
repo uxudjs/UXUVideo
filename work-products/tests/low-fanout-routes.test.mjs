@@ -68,8 +68,8 @@ test('app update checks the fixed configured repository with a bounded JSON resp
   const cookie = await login(env);
   const calls = [];
   const manifest = {
-    currentVersion: '1.1.0',
-    releases: [{ version: '1.1.0', publishedAt: '2026-08-07', title: 'Next', notes: ['Safe update'] }],
+    currentVersion: '1.2.0',
+    releases: [{ version: '1.2.0', publishedAt: '2026-08-07', title: 'Next', notes: ['Safe update'] }],
   };
   const response = await withFetchStub(async (url, init) => {
     calls.push({ url, init });
@@ -78,10 +78,15 @@ test('app update checks the fixed configured repository with a bounded JSON resp
 
   assert.equal(response.status, 200);
   const body = await response.json();
-  assert.equal(body.currentVersion, '1.0.0');
-  assert.equal(body.latestVersion, '1.1.0');
+  assert.equal(body.currentVersion, '1.1.0');
+  assert.equal(body.latestVersion, '1.2.0');
   assert.equal(body.status, 'update-available');
   assert.equal(body.checkedRemotely, true);
+  assert.deepEqual(body.copy, {
+    available: true,
+    href: '/api/app-update?artifact=worker',
+    version: '1.2.0',
+  });
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, 'https://raw.githubusercontent.com/uxudjs/UXUVideo/main/app-release.json');
 });

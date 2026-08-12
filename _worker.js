@@ -1,4 +1,4 @@
-const WORKER_VERSION = '1.0.0';
+const WORKER_VERSION = '1.1.0';
 const API_CONTRACT_VERSION = '1';
 const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
 const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
@@ -1978,6 +1978,7 @@ async function handleUserDocument(request, env, requestId, route) {
 
 const LOW_FANOUT_JSON_BYTES = 1024 * 1024;
 const SOURCE_IMPORT_BYTES = 512 * 1024;
+const APP_UPDATE_ARTIFACT_BYTES = 3 * 1024 * 1024;
 const DOUBAN_IMAGE_BYTES = 10 * 1024 * 1024;
 const DOUBAN_IMAGE_MIRRORS = ['img9.doubanio.com', 'img3.doubanio.com', 'img2.doubanio.com'];
 const DOUBAN_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36';
@@ -2060,19 +2061,23 @@ function validReleaseEntry(entry) {
     && entry.notes.every((note) => typeof note === 'string');
 }
 
-async function handleAppUpdate(env, requestId) {
+function appUpdateSource(env) {
   const repository = safeRepository(env);
   const branch = safeBranch(env);
   const branchPath = branch.split('/').map(encodeURIComponent).join('/');
   const rawBase = `https://raw.githubusercontent.com/${encodeURIComponent(repository.owner)}/${encodeURIComponent(repository.name)}/${branchPath}/`;
-  const source = {
+  return {
     repository: repository.slug,
     branch,
     manifestUrl: `${rawBase}app-release.json`,
+    packageUrl: `${rawBase}package.json`,
+    workerUrl: `${rawBase}_worker.js`,
     changelogUrl: `https://github.com/${repository.owner}/${repository.name}/blob/${branchPath}/CHANGELOG.md`,
     repositoryUrl: `https://github.com/${repository.owner}/${repository.name}`,
   };
-  const budget = createRequestBudget({ maxSubrequests: 2, maxWaiting: 2 });
+}
+
+async function loadAppUpdateState(source, budget) {
   let latestVersion = WORKER_VERSION;
   let latestRelease = null;
   let checkedRemotely = false;
@@ -2093,7 +2098,7 @@ async function handleAppUpdate(env, requestId) {
   }
   if (!checkedRemotely) {
     try {
-      const remotePackage = await upstreamJson(`${rawBase}package.json`, budget, {
+      const remotePackage = await upstreamJson(source.packageUrl, budget, {
         headers: { Accept: 'application/json' }, maximumBytes: 64 * 1024,
       });
       if (isRecord(remotePackage) && /^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$/.test(remotePackage.version)) {
@@ -2104,6 +2109,79 @@ async function handleAppUpdate(env, requestId) {
       // A failed update check is an informational 200 response.
     }
   }
+  return { latestVersion, latestRelease, checkedRemotely, usedRemoteManifest };
+}
+
+async function handleAppUpdateArtifact(request, requestId, source, budget, state) {
+  if (!state.checkedRemotely) {
+    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker release could not be verified.', 502);
+  }
+  const latestParts = /^(\d+)\.(\d+)\.(\d+)/.exec(state.latestVersion);
+  const currentParts = /^(\d+)\.(\d+)\.(\d+)/.exec(WORKER_VERSION);
+  if (latestParts && currentParts && compareSemver(latestParts.slice(1), currentParts.slice(1)) < 0) {
+    throw new UpstreamError('APP_UPDATE_VERSION_MISMATCH', 'The latest Worker release is older than the current Worker.', 409);
+  }
+  let response;
+  try {
+    response = await controlledFetch(source.workerUrl, {
+      signal: request.signal,
+      timeoutMs: 10_000,
+      maxRedirects: 0,
+      headers: { Accept: 'text/javascript, text/plain;q=0.9' },
+      budget,
+    });
+  } catch {
+    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be fetched.', 502);
+  }
+  if (!response.ok) {
+    await response.body?.cancel();
+    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be fetched.', 502);
+  }
+  const declared = Number(response.headers.get('Content-Length'));
+  if (Number.isFinite(declared) && declared > APP_UPDATE_ARTIFACT_BYTES) {
+    await response.body?.cancel();
+    throw new UpstreamError('APP_UPDATE_ARTIFACT_TOO_LARGE', 'The latest Worker file exceeds 3 MiB.', 413);
+  }
+  let bytes;
+  try {
+    bytes = await readLimitedBody(response, APP_UPDATE_ARTIFACT_BYTES);
+  } catch (error) {
+    if (error instanceof UpstreamError && error.code === 'UPSTREAM_BODY_TOO_LARGE') {
+      throw new UpstreamError('APP_UPDATE_ARTIFACT_TOO_LARGE', 'The latest Worker file exceeds 3 MiB.', 413);
+    }
+    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be read.', 502);
+  }
+  const text = new TextDecoder().decode(bytes);
+  const version = /(?:^|\n)\s*const\s+WORKER_VERSION\s*=\s*['"]([^'"]+)['"]\s*;/.exec(text)?.[1];
+  if (!version) {
+    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker version could not be verified.', 502);
+  }
+  if (version !== state.latestVersion) {
+    throw new UpstreamError('APP_UPDATE_VERSION_MISMATCH', 'The Worker file does not match the latest release version.', 409);
+  }
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const headers = responseHeaders(requestId, 'text/javascript; charset=utf-8', { cacheControl: 'private, no-store' });
+  headers.set('X-Content-Type-Options', 'nosniff');
+  headers.set('X-UXUVideo-Worker-Version', version);
+  headers.set('X-UXUVideo-Worker-SHA256', bytesToHex(new Uint8Array(digest)));
+  return {
+    routeId: 'app-update',
+    errorCode: null,
+    upstreamClass: 'github-raw',
+    response: new Response(bytes, { status: 200, headers }),
+  };
+}
+
+async function handleAppUpdate(request, env, requestId) {
+  const artifact = new URL(request.url).searchParams.get('artifact');
+  if (artifact && artifact !== 'worker') {
+    throw new UpstreamError('INVALID_REQUEST', 'The requested update artifact is not supported.', 400);
+  }
+  const source = appUpdateSource(env);
+  const budget = createRequestBudget({ maxSubrequests: artifact ? 3 : 2, maxWaiting: 2 });
+  const state = await loadAppUpdateState(source, budget);
+  if (artifact === 'worker') return handleAppUpdateArtifact(request, requestId, source, budget, state);
+  const { latestVersion, latestRelease, checkedRemotely, usedRemoteManifest } = state;
   const latestParts = /^(\d+)\.(\d+)\.(\d+)/.exec(latestVersion);
   const currentParts = /^(\d+)\.(\d+)\.(\d+)/.exec(WORKER_VERSION);
   const comparison = checkedRemotely && latestParts && currentParts
@@ -2124,7 +2202,9 @@ async function handleAppUpdate(env, requestId) {
       checkedAt: new Date().toISOString(),
       checkedRemotely,
       usedRemoteManifest,
-      source,
+      source: { repository: source.repository, branch: source.branch, manifestUrl: source.manifestUrl,
+        changelogUrl: source.changelogUrl, repositoryUrl: source.repositoryUrl },
+      copy: { available: checkedRemotely, href: '/api/app-update?artifact=worker', version: latestVersion },
       ...(!checkedRemotely ? { error: '无法获取远程版本信息。' } : {}),
     }, requestId),
   };
@@ -2428,7 +2508,7 @@ async function handleLowFanoutRoute(request, env, requestId, route) {
   const session = await getAuthSession(request, env, requestId);
   if (!session) return authFailureResult(requestId, route.id, 401, 'AUTH_REQUIRED', 'Authentication is required.');
   try {
-    if (route.id === 'app-update') return await handleAppUpdate(env, requestId);
+    if (route.id === 'app-update') return await handleAppUpdate(request, env, requestId);
     if (route.id === 'danmaku') return await handleDanmaku(request, requestId);
     if (route.id === 'detail') return await handleDetail(request, env, requestId, session);
     if (route.id === 'douban-image') return await handleDoubanImage(request, requestId);
@@ -3823,7 +3903,8 @@ function validateStaticAssetResponse(response, asset) {
     throw new Error('Pages asset Content-Type mismatch.');
   }
   const rawLength = response.headers.get('Content-Length');
-  if (typeof rawLength !== 'string' || !/^(0|[1-9]\d*)$/.test(rawLength)) {
+  if (rawLength === null) return null;
+  if (!/^(0|[1-9]\d*)$/.test(rawLength)) {
     throw new Error('Pages asset Content-Length is invalid.');
   }
   const length = Number(rawLength);
@@ -3854,7 +3935,7 @@ function staticResponse(body, contentLength, asset, requestId, status, head, env
     ? 'public, max-age=31536000, immutable'
     : 'no-cache, must-revalidate';
   const headers = responseHeaders(requestId, asset.contentType, { cacheControl, pagesVersion });
-  headers.set('Content-Length', String(contentLength));
+  if (contentLength !== null) headers.set('Content-Length', String(contentLength));
   applyStaticSecurityHeaders(headers, env);
   return new Response(head ? null : body, { status, headers });
 }

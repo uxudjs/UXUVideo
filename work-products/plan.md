@@ -1,6 +1,6 @@
-# 实施计划：KVideo 4.9.19 完整 UI/功能复刻
+# 实施计划：KVideo 4.9.19 完整复刻与定向 UI/更新增补
 
-状态：**T49-T53/CP8-local 已完成；T01-T45/CP0-CP7 为历史已完成基线；原 T46-T48 已被取代；T54-T56 保持独立 HOLD**
+状态：**T54-T65/CP9-local 已完成；用户于 2026-08-11 明确批准四项视觉候选；T66-T68 仍为远端/发布 HOLD**
 
 ## 1. 计划依据与充分性
 
@@ -11,9 +11,11 @@
 - 差距证据：固定 KVideo 提交包含完整设计样式、导航、主题、搜索、来源/订阅、收藏/历史、自定义播放器、弹幕、广告过滤、IPTV、Premium、设置、PWA、TV 和三语界面；当前 UXUV-Pages 只有少量通用体验组件和原生化播放器，不能据此声明完成复刻。
 - 2026-08-11 Pages 发布修订依据：用户明确要求删除 `_worker.js` 的 `PAGES_GIT_COMMIT`、manifest/资产 SHA 固定和 Pages 对接密钥，只使用 `pagesVersion`、`apiContract`、`workerRange` 判断兼容；兼容 Pages 小步更新不得要求用户重发 Worker。现有 `_worker.js` 仍精确固定 `0.2.0`/commit/manifest SHA，UXUV-Pages 发布脚本仍生成 `gitCommit`/`sha256`/`sri` 并写版本目录，均是本轮待迁移对象。
 - 参考边界：`../CfGfwAX/_worker.js` 只固定公共 Pages 根地址并直接读取页面，不含 Pages 版本、commit、manifest SHA、资源 SHA 或对接密钥。本计划保留 UXUVideo 已有 manifest 的路由/MIME/大小/兼容校验，但移除会强制 Worker 随 Pages 小改而更新的身份固定。
-- 规划充分性：规格已固定功能矩阵、安全边界、兼容字段、失败关闭、一次性迁移顺序和回滚条件。当前修订不改变 API Contract、D1、认证或媒体合同；若实现发现必须新增 Secret、改变 API Contract 或放宽路径/MIME/大小边界，立即停止并回到 `@uxu-code:spec`。
+- 2026-08-11 定向 UI/更新增补依据：用户直接调用 `@uxu-code:plan`，按 SPEC 20.11 批准第 20 节及 20.3 五项解释进入规划。规划快照为 UXUVideo `a20d9f2a521f1eb7e67ff4765d565bbe7c0eb18b`、UXUV-Pages `612825add6dd4e146e58a9ab5762f011ec48db08`，两仓工作树均干净；当前前端为 Next `16.3.0`。
+- 现状证据：`ContentNavigation` 仍渲染 GitHub、收藏、独立设置、语言和“首字符 + 全名”；`AppVersionSettings` 仍在普通/Premium 设置页挂载；`PasswordGate` 的认证后 `application-shell` 是八路由共享挂载点；`DisplaySettings` 的语言项仍含 hint/`small`；Worker `handleAppUpdate` 只返回元数据且 `handleLowFanoutRoute` 未传入 request。
+- 规划充分性：规格已固定功能矩阵、安全边界、兼容字段、失败关闭、一次性迁移顺序、定向 UI 范围、复制源码合同和回滚条件。当前增补不改变 API Contract、D1 schema、认证模型、媒体合同或当前权威测试列出的 23 个 API 路径；若实现发现必须新增 Secret、`.ico`、依赖、业务路由、认证/D1 变更或放宽路径/MIME/大小边界，立即停止并回到 `@uxu-code:spec`。
 
-旧 `work-products/plan.md` / `todo.md` 的 Worker/Pages 架构迁移历史继续作为证据；T42-T45 的精确身份结果只描述 2026-08-10 已发生的候选/发布事实，不再是当前运行时发布规范。未执行的原 T46-T48 被 T49-T56 取代，禁止按旧 pin 流程继续执行。
+旧 `work-products/plan.md` / `todo.md` 的 Worker/Pages 架构迁移历史继续作为证据；T42-T45 的精确身份结果只描述 2026-08-10 已发生的候选/发布事实，不再是当前运行时发布规范。未执行的原 T46-T48 已被取代；T49-T53 保留为完成事实，原未执行 T54-T56 顺延为 T66-T68，为 T54-T65 的本地 UI/更新增补让出依赖顺序。
 
 ## 2. 成功定义与不变量
 
@@ -24,10 +26,14 @@
 5. 所有新增测试放在相应仓库 `work-products/tests/`；测试引用仓库文件时从其最终位置使用相对路径，禁止 `C:\\Code` 等机器路径。
 6. UXUVideo `_worker.js` 只有在 RED 合同证明现有 Worker 无法支持 KVideo 正常成功路径时才允许最小修改；不得放宽 SSRF、CSRF、认证、Free 上限或 D1 安全合同。
 7. 不 reset、checkout 或覆盖当前工作树；从固定提交取源码使用只读 `git show`/`git archive` 到临时目录或逐文件补丁。
-8. 视觉基线只能来自固定提交和无敏感 fixture；更新基线截图、改变阈值或批准非 13.3 差异必须先问用户。
+8. 未受第 20 节影响的视觉基线只能来自固定提交和无敏感 fixture；第 20 节区域的新局部基线、图标预览或阈值变更必须先经用户可见审阅，禁止自动接受。
 9. Worker 固定唯一 `PAGES_BASE_URL`，但不固定 Pages 版本、commit、manifest SHA、资产 SHA 或 SRI。运行时只接受合法 `pagesVersion`、相同 `apiContract`、覆盖当前 Worker 的 `workerRange` 以及安全路由/MIME/大小合同；兼容 Pages 更新与回滚均不修改 Worker。
 10. 本地、公开 Pages、测试 Cloudflare/D1、真实媒体/设备证据分别记录，互不替代。
 11. T04-T38 的每个用户流程切片必须在本任务内同步闭合其简中/繁中/英语文案、键盘/焦点、适用的 320/768/1024/1440 断点和错误/空/加载状态；不得把这些质量要求推迟到最终汇总任务。
+12. 第 20 节只允许改动顶栏、首字符设置入口、全局版本入口/弹窗、语言区和默认图标；不得借“降低 AI 感”清理全站 CSS、替换组件库或重写播放器/认证/同步边界。
+13. `GET /api/app-update` 默认 JSON 保持向后兼容；`artifact=worker` 复用同一路由与会话鉴权，元数据自动检查不得携带源码，源码只在用户点击后按需拉取并校验版本、3 MiB 上限和 SHA-256。
+14. 八个已认证路由共享一个 `application-shell` 版本入口；公开、加载、登录、初始化和错误界面既不显示入口，也不提前请求 `/api/app-update`。路由切换不重复自动检查。
+15. 默认图标只替换 `public/icon.png`；运行时 `site.iconUrl` 继续优先。六档缩放和两种 mask 预览未获用户批准前，T64 不得更新局部视觉基线，T65-T68 不得继续。
 
 ## 3. 依赖图
 
@@ -121,10 +127,25 @@ flowchart TD
   T49 --> T51["T51 Pages 根目录发布"]
   T50 --> T52["T52 文档与边界"]
   T51 --> T52
-  T52 --> T53["T53 两仓本地门"]
-  T53 --> T54["T54 一次性 Worker 更新 HOLD"]
-  T54 --> T55["T55 Pages 发布与旧目录清理 HOLD"]
-  T55 --> T56["T56 最终发布门 HOLD"]
+  T52 --> T53["T53 两仓兼容本地门"]
+  T53 --> T54["T54 顶栏/用户入口 RED"]
+  T53 --> T55["T55 全局更新/语言/图标 RED"]
+  T53 --> T56["T56 Worker artifact RED"]
+  T54 --> T57["T57 顶栏与首字符设置入口"]
+  T55 --> T58["T58 三列语言"]
+  T56 --> T59["T59 Worker 按需源码"]
+  T59 --> T60["T60 全局更新控件"]
+  T60 --> T61["T61 application-shell 挂载"]
+  T57 --> T62["T62 响应式/无障碍 E2E"]
+  T58 --> T62
+  T61 --> T62
+  T55 --> T63["T63 U/V 图标候选"]
+  T62 --> T64["T64 局部视觉审批 HOLD"]
+  T63 --> T64
+  T64 --> T65["T65 两仓本地总门"]
+  T65 --> T66["T66 一次性 Worker 更新 HOLD"]
+  T66 --> T67["T67 Pages 发布与旧目录清理 HOLD"]
+  T67 --> T68["T68 最终发布门 HOLD"]
 ```
 
 ## 4. 任务
@@ -855,47 +876,221 @@ flowchart TD
 
 **回滚：** 若矩阵失败，退回对应 T50/T51/T52；不执行远端动作。
 
-### T54：一次性更新 Worker（HOLD）
+### T54：先建立顶部导航与首字符设置入口 RED
 
-**范围：** 仅在用户另行授权复制或部署后，把 T53 已验证的新 Worker 先更新到目标 Cloudflare；此时公开 Pages 仍保持当前旧字段 manifest，禁止同时切 Pages。
+**范围：** 只修改 UXUV-Pages 的既有合同测试，先证明当前 `ContentNavigation` 仍含 GitHub、收藏、独立设置和语言控件，用户区仍显示全名并有多余 wrapper；不改组件或样式。
 
-**验收标准：** 目标 Worker 能通过当前公开根 manifest 服务首页、设置和静态资产，`/api/config`/版本头显示 manifest 版本，既有认证/D1/API 冒烟无退化；未发送 Pages 密钥。
+**验收标准：** RED 同时锁定四个删除项只从 `ContentNavigation` 消失、品牌/IPTV/主题/退出继续存在、普通与 Premium 首字符入口分别指向 `/settings` 和 `/premium/settings`；并覆盖空名回退、代理对不被拆开、直接文本根和无完整用户名泄露。
 
-**验证：** 记录用户复制或经授权部署的 Worker 版本/deployment ID，以及当前 Pages 根目录只读探测。不得用本地测试冒充远端完成。
+**验证：** `node --test work-products/tests/home-ui-contract.test.mjs work-products/tests/global-shell-contract.test.mjs` 必须出现与上述旧 DOM 精确对应的预期失败，现有无关断言仍通过；保存失败测试名，不以源码字符串扫描代替可执行合同。
 
-**依赖：** T53、显式 Worker 复制/部署授权。
+**依赖：** T53、已批准 SPEC 第 20 节。
+
+**可能涉及：** UXUV-Pages `work-products/tests/home-ui-contract.test.mjs`、`work-products/tests/global-shell-contract.test.mjs`。
+
+**回滚：** 只撤销本任务新增 RED；无产品行为变化。
+
+### T55：建立全局更新、三列语言与默认图标 RED
+
+**范围：** 只在 UXUV-Pages `work-products/tests/` 增补失败合同；不改组件、CSS、图标或构建配置。新增测试须从最终位置以相对路径引用产品文件，并纳入仓库 `npm test`。
+
+**验收标准：** RED 证明当前版本区块仍在普通/Premium 设置页、认证 shell 未单挂全局入口、语言仍含 hint/`small` 且不能保证三等列、默认图标仍是旧设计；同时保护三种 locale、运行时 `site.iconUrl` 优先和未受影响设置说明。
+
+**验证：** 定向运行 `app-update-control-contract.test.mjs`、`settings-preferences-contract.test.mjs`、`premium-settings-contract.test.mjs`、`pwa-contract.test.mjs`，确认失败来自当前实现而非 fixture、导入或环境损坏。
+
+**依赖：** T53、T54 可并列准备但不得修改其测试所有权。
+
+**可能涉及：** UXUV-Pages `work-products/tests/app-update-control-contract.test.mjs`（新增）、`settings-preferences-contract.test.mjs`、`premium-settings-contract.test.mjs`、`pwa-contract.test.mjs`、`package.json`。
+
+**回滚：** 只撤销本任务新增 RED 与测试脚本登记；不恢复或改写产品文件。
+
+### T56：建立 Worker 按需复制源码 RED
+
+**范围：** 只在 UXUVideo `work-products/tests/` 新增/扩展 `app-update` 合同；默认元数据 GET、现有鉴权与 23 路径权威列表先作为不可退化基线，不改 `_worker.js`。
+
+**验收标准：** RED 覆盖 `artifact=worker` 的 401、固定配置上游、点击路径按需请求、200 原字节/版本/SHA-256/安全头，以及 409 版本不一致、413 超限、502 上游/解析失败、陈旧候选零复用和秘密零回显；默认 JSON 字段与状态仍兼容。
+
+**验证：** `node --test work-products/tests/app-update-artifact.test.mjs work-products/tests/worker-route-contract.test.mjs work-products/tests/low-fanout-routes.test.mjs`；预期失败必须集中在缺失 artifact 分支，既有元数据与路由合同保持 GREEN。
+
+**依赖：** T53、已批准 SPEC 20.5。
+
+**可能涉及：** UXUVideo `work-products/tests/app-update-artifact.test.mjs`（新增）、`work-products/tests/worker-route-contract.test.mjs`、`work-products/tests/low-fanout-routes.test.mjs`。
+
+**回滚：** 只撤销本任务新增 RED；不修改 Worker、D1 或配置。
+
+### T57：简化顶栏并把首字符变为设置入口
+
+**范围：** 最小修改 `ContentNavigation` 与其直接样式：删除四个指定控件及孤儿 import/文案，保留品牌、条件 IPTV、主题和退出；把用户可见首字符本身改为唯一设置链接，不新增认证字段或包装组件。
+
+**验收标准：** 普通/Premium 目标正确；去除空白后取首个 Unicode code point，不拆代理对，回退现有 session 用户名后仍为空则显示 `?`；直接文本节点、仅本地化“打开设置”可访问名称，DOM/tooltip 均无全名。
+
+**验证：** T54 全部转 GREEN；补跑 ContentNavigation 的四个调用方合同，键盘/焦点/44 px 命中区与主题、退出、IPTV、收藏路由可达性无退化。
+
+**依赖：** T54。
+
+**可能涉及：** UXUV-Pages `components/ContentNavigation.tsx`、`app/globals.css`、T54 两个测试文件。
+
+**回滚：** 仅恢复顶栏组件和本任务 CSS；路由、收藏数据、locale 持久化和认证 API 从未改变。
+
+### T58：把语言设置收敛为三列直接按钮
+
+**范围：** 只调整 `DisplaySettings` 的语言子区和对应 CSS；保留搜索显示等其他 `Choice` 说明，不为语言选项创建一次性包装组件。
+
+**验收标准：** `zh-CN`、`zh-TW`、`en` 在四断点始终一行三等列，只显示三个语言名称；无语言区 hint/选项 `small`，按钮保留 `aria-pressed`、Tab/Enter/Space、可见焦点和至少 44 px 高度，选中不只靠颜色。
+
+**验证：** T55 的语言 RED 转 GREEN；普通/Premium 持久化与即时切换合同、其他设置 helper text、320 px 无溢出和 200% 文本缩放均通过。
+
+**依赖：** T55。
+
+**可能涉及：** UXUV-Pages `components/settings/DisplaySettings.tsx`、`app/globals.css`、`work-products/tests/settings-preferences-contract.test.mjs`、`premium-settings-contract.test.mjs`、`data-settings-contract.test.mjs`。
+
+**回滚：** 恢复语言子区与专属 CSS；locale 值和存储 schema 不变。
+
+### T59：让 Worker 安全返回按需 `_worker.js`
+
+**范围：** 最小扩展现有 `app-update` 分支：默认 GET 继续返回原 JSON并可追加同源 `copy` 描述；仅 `artifact=worker` 时从 Worker 配置固定且经现有仓库/分支校验的 raw URL 获取源码。复用 `controlledFetch`、命名上限、结构化错误和会话鉴权，不新增路由。
+
+**验收标准：** 源码仅点击后请求，原字节不超过 3 MiB，解析的 `WORKER_VERSION` 与本次远端 latest 完全一致后才以 `text/javascript; charset=utf-8`、`private, no-store`、`nosniff`、版本及原字节 SHA-256 头返回；401/409/413/502 稳定且不回显上游正文或秘密。
+
+**验证：** T56 全部转 GREEN；`node --check _worker.js`、`npm test`、`npm run check:size`、23 路径合同、受控重定向/HTTPS/长度/超限流合同和 `git diff --check` 通过。
+
+**依赖：** T56。
+
+**可能涉及：** UXUVideo `_worker.js` 与 T56 三个测试文件；不改 D1 schema、认证模型、Pages 加载或媒体 API。
+
+**回滚：** 删除 `artifact` 分支和新增 `copy` 字段即可恢复旧元数据行为；无数据迁移或远端状态。
+
+### T60：把版本设置组件改造成单一全局更新控件
+
+**范围：** 原地迁移/重命名 `AppVersionSettings`，不保留大设置卡与新控件两份实现。复用既有状态解析和 `useDialogFocusTrap`，实现紧凑入口、单 overlay 弹窗、按需复制与受控 textarea fallback；不新建只转发 props 的 wrapper。
+
+**验收标准：** 五种状态、当前/最新版本、可信时间、变更/仓库链接、重试/关闭和复制反馈三语齐全；`update-available`/`up-to-date` 可复制，`loading`/`ahead-of-remote`/`check-failed` 禁用；只接受版本与弹窗 latest 一致的 200 正文，失败即清空候选。
+
+**验证：** `app-update-control-contract.test.mjs` 的组件/状态/复制合同转 GREEN；焦点进入/陷阱/Escape/归还、背景不可交互、`aria-live`、无自动剪贴板/部署跳转、无卡片套卡片均有测试。
+
+**依赖：** T55、T59。
+
+**可能涉及：** UXUV-Pages `components/settings/AppVersionSettings.tsx`（重命名或替换为单一 `AppUpdateControl`）、`app/globals.css`、`work-products/tests/app-update-control-contract.test.mjs`。
+
+**回滚：** 恢复旧组件文件和版本 CSS；Worker artifact 分支可独立保留且不会被自动调用。
+
+### T61：在认证 application-shell 单挂入口并移出设置页
+
+**范围：** 在 `PasswordGate` 的认证后 `application-shell` 挂载一次 T60 控件；从普通和 Premium 设置页移除旧版本区块/import，保持后续设置顺序。公开、加载、错误和登录分支不挂载控件。
+
+**验收标准：** 八个认证路由共享同一实例，路由切换每会话只自动检查一次；非认证分支无入口且不请求 `/api/app-update`；普通/Premium 设置页不再出现大型版本首块，其他区块顺序和功能不变。
+
+**验证：** `global-shell-contract.test.mjs`、`app-update-control-contract.test.mjs`、`premium-settings-contract.test.mjs` 转 GREEN；路由切换/卸载 abort、显式重试和会话账户变更行为可复验。
+
+**依赖：** T60。
+
+**可能涉及：** UXUV-Pages `components/PasswordGate.tsx`、`app/settings/page.tsx`、`components/premium/PremiumSettingsExperience.tsx`、`work-products/tests/global-shell-contract.test.mjs`、`premium-settings-contract.test.mjs`。
+
+**回滚：** 恢复两设置页挂载并从 shell 移除控件；不改变 API 或存储数据。
+
+### T62：闭合顶栏与全局更新入口的响应式、无障碍和视觉减层
+
+**范围：** 用既有 spacing/color/z-index token 调整本节涉及 CSS，并补 Playwright；只为应用 chrome 统一预留空间，不做逐页 transform/margin 补丁，不触碰播放器业务逻辑。
+
+**验收标准：** 320/768/1024/1440 px、安全区和 200% 文本缩放下，44 px 入口不覆盖用户入口、播放器控制、用量提醒、标题或弹窗关闭；更新提示非纯颜色、无持续脉冲，reduced-motion 下无运动；overlay 外不新增明显 elevation。
+
+**验证：** 八路由各恰有一个入口；非认证分支零入口/零更新请求；五状态、复制成功/失败、陈旧候选清除、ahead 禁用、焦点/Escape/归还、键盘与 axe 在 `app-update-control.e2e.spec.ts` 和 `accessibility.e2e.spec.ts` 通过。
+
+**依赖：** T57、T58、T61。
+
+**可能涉及：** UXUV-Pages `app/globals.css`、`work-products/tests/app-update-control.e2e.spec.ts`（新增）、`app-flows.e2e.spec.ts`、`accessibility.e2e.spec.ts`。
+
+**回滚：** 恢复本任务 CSS 和 E2E；T57-T61 的独立功能合同仍可单独回滚/验证。
+
+### T63：生成并验证蓝灰 U/V 默认图标候选
+
+**范围：** 使用位图资产流程生成单一 1024×1024 PNG 候选，替换项目默认 `public/icon.png`；固定 `#0F172A`、`#60A5FA`、`#94A3B8`，仅允许小面积 `#E2E8F0`。不得新增 `.ico`、网络字体、依赖、渐变、发光、3D、颗粒或重阴影。
+
+**验收标准：** U 为外轮廓、V 居中且两者可辨，关键笔画在 40% mask 安全圆内；16/32/48 px 不依赖小于 2 输出像素的关键间隙，192/512/1024 无脏边/透明杂点；metadata/manifest/Worker 默认引用不变，运行时自定义图标仍优先。
+
+**验证：** `pwa-contract.test.mjs` 与新增 `icon-visual-contract.test.mjs` 检查 PNG 尺寸、模式、固定色、引用和安全区；在 `work-products/tests/fixtures/icon-review/` 生成六档缩放及圆形/圆角矩形 mask 组合预览，交给 T64 审阅。
+
+**依赖：** T55。图标资产的视觉验收依赖 T64，不因自动合同 GREEN 而自动批准。
+
+**可能涉及：** UXUV-Pages `public/icon.png`、`work-products/tests/pwa-contract.test.mjs`、`work-products/tests/icon-visual-contract.test.mjs`（新增）及其 `fixtures/icon-review/` 预览。
+
+**回滚：** 恢复旧 `public/icon.png` 并删除本任务预览/合同；运行时自定义品牌不受影响。
+
+**T54-T63 执行证据（2026-08-11）：** T54 顶栏 RED 为 2 个预期失败，T56 Worker artifact RED 为 5 个预期失败，T55 的全局更新/三列语言/旧图标合同均按当前缺口失败；实施后顶栏/语言合同 17/17、全局更新相关静态合同 24/24、Worker 定向合同 19/19、图标/PWA/runtime 合同 10/10、全局更新 E2E 3/3 均 GREEN。UXUV-Pages lint 与构建通过；八路由与 320/768/1024/1440 px 的单入口、非认证零请求和页头不重叠已验证。T63 生成 1024 PNG、六档缩放、圆形/圆角 mask 及三语/四断点局部审阅图；这些自动证据不替代 T64 的用户视觉批准。
+
+### T64：审阅并冻结第 20 节局部视觉基线（已完成）
+
+**范围：** 向用户展示 T63 六档/mask 预览，以及 T57-T62 在四断点和三语的“旧实现 / 新候选 / 规格依据”对照；只在用户明确批准后更新受影响区域的视觉快照。未受影响区域继续使用原阈值和基线。
+
+**验收标准：** 用户明确批准图标候选、顶栏、版本入口/弹窗和语言区；局部快照只覆盖批准区域，全页 `0.01`、关键区 `0.005` 阈值不放宽；任何未批准差异返回所属任务修订。
+
+**验证：** 人工审批记录、快照 diff 和基线文件一一对应；连续两轮视觉测试稳定，mask/小尺寸预览可见，不以自动接受或更新全页快照消除差异。
+
+**依赖：** T62、T63、用户对可见候选的明确批准。
+
+**可能涉及：** UXUV-Pages 既有 `work-products/tests/kvideo-visual-parity.e2e.spec.ts`、其局部 snapshot/fixture、`work-products/kvideo-parity-matrix.md` 的批准差异证据；不改产品逻辑。
+
+**回滚：** 删除未批准或错误更新的局部基线，恢复上一批准快照；产品候选退回 T57-T63 对应任务。
+
+**T64 执行证据（2026-08-11）：** 用户回复“批准四项候选”，明确批准图标、顶栏、版本入口/弹窗和语言区。视觉套件仅把这些差异从固定 KVideo DOM 结构比较中隔离，页面主体、token 与其余交互仍继续比较；完整候选写入八路由 × 四断点共 32 个快照，`maxDiffPixelRatio: 0.01` 未放宽。基线写入后以 `--repeat-each=2` 连续运行 64/64 GREEN，六档图标与两种 mask 预览保留。
+
+### T65：闭合第 20 节两仓本地总门
+
+**范围：** 不新增功能。聚合 T54-T64 的合同、视觉和审批证据，更新第 20 节对应矩阵状态；发现失败必须退回拥有该文件的任务，不在总门顺手修补。
+
+**验收标准：** 第 20 节 20.10 全部满足，T64 有明确批准；两仓差异只落在 20.7 允许文件/测试/证据，未新增路由、依赖、Secret、`.ico`、D1/auth/media 变更；工作树候选可独立审阅和回滚。
+
+**验证：** UXUVideo 运行 `node --check _worker.js`、`npm test`、`npm run check:size`、既有秘密/边界扫描、`git diff --check`；UXUV-Pages 运行 `npm test`、`npm run lint`、`npm run build`、`npm run test:e2e`、既有秘密/发布扫描、`git diff --check`。结果只证明本地工作树，不证明 commit、push、Pages 或 Worker 部署。
+
+**依赖：** T64。
+
+**可能涉及：** 两仓既有测试/证据，以及 UXUVideo `work-products/plan.md`、`todo.md` 和 UXUV-Pages `work-products/kvideo-parity-matrix.md`；不修改业务逻辑。
+
+**回滚：** 若总门失败，退回首个失败任务；不执行 T66-T68 或任何远端动作。
+
+**T65 执行证据（2026-08-11）：** 首轮完整 E2E 为 101/110，8 项来自已删除顶栏语言/全名/旧版本卡片的过期测试路径，1 项暴露更新入口层级高于历史侧栏的真实遮挡；分别退回受影响测试与 T62，将入口保持在全局右上区域但置于所有 overlay 下方。聚焦遮挡/更新控件回归 4/4、完整 E2E 110/110、视觉基线复验 32/32 GREEN；此前 `--repeat-each=2` 稳定性门 64/64 GREEN，阈值仍为 `0.01`。最终 UXUVideo `node --check`、95/95 单测、gzip 39,409/3,145,728 B；UXUV-Pages 139/139 单测、lint、Next 生产构建（8 个应用路由与 `_not-found`、27 个 chrome83 client assets）全部通过。两仓秘密/边界合同和 `git diff --check` 通过；仅形成未提交、未推送、未部署的本地工作树候选。
+
+### T66：一次性更新 Worker（HOLD）
+
+**范围：** 仅在用户另行授权复制或部署后，把 T65 已验证、含安全 artifact 分支且保留 T53 Pages 兼容合同的 Worker 先更新到目标 Cloudflare；此时公开 Pages 保持当前版本，禁止同时切 Pages。
+
+**验收标准：** 目标 Worker 继续通过当前公开根 manifest 服务首页/静态资产，默认 `/api/app-update` 向后兼容，登录后点击 artifact 能返回版本一致源码；既有认证/D1/API 冒烟无退化，未发送 Pages 密钥。
+
+**验证：** 记录用户复制或经授权部署的 Worker 版本/deployment ID、artifact 安全头/哈希和当前 Pages 根目录只读探测。不得用本地测试冒充远端完成。
+
+**依赖：** T65、显式 Worker 复制/部署授权。
 
 **可能涉及：** 用户 Cloudflare Worker；不改 Pages、D1 schema 或 Secret 值。
 
 **回滚：** 恢复上一 Worker；Pages 尚未改变，因此无需同步回滚 Pages。
 
-### T55：发布精简 Pages 并清理旧版本目录（HOLD）
+### T67：发布第 20 节 Pages 并清理旧版本目录（HOLD）
 
-**范围：** 仅在 T54 远端证据通过且用户另行授权 push/Pages 发布后，发布 T51 的根目录产物。先只读确认生产 HTML/JS/manifest 已无 `/UXUV-Pages/0.2.0/` 或其他版本路径引用，再让 `rsync --delete` 删除 `gh-pages` 的遗留版本目录；不配置任何对接密钥。
+**范围：** 仅在 T66 远端证据通过且用户另行授权 UXUV-Pages commit/push/Pages 发布后，发布 T65 的根目录产物。先只读确认生产 HTML/JS/manifest 已无旧版本路径引用，再让既有 `rsync --delete` 删除 `gh-pages` 遗留版本目录；不配置对接密钥。
 
-**验收标准：** 公开根 manifest 为精简字段，八个路由和关键资产经 Worker 正常返回；旧版本目录已不存在或返回 404，且生产页面无旧路径请求；兼容 Pages 再次小改时无需修改 Worker 即能显示新 `pagesVersion`/内容。
+**验收标准：** 公开根 manifest/八路由/关键资产正确，已批准 U/V 图标和全局版本入口经 Worker 可见；旧版本目录不存在或 404，生产无旧路径请求；兼容 Pages 再次小改无需修改 Worker。
 
-**验证：** Actions、`gh-pages` tree、公开根 manifest、浏览器网络请求和 Worker 版本头分层记录；旧目录删除前后路径清单可审阅。删除仅限已确认的 `gh-pages` 版本目录。
+**验证：** Actions、`gh-pages` tree、公开根 manifest、浏览器网络/交互、Worker/Pages 版本头分层记录；旧目录删除前后路径清单可审阅，删除仅限已确认 `gh-pages` 遗留目录。
 
-**依赖：** T54、显式 UXUV-Pages commit/push/Pages 发布与远端目录清理授权。
+**依赖：** T66、显式 UXUV-Pages commit/push/Pages 发布与远端目录清理授权。
 
 **可能涉及：** UXUV-Pages `main`/`gh-pages` 和 GitHub Pages；不修改 Worker、D1 或 Cloudflare Secret。
 
-**回滚：** 把上一兼容 Pages artifact 重新发布到根目录；Worker 保持不变。若兼容判断错误，先恢复上一根 artifact，再决定是否回滚 Worker。
+**回滚：** 把上一兼容 Pages artifact 重新发布到根目录；Worker 保持不变。若 UI 回归，优先 Pages-only 回滚。
 
-### T56：给出最终 GO/NO-GO（HOLD）
+### T68：给出最终 GO/NO-GO（HOLD）
 
-**范围：** 用户调用 `@uxu-code:ship` 后，对 T53 本地门、T54 一次性 Worker 顺序、T55 根目录发布/旧目录清理和兼容 Pages 独立更新证据给出 GO/NO-GO；GO 不自动授权新的部署。
+**范围：** 用户调用 `@uxu-code:ship` 后，对 T65 本地门、T66 Worker 顺序、T67 Pages 发布/旧目录清理和兼容 Pages 独立更新证据给出 GO/NO-GO；GO 不自动授权新的部署。
 
-**验收标准：** 无运行时 commit/SHA/Pages 密钥，兼容更新无需 Worker，API/range 不兼容失败关闭，回滚只需重新发布上一 Pages artifact；任一证据缺失即 NO-GO。
+**验收标准：** 第 20 节生产表面与复制合同可复验；无运行时 commit/SHA/Pages 密钥，兼容更新无需 Worker，API/range 不兼容失败关闭，Pages-only 回滚成立；任一证据缺失即 NO-GO。
 
-**验证：** 重跑只读配置/路径/版本探测并核对证据层级、时间与回滚点。
+**验证：** 重跑只读配置/路径/版本/交互探测并核对证据层级、时间与回滚点。
 
-**依赖：** T55、用户调用 `@uxu-code:ship`。
+**依赖：** T67、用户调用 `@uxu-code:ship`。
 
 **可能涉及：** `work-products/release-gate.md`、`work-products/todo.md`；不修改业务代码。
 
-**回滚：** 按 T55 回滚 Pages；只有一次性 Worker 本身发生独立回归时才按 T54 回滚 Worker，D1 schema 不变。
+**回滚：** 按 T67 回滚 Pages；只有 Worker artifact/兼容合同发生独立回归时才按 T66 回滚 Worker，D1 schema 不变。
 
 ## 5. 检查点
 
@@ -938,10 +1133,24 @@ flowchart TD
 - 这里只能称为本地发布候选，不能称为已发布或生产可用。
 - **执行结论（2026-08-10）：** CP7 GREEN；随后 T43-T45 完成了当时的精确身份发布与本地 Worker pin。该 pin 已被 2026-08-11 新合同取代，不能继续进入旧 T46-T48。
 
-### CP8：Pages 兼容发布迁移（T49-T56；T54-T56 HOLD）
+### CP8：Pages 兼容发布本地迁移（T49-T53，已完成）
 
 - T49-T53 必须证明无 runtime commit/SHA/Pages 密钥、动态版本正确、五组合兼容矩阵和两仓本地门；这只形成本地候选。
-- T54 必须先完成一次性 Worker 更新；T55 才能发布精简根目录并删除旧版本目录。只有这一顺序、兼容小改无需 Worker、Pages-only 回滚和最终 `@ship` 均闭合后才可能 GO。
+- **执行结论（2026-08-11）：** CP8-local 已闭合；未 commit、push、发布或部署。
+
+### CP9：第 20 节本地 UI/更新增补（T54-T65，已完成）
+
+- **CP9A（T54-T56）：** 三组 RED 可复验，失败均来自当前缺口，既有无关合同仍 GREEN；未写产品代码。
+- **CP9B（T57-T59）：** 顶栏/首字符、三列语言和 Worker artifact 各自转 GREEN，文件所有权与回滚独立。
+- **CP9C（T60-T62）：** 单一全局控件、shell 挂载、八路由/非认证边界、四断点和无障碍闭合。
+- **CP9D（T63-T64）：** 六档/两 mask 图标与局部 UI 对照可见；用户明确批准后才冻结局部基线。
+- **CP9E（T65）：** 两仓全门只能形成新的本地候选，不代表已 commit、push、Pages 发布或 Worker 部署。
+- **执行结论（2026-08-11）：** CP9-local 已闭合；本地门与用户视觉审批均完成，T66-T68 未执行。
+
+### CP10：一次性远端迁移与发布门（T66-T68，全部 HOLD）
+
+- T66 必须先更新并验证 Worker；T67 才能发布第 20 节 Pages 与清理遗留目录。
+- 只有严格顺序、公开浏览器证据、兼容 Pages-only 回滚和最终 `@uxu-code:ship` 均闭合后，T68 才可能 GO。
 
 ## 6. 计划测试文件
 
@@ -962,7 +1171,13 @@ T49-T53 的定向合同固定复用：
 
 - UXUVideo `work-products/tests/pages-integrity.test.mjs`、`worker-route-contract.test.mjs`、`worker-only-boundary.test.mjs`。
 - UXUV-Pages `work-products/tests/release-manifest.test.mjs`、`pages-deployment.test.mjs`、`pwa-contract.test.mjs`。
-- 不新增固定公网 commit/SHA fixture；manifest/stream 单元测试使用内存 fixture，公开根目录只读探测仅属于 T55 远端证据。
+- 不新增固定公网 commit/SHA fixture；manifest/stream 单元测试使用内存 fixture，公开根目录只读探测仅属于 T67 远端证据。
+
+第 20 节计划新增/扩展的测试固定为：
+
+- UXUVideo `work-products/tests/app-update-artifact.test.mjs`（新增）、`worker-route-contract.test.mjs`、`low-fanout-routes.test.mjs`。
+- UXUV-Pages `work-products/tests/app-update-control-contract.test.mjs`（新增）、`app-update-control.e2e.spec.ts`（新增）、`icon-visual-contract.test.mjs`（新增），以及既有 `home-ui-contract.test.mjs`、`global-shell-contract.test.mjs`、`settings-preferences-contract.test.mjs`、`data-settings-contract.test.mjs`、`premium-settings-contract.test.mjs`、`pwa-contract.test.mjs`、`app-flows.e2e.spec.ts`、`accessibility.e2e.spec.ts`。
+- 图标审阅 fixture 只放 UXUV-Pages `work-products/tests/fixtures/icon-review/`；测试与 fixture 中的仓库引用一律从最终位置相对解析，禁止机器绝对路径。
 
 ## 7. 风险与门
 
@@ -977,9 +1192,14 @@ T49-T53 的定向合同固定复用：
 | TV/Cast/PiP 无法完全自动化 | 隐藏缺陷 | 能力 mock + 可复验人工设备步骤，未执行不得标 pass |
 | 视觉基线被实现覆盖 | 回归被掩盖 | 基线更新 Ask first；固定 commit/hash；双重审阅 |
 | Worker 安全因兼容 UI 被放宽 | 认证/SSRF/配额风险 | 现有合同为不可退化门；UI 解释限制，不删除安全控制 |
-| 旧 Worker 无法读取精简 manifest | Pages 先发布会让现网 UI 503 | 一次性迁移严格先 T54 Worker、后 T55 Pages；T53 证明新 Worker 可读旧/新两种 manifest |
+| 旧 Worker 无法读取精简 manifest | Pages 先发布会让现网 UI 503 | 一次性迁移严格先 T66 Worker、后 T67 Pages；T53 证明新 Worker 可读旧/新两种 manifest |
 | 兼容 Pages 内容发生非预期变化 | 无运行时 SHA 可识别内容漂移 | 保护仓库/Pages 权限，保留 Git/Actions artifact，发布前全门；异常时只重新发布上一兼容根 artifact |
 | Pages 版本或合同伪造 | Worker 加载不兼容 UI | 合法 semver、精确 API Contract、Worker range、安全路径/MIME/大小失败关闭；不拼接 `main/latest` |
+| 浏览器直接取可变 Worker 源码 | CORS/污染或提示版本与复制字节不一致 | 只调用同源鉴权 `artifact=worker`；Worker 固定配置上游并校验版本、3 MiB 上限、SHA-256 与安全头 |
+| 全局入口重复挂载或提前检查 | 八路由重复请求，公开/登录页触发认证 API | 只挂 `application-shell` 一次；非认证分支零挂载/零请求；路由切换 E2E 统计一次自动检查 |
+| 版本入口覆盖播放器或移动顶栏 | 关键控件不可操作 | 统一 chrome 预留、safe-area、四断点、200% 缩放和真实控制层遮挡门；禁止逐页偏移补丁 |
+| 图标自动接受或小尺寸失真 | 品牌基线错误且 PWA mask 裁切 | T63 六档/两 mask 预览，T64 用户审批 HOLD；未批准不更新局部基线或发布 |
+| “降低 AI 感”扩大为全站重写 | diff 与回归范围失控 | 只允许 SPEC 20.7 表面；overlay 外不新增 elevation，不做全站 CSS/组件库/播放器重构 |
 
 ## 8. 并行与冲突约束
 
@@ -989,22 +1209,25 @@ T49-T53 的定向合同固定复用：
 - T22/T23 可并行研究但不能并发修改共享播放器状态；T24 合并后才能做 T25/T26。
 - T27 与 T29 可并行；T28/T30 分别等待其前置。
 - T31 与 T32 可在各自前置完成后并行；T33/T34 共享同步基础但按不同文档类型串行合并，T35/T36 各自独立回滚。
-- T37 与 T38 在各自前置完成后可独立验证；T39 是独立授权 HOLD。T49 后 T50/T51 可分仓并行，T52-T56 必须串行；任何并行任务合并后都要重跑对应检查点。
+- T37 与 T38 在各自前置完成后可独立验证；T39 是独立授权 HOLD。T49 后 T50/T51 可分仓并行，T52-T53 必须串行。
+- T54-T56 是三个互不改产品文件的 RED，可分别准备；进入产品修改后，T57/T58 可在文件所有权不重叠时并行，T59 必须先于 T60，T60-T62 串行。T63 可与 T57-T62 并行产出候选，但 T64 必须同时等待两边完成。
+- T64 是用户视觉审批 HOLD；T65-T68 全部串行。任何并行任务合并后重跑 CP9 对应合同，不允许两个任务并发修改 `app/globals.css`。
 
 ## 9. 当前未决项
 
 - 首次视觉基线已获用户批准；后续仍禁止无批准更新基线或修改阈值。
 - 真实 Cast、PiP、PWA 安装、TV 与 Cloudflare 环境由用户部署后验收；本地证据不得冒充真实设备或生产证明。
 - `pagesVersion` 继续来自 UXUV-Pages `package.json`，只用于用户可见版本与兼容诊断；同版本允许内容修订。是否升版由 Pages 变更语义决定，不再触发 Worker 更新。
-- 公开 `gh-pages` 遗留版本目录的实际删除只在 T55 执行；必须先确认 T54 目标 Worker 已更新且生产请求不再引用旧路径。
+- 第 20 节没有待补的产品决策；T64 图标候选和局部视觉基线已获用户明确批准。后续基线变更仍须重新审批，自动合同或截图工具不得代替用户批准。
+- 公开 `gh-pages` 遗留版本目录的实际删除只在 T67 执行；必须先确认 T66 目标 Worker 已更新且生产请求不再引用旧路径。
 - 任何固定提交中可达、但当前矩阵未覆盖的行为都自动扩大矩阵，而不是静默删减；若它需要非 13.3 架构差异，停止并请求修订 SPEC。
 
 ## 10. 完成与授权边界
 
 - 本计划获批后，只有用户明确调用 `@uxu-code:build`（或 `@uxu-code:build auto`）才允许开始本地实现。
 - 本地实现授权不包含 commit、push、Pages 发布、Worker 部署、真实 D1/Secret/Analytics Token 或生产切换。
-- T39 已按用户明确的单文件 Worker 交付边界完成本地/受控真实房间验证；T43-T45 是历史已完成事实。原 T46-T48 已取代且禁止执行；T54、T55、T56 分别是新的 Worker 更新、Pages 发布/远端目录删除和最终发布门 HOLD。
-- 计划完成不等于产品完成；产品完成必须满足 SPEC 15.A-G 和本计划 CP8。
+- T39 已按用户明确的单文件 Worker 交付边界完成本地/受控真实房间验证；T43-T45 是历史已完成事实。原 T46-T48 已取代且禁止执行；T64/T65 已完成，T66、T67、T68 分别是 Worker 更新、Pages 发布/远端目录删除和最终发布门 HOLD。
+- 计划完成不等于产品完成；产品完成必须满足 SPEC 15.A-G、第 20 节和本计划 CP8-CP10。
 
 ## 11. 单模型对抗审查修订记录
 
@@ -1051,5 +1274,15 @@ T49-T53 的定向合同固定复用：
 | Pages 小改不得要求 Worker 更新 | T50 只按 `pagesVersion`/API Contract/Worker range/安全映射判断兼容，T53 验证同版本修订和新兼容版本 |
 | Worker/manifest 不使用 commit 或 SHA 固定 | T49 先 RED，T50/T51 删除 runtime/published identity 字段；Git/Actions 只留作外部审计记录 |
 | 公开 Pages 不配置对接密钥 | T49/T50/秘密扫描证明 Worker→Pages 请求无 Cookie、Authorization、Token 或 Secret |
-| 移除多版本目录 | T51 本地删除版本目录逻辑；T55 在先更新 Worker并确认零引用后才删除远端遗留目录 |
-| 一次性迁移不能中断现网 | T50 新 Worker兼容当前旧字段 manifest，T54 先更新 Worker，T55 后发布精简 manifest |
+| 移除多版本目录 | T51 本地删除版本目录逻辑；T67 在先更新 Worker并确认零引用后才删除远端遗留目录 |
+| 一次性迁移不能中断现网 | T50 新 Worker兼容当前旧字段 manifest，T66 先更新 Worker，T67 后发布精简 manifest |
+
+2026-08-11 用户直接调用 `@uxu-code:plan` 批准 SPEC 第 20 节进入规划。本次修订是对已批准合同的依赖拆分，没有新增产品决策；保留以下计划转换记录：
+
+| 已批准合同 | 计划处理 |
+| --- | --- |
+| 顶栏删除四项，用户首字符进入设置 | T54 先 RED；T57 只改 `ContentNavigation` 与直接样式，普通/Premium 路由分别验证 |
+| 三语言并排且无小字 | T55 先 RED；T58 只改语言子区，保护其他设置说明和 locale 持久化 |
+| 全局版本入口与按需复制 | T56 Worker RED→T59 后端 GREEN；T60 单一控件→T61 shell 单挂→T62 E2E，避免页面级重复实例 |
+| 蓝灰 U/V 默认图标 | T63 生成候选与六档/mask fixture；T64 用户审批后才冻结局部基线 |
+| 降低嵌套和 AI 感 | T57/T58/T60/T62 按可执行 DOM/token/elevation 合同收敛；不扩大到全站重写 |

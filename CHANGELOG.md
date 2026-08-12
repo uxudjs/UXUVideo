@@ -2,9 +2,13 @@
 
 ## Unreleased
 
+## 1.1.0 - 2026-08-13
+
 - Worker 改为从 GitHub Pages 根目录动态读取清单，按语义版本、API Contract 与 `workerRange` 判断兼容，不再固定 Pages 版本、commit、manifest SHA-256 或资产 SHA/SRI。
 - UXUV-Pages 发布改为单一 `release/current` 产物并同步到站点根目录；兼容的小修订可独立发布，无需更新 Worker 或配置 Pages 对接密钥。
 - 保留危险路径、错误 MIME、非 200、无效/超限长度、实际流超限和不兼容清单的失败关闭行为；回滚方式为重新发布上一份兼容 Pages artifact。
+- 新增全局版本状态与一键复制最新 `_worker.js`；远端版本落后时禁止复制，避免把当前 Worker 降级。
+- 修复远端缺少 `app-release.json` 时无法回退到 `package.json` 的更新检查错误。
 
 ## 1.0.0 - 2026-08-07
 
