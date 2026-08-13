@@ -1,6 +1,6 @@
 # KVideo 4.9.19 完整复刻与定向 UI/更新任务清单
 
-状态：**T54-T65/CP9-local 已完成；用户已批准四项视觉候选；T66-T68 仍为远端/发布 HOLD**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
+状态：**T54-T68、CP9-local 与 CP10-remote 均已完成；Worker 1.1.0、Pages 0.2.0 与生产 Edge 登录态复验已闭合；最终发布门 GO**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
 
 旧清单中已完成的 Worker/D1/登录/静态发布迁移继续作为架构基线；T42-T45 的 commit/SHA/pin 只记录 2026-08-10 的历史发布事实，不再是当前运行时发布合同。
 
@@ -116,10 +116,10 @@
 
 ## Phase 11：一次性远端迁移与清理
 
-- [ ] **HOLD T66** 经独立授权先复制/部署 T65 Worker，保持当前 Pages 不变并完成默认 metadata、artifact、认证/D1/API 远端冒烟。
-- [ ] **HOLD T67** T66 通过后，经独立授权 commit/push/发布第 20 节 Pages；只读确认生产零旧路径引用后删除 `gh-pages` 遗留版本目录。
-- [ ] **HOLD T68** 由 `@uxu-code:ship` 对一次性顺序、公开 UI/复制证据、独立 Pages 更新和 Pages-only 回滚给出 GO/NO-GO。
-- [ ] CP10-remote 公开根 manifest/路由/版本头和第 20 节 UI 正确，旧版本目录清理完成，后续兼容 Pages 小改无需重新部署 Worker。
+- [x] **T66** Worker `1.1.0` 已部署，公开/控制台冒烟与 Edge 生产登录态 artifact 复制、版本、源码 SHA-256 均通过。
+- [x] **T67** 已授权并发布第 20 节 Pages；两个 Actions workflow 成功，公开字节一致，`gh-pages` 旧版本目录为零。
+- [x] **T68** `@uxu-code:ship` 已重跑；部署身份、公开字节、生产 Edge 登录态 artifact/设置 UI 与两仓最终门全部通过，结论 GO。
+- [x] CP10-remote 公开根 manifest/路由/版本头和第 20 节 UI 正确，旧版本目录清理完成，后续兼容 Pages 小改无需重新部署 Worker。
 
 ## 每任务固定检查
 
@@ -149,5 +149,5 @@
 - [x] 已批准并完成：UXUV-Pages commit、push 与 `0.2.0` Pages 发布（T43-T44）。
 - [x] 已批准：T54-T63 的本地产品、测试与图标候选实施；不含 commit、push、发布、部署或真实资源操作。
 - [x] 已批准：用户于 2026-08-11 回复“批准四项候选”，批准图标、顶栏、版本入口/弹窗和语言区，并授权继续 T65 本地总门。
-- [ ] 未批准：现有 T49-T53 或未来 T54-T65 的 commit/push；T66 Worker 复制/部署、T67 UXUV-Pages commit/push/发布/远端目录删除、T68 最终发布门；本轮不执行。
+- [x] 已批准并执行：用户授权同步 Worker 1.1.0 权威源码、Cloudflare Worker 与 GitHub Pages 发布；T66-T67 与生产 Edge 登录态复验已完成。
 - [ ] 未批准：真实 D1、Secret、Analytics Token、生产数据迁移或不可逆 schema 变更。

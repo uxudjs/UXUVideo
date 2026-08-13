@@ -1,6 +1,6 @@
 # 实施计划：KVideo 4.9.19 完整复刻与定向 UI/更新增补
 
-状态：**T54-T65/CP9-local 已完成；用户于 2026-08-11 明确批准四项视觉候选；T66-T68 仍为远端/发布 HOLD**
+状态：**T54-T68、CP9-local 与 CP10-remote 均已完成；Worker 1.1.0、Pages 0.2.0 与生产 Edge 登录态复验已闭合；最终发布门 GO**
 
 ## 1. 计划依据与充分性
 
@@ -1050,7 +1050,7 @@ flowchart TD
 
 **T65 执行证据（2026-08-11）：** 首轮完整 E2E 为 101/110，8 项来自已删除顶栏语言/全名/旧版本卡片的过期测试路径，1 项暴露更新入口层级高于历史侧栏的真实遮挡；分别退回受影响测试与 T62，将入口保持在全局右上区域但置于所有 overlay 下方。聚焦遮挡/更新控件回归 4/4、完整 E2E 110/110、视觉基线复验 32/32 GREEN；此前 `--repeat-each=2` 稳定性门 64/64 GREEN，阈值仍为 `0.01`。最终 UXUVideo `node --check`、95/95 单测、gzip 39,409/3,145,728 B；UXUV-Pages 139/139 单测、lint、Next 生产构建（8 个应用路由与 `_not-found`、27 个 chrome83 client assets）全部通过。两仓秘密/边界合同和 `git diff --check` 通过；仅形成未提交、未推送、未部署的本地工作树候选。
 
-### T66：一次性更新 Worker（HOLD）
+### T66：一次性更新 Worker（已完成）
 
 **范围：** 仅在用户另行授权复制或部署后，把 T65 已验证、含安全 artifact 分支且保留 T53 Pages 兼容合同的 Worker 先更新到目标 Cloudflare；此时公开 Pages 保持当前版本，禁止同时切 Pages。
 
@@ -1064,7 +1064,9 @@ flowchart TD
 
 **回滚：** 恢复上一 Worker；Pages 尚未改变，因此无需同步回滚 Pages。
 
-### T67：发布第 20 节 Pages 并清理旧版本目录（HOLD）
+**远端证据（2026-08-13）：** 用户已明确授权 Cloudflare 发布。`my-blog` 控制台显示活动且最新部署 `a9872e9d`，编辑器无待部署改动；控制台实时日志连续记录根请求 `200`、Worker `1.1.0`、Pages `0.2.0`、API Contract `1`。公开根、`/api/config` 与匿名 session 冒烟通过，未登录 artifact 按合同返回 `401 AUTH_REQUIRED`。权威 `_worker.js` commit `9ba3f19d9743dd8c1aa5370686ffde93b3c1e595` 的本地与 GitHub 原字节相等，SHA-256 为 `d0640a7fc6655c70c7c3dab962ec0c7bbef1d1eb73b13307ece43e292074b09b`。随后使用用户指定的 Edge 登录态打开版本弹窗，当前/最新版本均为 `1.1.0`；点击“复制最新 _worker.js”后 UI 显示复制成功。系统剪贴板原始 CRLF 文本为 169,879 bytes，换行标准化后为 165,661 bytes，SHA-256 与权威源码完全相同，源码内 `WORKER_VERSION` 为 `1.1.0`。
+
+### T67：发布第 20 节 Pages 并清理旧版本目录（已完成）
 
 **范围：** 仅在 T66 远端证据通过且用户另行授权 UXUV-Pages commit/push/Pages 发布后，发布 T65 的根目录产物。先只读确认生产 HTML/JS/manifest 已无旧版本路径引用，再让既有 `rsync --delete` 删除 `gh-pages` 遗留版本目录；不配置对接密钥。
 
@@ -1078,7 +1080,9 @@ flowchart TD
 
 **回滚：** 把上一兼容 Pages artifact 重新发布到根目录；Worker 保持不变。若 UI 回归，优先 Pages-only 回滚。
 
-### T68：给出最终 GO/NO-GO（HOLD）
+**远端证据（2026-08-13）：** UXUV-Pages `main` 为 `269cc6bceddfb081d73665e1dc035920fb238bbc`；发布 workflow `31620747975` 成功，系统 Pages workflow `31620826087` attempt 2 成功，`gh-pages` 为 `37e7b3ce8092102df8af161ba472aa2535b21a0f`。公开发布 80 个资产加 manifest 与发布候选逐字节一致，零 mismatch；远端 tree 无 `0.1.2/` 或 `0.2.0/` 旧版本目录。生产和 GitHub Pages 的 `icon.png` 均与已批准本地图标完全相等，SHA-256 为 `853e99eb22093ee759d30a05e18a33de86cb4deb5cbe8c094afa391a3251b91d`。
+
+### T68：给出最终 GO/NO-GO（已完成：GO）
 
 **范围：** 用户调用 `@uxu-code:ship` 后，对 T65 本地门、T66 Worker 顺序、T67 Pages 发布/旧目录清理和兼容 Pages 独立更新证据给出 GO/NO-GO；GO 不自动授权新的部署。
 
@@ -1091,6 +1095,8 @@ flowchart TD
 **可能涉及：** `work-products/release-gate.md`、`work-products/todo.md`；不修改业务代码。
 
 **回滚：** 按 T67 回滚 Pages；只有 Worker artifact/兼容合同发生独立回归时才按 T66 回滚 Worker，D1 schema 不变。
+
+**最终门证据（2026-08-13）：** 部署身份、公开字节、生产 Edge 登录态 artifact 与设置界面证据均已闭合。精确候选未漂移：UXUVideo `9ba3f19d9743dd8c1aa5370686ffde93b3c1e595` 与 UXUV-Pages `269cc6bceddfb081d73665e1dc035920fb238bbc` 均和各自 `origin/main` 一致。复跑 UXUVideo 98/98、Worker 语法与 39,474/3,145,728 bytes gzip 体积门；UXUV-Pages 139/139、lint、TypeScript、生产构建、release 构建与 Playwright 111/111；两仓 `git diff --check`、高置信秘密与机器路径扫描通过。npm 官方审计无 high/critical，仅保留 Pages 开发依赖 `esbuild@0.27.7` 的 low 告警。最终结论为 **GO**，不触发新的部署。
 
 ## 5. 检查点
 
@@ -1147,10 +1153,10 @@ flowchart TD
 - **CP9E（T65）：** 两仓全门只能形成新的本地候选，不代表已 commit、push、Pages 发布或 Worker 部署。
 - **执行结论（2026-08-11）：** CP9-local 已闭合；本地门与用户视觉审批均完成，T66-T68 未执行。
 
-### CP10：一次性远端迁移与发布门（T66-T68，全部 HOLD）
+### CP10：一次性远端迁移与发布门（已完成：GO）
 
-- T66 必须先更新并验证 Worker；T67 才能发布第 20 节 Pages 与清理遗留目录。
-- 只有严格顺序、公开浏览器证据、兼容 Pages-only 回滚和最终 `@uxu-code:ship` 均闭合后，T68 才可能 GO。
+- 实际运行时顺序为先部署 Worker `1.1.0`、后发布 Pages `0.2.0` 并清理旧目录；公开根和控制台日志均正常。
+- 生产登录态 artifact 复制/版本/SHA-256 与设置界面证据已经闭合；兼容 Pages-only 与 Worker deployment 回滚保持可用，最终 `@uxu-code:ship` 结论 GO。
 
 ## 6. 计划测试文件
 
@@ -1219,14 +1225,15 @@ T49-T53 的定向合同固定复用：
 - 真实 Cast、PiP、PWA 安装、TV 与 Cloudflare 环境由用户部署后验收；本地证据不得冒充真实设备或生产证明。
 - `pagesVersion` 继续来自 UXUV-Pages `package.json`，只用于用户可见版本与兼容诊断；同版本允许内容修订。是否升版由 Pages 变更语义决定，不再触发 Worker 更新。
 - 第 20 节没有待补的产品决策；T64 图标候选和局部视觉基线已获用户明确批准。后续基线变更仍须重新审批，自动合同或截图工具不得代替用户批准。
-- 公开 `gh-pages` 遗留版本目录的实际删除只在 T67 执行；必须先确认 T66 目标 Worker 已更新且生产请求不再引用旧路径。
+- `gh-pages` 遗留版本目录已由 T67 清理；远端 tree 无 `0.1.2/` 或 `0.2.0/` 目录，生产请求使用公开根路径。
+- 用户指定的 Edge 登录态已完成生产 artifact 复制与设置界面复验：入口只显示首字母 `A`，设置页无版本区块；三种语言为同一 grid 行的三个等宽按钮，且无说明小字。
 - 任何固定提交中可达、但当前矩阵未覆盖的行为都自动扩大矩阵，而不是静默删减；若它需要非 13.3 架构差异，停止并请求修订 SPEC。
 
 ## 10. 完成与授权边界
 
 - 本计划获批后，只有用户明确调用 `@uxu-code:build`（或 `@uxu-code:build auto`）才允许开始本地实现。
 - 本地实现授权不包含 commit、push、Pages 发布、Worker 部署、真实 D1/Secret/Analytics Token 或生产切换。
-- T39 已按用户明确的单文件 Worker 交付边界完成本地/受控真实房间验证；T43-T45 是历史已完成事实。原 T46-T48 已取代且禁止执行；T64/T65 已完成，T66、T67、T68 分别是 Worker 更新、Pages 发布/远端目录删除和最终发布门 HOLD。
+- T39 已按用户明确的单文件 Worker 交付边界完成本地/受控真实房间验证；T43-T45 是历史已完成事实。原 T46-T48 已取代且禁止执行；T64-T68、生产登录态复验与 CP10 均已完成，最终发布门 GO。
 - 计划完成不等于产品完成；产品完成必须满足 SPEC 15.A-G、第 20 节和本计划 CP8-CP10。
 
 ## 11. 单模型对抗审查修订记录
