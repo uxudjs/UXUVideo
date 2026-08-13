@@ -2725,11 +2725,15 @@ function handleParallelSearch(request, requestId, session, env, body) {
     const budget = createRequestBudget({ maxSubrequests: profile.sources * 3, maxWaiting: profile.concurrency });
     let completedSources = 0;
     let totalVideosFound = 0;
+    let validSources = 0;
+    let failedSources = 0;
     send({ type: 'start', totalSources: sources.length, capability: profileCapability(profile) });
     await runConcurrent(sources, profile.concurrency, async (source) => {
+      let receivedValidResponse = false;
       try {
         for (let page = firstPage; page <= 3 && totalVideosFound < profile.videos; page += 1) {
           const result = await searchSourcePage(source, body.query.trim(), page, budget, signal);
+          receivedValidResponse = true;
           const remaining = Math.max(0, profile.videos - totalVideosFound);
           const videos = result.videos.slice(0, remaining);
           totalVideosFound += videos.length;
@@ -2742,10 +2746,29 @@ function handleParallelSearch(request, requestId, session, env, body) {
       } catch (error) {
         if (signal.aborted) throw error;
       }
+      if (receivedValidResponse) validSources += 1;
+      else failedSources += 1;
       completedSources += 1;
       send({ type: 'progress', completedSources, totalSources: sources.length, totalVideosFound });
     }, signal);
-    if (!signal.aborted) send({ type: 'complete', totalVideosFound, totalSources: sources.length, maxPageCount: 3 });
+    if (signal.aborted) return;
+    if (validSources === 0 && failedSources > 0) {
+      console.log(JSON.stringify({
+        event: 'search.sources_unavailable', requestId, routeId: 'search-parallel',
+        errorCode: 'SEARCH_SOURCES_UNAVAILABLE', failedSources, totalSources: sources.length,
+      }));
+      send({
+        type: 'error',
+        error: {
+          code: 'SEARCH_SOURCES_UNAVAILABLE',
+          message: 'No video source returned a valid search response.',
+          requestId,
+          details: { failedSources, totalSources: sources.length },
+        },
+      });
+      return;
+    }
+    send({ type: 'complete', totalVideosFound, totalSources: sources.length, maxPageCount: 3 });
   });
 }
 

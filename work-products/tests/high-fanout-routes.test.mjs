@@ -171,6 +171,51 @@ test('search preserves a custom imported PHP endpoint', async () => {
   assert.equal(calls[0], 'https://api.example/inc/apijson.php?ac=videolist&wd=test&pg=1');
 });
 
+test('search reports an error instead of an empty result when every source response is invalid', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await viewerSession(env);
+  const result = await withFetchStub(async () => Response.json([{
+    id: 'catalog-source',
+    name: 'Catalog source',
+    baseUrl: 'https://catalog.example/api.php/provide/vod',
+  }]), async () => {
+    const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
+      body: { query: 'test', sources: [source(1)], page: 1 },
+    }), env, {});
+    return { status: response.status, text: await response.text() };
+  });
+
+  assert.equal(result.status, 200);
+  const events = sseData(result.text);
+  const error = events.find(({ type }) => type === 'error');
+  assert.equal(error?.error?.code, 'SEARCH_SOURCES_UNAVAILABLE');
+  assert.equal(typeof error?.error?.requestId, 'string');
+  assert.deepEqual(error?.error?.details, { failedSources: 1, totalSources: 1 });
+  assert.equal(events.some(({ type }) => type === 'complete'), false);
+});
+
+test('search still completes when at least one source returns a valid empty response', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await viewerSession(env);
+  const result = await withFetchStub(async (url) => (
+    new URL(String(url)).hostname === 'source-1.example'
+      ? Response.json([{ id: 'not-a-search-response' }])
+      : Response.json({ code: 1, pagecount: 1, list: [] })
+  ), async () => {
+    const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
+      body: { query: 'test', sources: [source(1), source(2)], page: 1 },
+    }), env, {});
+    return { status: response.status, text: await response.text() };
+  });
+
+  assert.equal(result.status, 200);
+  const events = sseData(result.text);
+  assert.equal(events.some(({ type }) => type === 'error'), false);
+  assert.deepEqual(events.at(-1), { type: 'complete', totalVideosFound: 0, totalSources: 2, maxPageCount: 3 });
+});
+
 test('premium aggregation requires server-side authorization and avoids Node Buffer', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db, { PREMIUM_PASSWORD: 'premium-password' });
