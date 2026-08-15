@@ -180,6 +180,16 @@ test('supports the five-case Pages compatibility migration matrix', async () => 
   assert.equal(JSON.parse(incompatible.messages[0]).failureReason, 'MANIFEST_RANGE_INCOMPATIBLE');
 });
 
+test('static CSP permits browser-direct HTTPS media without wildcard sources', async () => {
+  const { response } = await dispatch('/');
+  const policy = response.headers.get('Content-Security-Policy') ?? '';
+
+  assert.match(policy, /(?:^|; )media-src 'self' blob: https:(?:;|$)/);
+  assert.match(policy, /(?:^|; )connect-src 'self' https:(?: |;|$)/);
+  assert.doesNotMatch(policy, /(?:^|\s)\*(?:\s|;|$)/);
+  assert.doesNotMatch(policy, /(?:^|\s)http:(?:\s|;|$)/);
+});
+
 test('rejects invalid version and incompatible API or Worker ranges', async () => {
   await assert.rejects(
     validatePagesManifest(bytes(manifestFixture({ pagesVersion: 'latest' }))),

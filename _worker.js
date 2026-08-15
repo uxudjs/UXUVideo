@@ -1,4 +1,4 @@
-const WORKER_VERSION = '1.1.3';
+const WORKER_VERSION = '1.1.4';
 const API_CONTRACT_VERSION = '1';
 const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
 const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
@@ -3895,8 +3895,8 @@ function staticContentSecurityPolicy(env = {}) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    "media-src 'self' blob:",
-    "connect-src 'self'",
+    "media-src 'self' blob: https:",
+    "connect-src 'self' https:",
     "frame-src 'self'",
     "worker-src 'self' blob:",
     "manifest-src 'self'",

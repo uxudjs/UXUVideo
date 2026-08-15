@@ -78,7 +78,7 @@ test('app update checks the fixed configured repository with a bounded JSON resp
 
   assert.equal(response.status, 200);
   const body = await response.json();
-  assert.equal(body.currentVersion, '1.1.3');
+  assert.equal(body.currentVersion, '1.1.4');
   assert.equal(body.latestVersion, '1.2.0');
   assert.equal(body.status, 'update-available');
   assert.equal(body.checkedRemotely, true);

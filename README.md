@@ -2,7 +2,7 @@
 
 UXUVideo 现在由一个自包含的 Cloudflare Worker 与一个可独立发布的静态前端组成：
 
-- 后端与静态入口：[`_worker.js`](./_worker.js)，版本 `1.1.3`，API Contract `1`。
+- 后端与静态入口：[`_worker.js`](./_worker.js)，版本 `1.1.4`，API Contract `1`。
 - 前端：UXUV-Pages，固定公开根基址 `https://uxudjs.github.io/UXUV-Pages/`，不再使用版本目录。
 - 数据：Cloudflare D1；不再使用 Next.js、Node 服务端或 Upstash Redis。
 
