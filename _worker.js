@@ -1,4 +1,4 @@
-const WORKER_VERSION = '1.1.2';
+const WORKER_VERSION = '1.1.3';
 const API_CONTRACT_VERSION = '1';
 const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
 const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
@@ -3334,8 +3334,15 @@ async function mediaUpstream(request, requestId, routeId, options, env) {
     budget: createRequestBudget({ maxSubrequests: 4, maxWaiting: 1 }),
   });
   if (!upstream.ok && upstream.status !== 206) {
+    const upstreamStatus = upstream.status;
     await upstream.body?.cancel();
-    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${upstream.status}.`, 502);
+    if (routeId === 'proxy' && upstreamStatus === 403) {
+      const headers = responseHeaders(requestId, 'text/plain; charset=utf-8');
+      headers.set('Location', options.target);
+      sameOriginCors(request, headers);
+      return new Response(null, { status: 307, headers });
+    }
+    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${upstreamStatus}.`, 502);
   }
   const contentType = upstream.headers.get('Content-Type') || '';
   if (isMediaManifest(options.target, contentType)) {

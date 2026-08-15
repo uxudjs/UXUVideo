@@ -77,6 +77,30 @@ test('proxy requires a session, rewrites HLS children with scoped tokens, and sk
   }
 });
 
+test('proxy redirects authenticated media to the validated upstream when Cloudflare is denied', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await login(env);
+  const target = 'https://media.example/movie.m3u8';
+  const request = () => new Request(`${ORIGIN}/api/proxy?url=${encodeURIComponent(target)}`, {
+    headers: { Cookie: cookie, Origin: ORIGIN, Range: 'bytes=0-1' },
+  });
+
+  const redirected = await withFetchStub(async () => new Response(null, { status: 403 }), () => (
+    worker.fetch(request(), env, {})
+  ));
+  assert.equal(redirected.status, 307);
+  assert.equal(redirected.headers.get('Location'), target);
+  assert.equal(redirected.headers.get('Access-Control-Allow-Origin'), ORIGIN);
+  assert.equal(redirected.headers.get('Cache-Control'), 'no-store');
+
+  const unauthorized = await withFetchStub(async () => new Response(null, { status: 401 }), () => (
+    worker.fetch(request(), env, {})
+  ));
+  assert.equal(unauthorized.status, 502);
+  assert.equal((await unauthorized.json()).error.code, 'UPSTREAM_HTTP_ERROR');
+});
+
 test('proxy preserves Range bytes and cancelling the response cancels upstream with one termination log', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db);
