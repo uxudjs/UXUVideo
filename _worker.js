@@ -1,4 +1,4 @@
-const WORKER_VERSION = '1.1.0';
+const WORKER_VERSION = '1.1.1';
 const API_CONTRACT_VERSION = '1';
 const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
 const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
@@ -846,11 +846,11 @@ function normalizeUsername(value) {
     : '';
 }
 
-async function readJsonBody(request) {
+async function readJsonBody(request, maximumBytes = AUTH_BODY_MAX_BYTES) {
   const declaredLength = Number(request.headers.get('Content-Length'));
-  if (Number.isFinite(declaredLength) && declaredLength > AUTH_BODY_MAX_BYTES) return null;
+  if (Number.isFinite(declaredLength) && declaredLength > maximumBytes) return null;
   const text = await request.text();
-  if (new TextEncoder().encode(text).byteLength > AUTH_BODY_MAX_BYTES) return null;
+  if (new TextEncoder().encode(text).byteLength > maximumBytes) return null;
   try {
     const value = JSON.parse(text);
     return isRecord(value) ? value : null;
@@ -3026,7 +3026,9 @@ async function handleHighFanoutRoute(request, env, requestId, route) {
     return authFailureResult(requestId, route.id, 403, 'PREMIUM_REQUIRED', 'Premium access is required.');
   }
   try {
-    const body = request.method === 'POST' && jsonRequest(request) ? await readJsonBody(request) : null;
+    const body = request.method === 'POST' && jsonRequest(request)
+      ? await readJsonBody(request, D1_LIMITS.documentMaxBytes)
+      : null;
     if (request.method === 'POST' && !body) throw new UpstreamError('INVALID_REQUEST', 'JSON request body is invalid.', 400);
     const profile = sessionProfile(session, env);
     if (route.id === 'search-parallel') return handleParallelSearch(request, requestId, session, env, body);

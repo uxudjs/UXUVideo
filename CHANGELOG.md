@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.1.1 - 2026-08-15
+
+- 修复网页账户导入较大订阅源集合后，搜索请求被 16 KiB 认证请求体上限误拒绝；高扇出请求沿用 512 KiB 用户文档边界，账户源数、并发与权限上限不变。
+
 ## 1.1.0 - 2026-08-13
 
 - Worker 改为从 GitHub Pages 根目录动态读取清单，按语义版本、API Contract 与 `workerRange` 判断兼容，不再固定 Pages 版本、commit、manifest SHA-256 或资产 SHA/SRI。

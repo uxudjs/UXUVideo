@@ -115,7 +115,7 @@ async function dispatch(path, method) {
 function assertVersionHeaders(response) {
   const requestId = response.headers.get('X-Request-Id');
   assert.match(requestId ?? '', REQUEST_ID_PATTERN);
-  assert.equal(response.headers.get('X-UXUV-Worker-Version'), '1.1.0');
+  assert.equal(response.headers.get('X-UXUV-Worker-Version'), '1.1.1');
   assert.equal(response.headers.get('X-UXUV-Pages-Version'), null);
   assert.equal(response.headers.get('X-UXUV-API-Contract'), '1');
   return requestId;
@@ -229,7 +229,7 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
   const publicResponse = await fetchWorker(new Request('https://worker.example/api/config'), env);
   assert.equal(publicResponse.status, 200);
   const publicConfig = await publicResponse.json();
-  assert.deepEqual(publicConfig.release, { worker: '1.1.0', pages: PAGES_VERSION, apiContract: 1 });
+  assert.deepEqual(publicConfig.release, { worker: '1.1.1', pages: PAGES_VERSION, apiContract: 1 });
   assert.deepEqual(publicConfig.site, {
     name: 'Family Video',
     title: 'Family Video Library',

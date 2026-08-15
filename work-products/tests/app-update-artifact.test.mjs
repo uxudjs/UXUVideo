@@ -38,7 +38,7 @@ function request(cookie = '') {
   return new Request(`${ORIGIN}/api/app-update?artifact=worker`, { headers: { Cookie: cookie } });
 }
 
-function release(version = '1.1.0') {
+function release(version = '1.1.1') {
   return {
     currentVersion: version,
     releases: [{ version, publishedAt: '2026-08-11', title: 'Release', notes: [] }],
@@ -61,7 +61,7 @@ test('artifact download requires authentication before contacting GitHub', async
 test('artifact download returns exact verified Worker bytes and safety headers', async () => {
   const env = environment(createAuthD1Stub().db);
   const cookie = await login(env);
-  const source = "const WORKER_VERSION = '1.1.0';\nexport default { fetch() {} };\n";
+  const source = "const WORKER_VERSION = '1.1.1';\nexport default { fetch() {} };\n";
   const calls = [];
   const response = await withFetchStub(async (input, init = {}) => {
     const url = String(input);
@@ -81,7 +81,7 @@ test('artifact download returns exact verified Worker bytes and safety headers',
   assert.equal(response.headers.get('Content-Type'), 'text/javascript; charset=utf-8');
   assert.equal(response.headers.get('Cache-Control'), 'private, no-store');
   assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
-  assert.equal(response.headers.get('X-UXUVideo-Worker-Version'), '1.1.0');
+  assert.equal(response.headers.get('X-UXUVideo-Worker-Version'), '1.1.1');
   assert.equal(response.headers.get('X-UXUVideo-Worker-SHA256'), createHash('sha256').update(source).digest('hex'));
   assert.deepEqual(calls.map(({ url }) => url), [MANIFEST_PATH, SOURCE_PATH]);
   assert.ok(calls.every(({ redirect }) => redirect === 'manual'));
@@ -90,13 +90,13 @@ test('artifact download returns exact verified Worker bytes and safety headers',
 test('artifact download falls back to package.json when release manifest is missing', async () => {
   const env = environment(createAuthD1Stub().db);
   const cookie = await login(env);
-  const source = "const WORKER_VERSION = '1.1.0';\nexport default { fetch() {} };\n";
+  const source = "const WORKER_VERSION = '1.1.1';\nexport default { fetch() {} };\n";
   const calls = [];
   const response = await withFetchStub(async (input) => {
     const url = String(input);
     calls.push(url);
     if (url === MANIFEST_PATH) return new Response('Not Found', { status: 404 });
-    if (url === PACKAGE_PATH) return Response.json({ version: '1.1.0' });
+    if (url === PACKAGE_PATH) return Response.json({ version: '1.1.1' });
     if (url === SOURCE_PATH) return new Response(source);
     throw new Error(`unexpected URL ${url}`);
   }, () => worker.fetch(request(cookie), env, {}));
@@ -127,7 +127,7 @@ test('artifact download fails closed when source and release versions differ', a
   const env = environment(createAuthD1Stub().db);
   const cookie = await login(env);
   const response = await withFetchStub(async (input) => {
-    if (String(input) === MANIFEST_PATH) return Response.json(release('1.1.0'));
+    if (String(input) === MANIFEST_PATH) return Response.json(release('1.1.1'));
     return new Response("const WORKER_VERSION = '1.0.9';\n");
   }, () => worker.fetch(request(cookie), env, {}));
 

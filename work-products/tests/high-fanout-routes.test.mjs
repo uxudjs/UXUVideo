@@ -54,6 +54,15 @@ const source = (index) => ({
   enabled: true,
 });
 
+const importedSource = (index) => ({
+  ...source(index),
+  updatedAt: 1_700_000_000_000 + index,
+  name: `Imported source ${index}`,
+  group: 'normal',
+  kind: 'personal',
+  priority: index + 1,
+});
+
 function sseData(text) {
   return text.split(/\r?\n/).filter((line) => line.startsWith('data: ')).map((line) => JSON.parse(line.slice(6)));
 }
@@ -125,6 +134,44 @@ test('paid search caps imported collections at 32 sources, six-way concurrency, 
   assert.equal(videos.length, 2_000);
   assert.ok(maximumActive <= 6, `observed ${maximumActive} concurrent upstreams`);
   assert.deepEqual(events.at(-1), { type: 'complete', totalVideosFound: 2_000, totalSources: 32, maxPageCount: 3 });
+});
+
+test('search accepts a full imported collection before applying the paid source cap', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await login(env);
+  const body = { query: 'test', sources: Array.from({ length: 78 }, (_, index) => importedSource(index)), page: 1 };
+  assert.ok(new TextEncoder().encode(JSON.stringify(body)).byteLength > 16 * 1024);
+  let fetches = 0;
+  const result = await withFetchStub(async () => {
+    fetches += 1;
+    return Response.json({ code: 1, pagecount: 1, list: [] });
+  }, async () => {
+    const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, { body }), env, {});
+    return { status: response.status, text: await response.text() };
+  });
+
+  assert.equal(result.status, 200);
+  const events = sseData(result.text);
+  assert.equal(events[0].totalSources, 32);
+  assert.equal(fetches, 32);
+});
+
+test('high-fanout JSON bodies remain bounded to the saved-document limit', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await login(env);
+  let fetches = 0;
+  const response = await withFetchStub(async () => {
+    fetches += 1;
+    return Response.json({ code: 1, pagecount: 1, list: [] });
+  }, () => worker.fetch(apiRequest('/api/search-parallel', cookie, {
+    body: { query: 'test', sources: [source(1)], padding: 'x'.repeat(512 * 1024) },
+  }), env, {}));
+
+  assert.equal(response.status, 400);
+  assert.equal(await sseErrorCode(response), 'INVALID_REQUEST');
+  assert.equal(fetches, 0);
 });
 
 test('search treats an imported full endpoint as the request target', async () => {
