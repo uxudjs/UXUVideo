@@ -1,4 +1,4 @@
-const WORKER_VERSION = '1.1.1';
+const WORKER_VERSION = '1.1.2';
 const API_CONTRACT_VERSION = '1';
 const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
 const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
@@ -3043,18 +3043,15 @@ async function handleHighFanoutRoute(request, env, requestId, route) {
 
 const MEDIA_TOKEN_TTL_MS = 10 * 60 * 1000;
 const MEDIA_MANIFEST_BYTES = 1024 * 1024;
-const MEDIA_MANIFEST_URI_LIMIT = 512;
+const MEDIA_MANIFEST_URI_LIMIT = 2_048;
 
 function mediaTokenPayload(scope, target, userAgent, referer, expiresAt) {
   return new TextEncoder().encode(`${scope}\n${target}\n${userAgent}\n${referer}\n${expiresAt}`);
 }
 
-async function signMediaToken(secret, scope, target, userAgent, referer, expiresAt) {
-  if (typeof secret !== 'string' || secret.length < 32) {
-    throw new UpstreamError('SIGNING_UNAVAILABLE', 'Media signing configuration is invalid.', 503);
-  }
+async function signMediaToken(signingKey, scope, target, userAgent, referer, expiresAt) {
   const signature = new Uint8Array(await crypto.subtle.sign(
-    'HMAC', await hmacKey(secret), mediaTokenPayload(scope, target, userAgent, referer, expiresAt),
+    'HMAC', signingKey, mediaTokenPayload(scope, target, userAgent, referer, expiresAt),
   ));
   return `${expiresAt}.${bytesToBase64(signature).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
 }
@@ -3177,8 +3174,8 @@ function isMediaManifest(target, contentType) {
     || /(?:mpegurl|x-mpegurl|x-scpls)/i.test(contentType);
 }
 
-async function mediaChildPath(routeId, target, userAgent, referer, secret, expiresAt, adFilterMode, adKeywords) {
-  const token = await signMediaToken(secret, routeId, target, userAgent, referer, expiresAt);
+async function mediaChildPath(routeId, target, userAgent, referer, signingKey, expiresAt, adFilterMode, adKeywords) {
+  const token = await signMediaToken(signingKey, routeId, target, userAgent, referer, expiresAt);
   const query = new URLSearchParams({ url: target, token });
   if (userAgent) query.set('ua', userAgent);
   if (referer) query.set('referer', referer);
@@ -3285,6 +3282,10 @@ export function filterMediaManifest(content, mode = 'off', keywords = []) {
 async function rewriteMediaManifest(content, target, routeId, userAgent, referer, secret, adFilterMode, adKeywords) {
   const lines = filterMediaManifest(content, adFilterMode, adKeywords).split(/\r?\n/);
   const expiresAt = Date.now() + MEDIA_TOKEN_TTL_MS;
+  if (typeof secret !== 'string' || secret.length < 32) {
+    throw new UpstreamError('SIGNING_UNAVAILABLE', 'Media signing configuration is invalid.', 503);
+  }
+  const signingKey = await hmacKey(secret);
   let rewrittenUris = 0;
   const child = async (value) => {
     rewrittenUris += 1;
@@ -3292,7 +3293,7 @@ async function rewriteMediaManifest(content, target, routeId, userAgent, referer
       throw new UpstreamError('MEDIA_MANIFEST_TOO_COMPLEX', 'Media manifest contains too many child resources.', 413);
     }
     return mediaChildPath(
-      routeId, validateUpstreamUrl(value, new URL(target)).href, userAgent, referer, secret, expiresAt,
+      routeId, validateUpstreamUrl(value, new URL(target)).href, userAgent, referer, signingKey, expiresAt,
       adFilterMode, adKeywords,
     );
   };

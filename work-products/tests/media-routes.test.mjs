@@ -151,6 +151,25 @@ test('proxy applies bounded ad filtering before same-origin child rewriting and 
   assert.deepEqual(childUrl.searchParams.getAll('adkw'), ['sponsor']);
 });
 
+test('proxy rewrites a production-sized VOD manifest with 1,651 child resources', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await login(env);
+  const target = 'https://media.example/movie.m3u8';
+  const segments = Array.from({ length: 1_651 }, (_value, index) => `#EXTINF:5,\nsegment-${index}.ts`);
+  const manifest = `#EXTM3U\n${segments.join('\n')}\n#EXT-X-ENDLIST`;
+  const response = await withFetchStub(async () => new Response(manifest, {
+    headers: { 'Content-Type': 'application/vnd.apple.mpegurl' },
+  }), () => worker.fetch(new Request(
+    `${ORIGIN}/api/proxy?url=${encodeURIComponent(target)}`,
+    { headers: { Cookie: cookie } },
+  ), env, {}));
+
+  assert.equal(response.status, 200);
+  const rewritten = await response.text();
+  assert.equal([...rewritten.matchAll(/\/api\/proxy\?/g)].length, 1_651);
+});
+
 test('IPTV playlist requires iptv_access, validates headers, and uses a bounded isolate cache', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db);

@@ -35,17 +35,17 @@ test("Worker has no npm or local runtime dependency", () => {
   assert.equal(packageJson.scripts["check:size"], "node scripts/check-worker-size.mjs");
 });
 
-test("Worker release version 1.1.1 is synchronized", () => {
+test("Worker release version 1.1.2 is synchronized", () => {
   const workerVersion = /const WORKER_VERSION = ['"]([^'"]+)['"]/.exec(read("_worker.js"))?.[1];
   const packageVersion = JSON.parse(read("package.json")).version;
   const packageLock = JSON.parse(read("package-lock.json"));
 
-  assert.equal(workerVersion, "1.1.1");
+  assert.equal(workerVersion, "1.1.2");
   assert.equal(packageVersion, workerVersion);
   assert.equal(packageLock.version, workerVersion);
   assert.equal(packageLock.packages[""].version, workerVersion);
-  assert.match(read("README.md"), /版本 `1\.1\.1`/);
-  assert.match(read("CHANGELOG.md"), /## 1\.1\.1 - 2026-08-15/);
+  assert.match(read("README.md"), /版本 `1\.1\.2`/);
+  assert.match(read("CHANGELOG.md"), /## 1\.1\.2 - 2026-08-15/);
 });
 
 test("compressed Worker stays below the 3 MiB upload boundary", () => {
