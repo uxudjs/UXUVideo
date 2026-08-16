@@ -3334,15 +3334,14 @@ async function mediaUpstream(request, requestId, routeId, options, env) {
     budget: createRequestBudget({ maxSubrequests: 4, maxWaiting: 1 }),
   });
   if (!upstream.ok && upstream.status !== 206) {
-    const upstreamStatus = upstream.status;
     await upstream.body?.cancel();
-    if (routeId === 'proxy' && upstreamStatus === 403) {
+    if (routeId === 'proxy' && upstream.status === 403) {
       const headers = responseHeaders(requestId, 'text/plain; charset=utf-8');
       headers.set('Location', options.target);
       sameOriginCors(request, headers);
       return new Response(null, { status: 307, headers });
     }
-    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${upstreamStatus}.`, 502);
+    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${upstream.status}.`, 502);
   }
   const contentType = upstream.headers.get('Content-Type') || '';
   if (isMediaManifest(options.target, contentType)) {
