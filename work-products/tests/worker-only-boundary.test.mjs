@@ -86,3 +86,21 @@ test("Worker and Pages deployment contract is documented", () => {
   assert.match(spec, /只有已读取并验证当前 Pages 清单的静态 Pages 响应与 `\/api\/config` 才带 `X-UXUV-Pages-Version`/);
   assert.match(spec, /其他 API 不回报未验证、过期或硬编码的 Pages 版本/);
 });
+
+test("README leads users through the account-scoped source flow and states responsibility boundaries", () => {
+  const readme = read("README.md");
+  for (const term of [
+    "## 普通用户：从这里开始",
+    "GitHub Pages 不是应用入口",
+    "设置 → 视频源管理 → 导入 → 订阅",
+    "账户 D1 配置文档",
+    "`SUBSCRIPTION_SOURCES` 仅用于部署者提供统一的系统预设订阅",
+    "不提供、不托管、不分发任何视频内容或订阅源",
+    "不构成对可用性、合法性或生产适用性的保证",
+  ]) assert.match(readme, new RegExp(term));
+
+  assert.ok(
+    readme.indexOf("## 普通用户：从这里开始") < readme.indexOf("## 部署者：5 分钟部署"),
+    "the ordinary user journey must appear before deployment details",
+  );
+});
