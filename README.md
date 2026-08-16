@@ -1,109 +1,86 @@
-# UXUVideo Worker
+# UXUVideo
 
-UXUVideo 是一个自托管的网页视频聚合界面：一个 Cloudflare Worker 提供登录、API、D1 数据与同源页面入口，UXUV-Pages 提供可独立发布的静态前端。
+基于 Cloudflare Workers 与 D1 的自托管视频聚合应用，提供多来源搜索、在线播放、账号管理和跨设备同步。当前 Worker 版本 `1.1.4`。
 
-- 后端与静态入口：[`_worker.js`](./_worker.js)，版本 `1.1.4`，API Contract `1`。
-- 前端：UXUV-Pages，固定公开根基址 `https://uxudjs.github.io/UXUV-Pages/`，不再使用版本目录。
-- 数据：Cloudflare D1；不再使用 Next.js、Node 服务端或 Upstash Redis。
+应用界面由 UXUV-Pages 提供，实际使用请访问你部署的 Worker 域名。本项目不内置视频内容或订阅源，部署后需自行配置合法来源。
 
-Worker 会校验 Pages release manifest 的语义版本、API Contract、`workerRange`、路由、MIME 与大小边界，再从自身域名流式提供页面和 API。它不固定 Pages commit 或 SHA，也不向公开 Pages 发送 Cookie、Authorization、Token、Secret 或对接密钥。直接访问 GitHub Pages 只显示部署指引，不建立认证会话。
+### 主要功能
 
-> **项目声明：**本项目不提供、不托管、不分发任何视频内容或订阅源。部署者与用户只能接入自己有权使用且允许当前部署方式访问的来源；本项目不构成对可用性、合法性或生产适用性的保证。完整边界见[项目声明、安全与许可](#项目声明安全与许可)。
+- 🔍 **聚合搜索** - 同时搜索多个视频源，并按来源、类型、语言等条件筛选结果
+- ▶️ **在线播放** - 支持常见 HLS 视频、播放记录、收藏、弹幕与广告关键词过滤
+- 👤 **账号管理** - 支持管理员与普通账号，来源、收藏和历史记录按账号隔离
+- ☁️ **跨设备同步** - 账号设置与资料通过部署者自己的 D1 数据库同步
+- 📺 **扩展体验** - 支持 IPTV、Premium、PWA、电视遥控导航和 VideoTogether 一起看
+- 🌐 **多语言界面** - 支持简体中文、繁体中文和英语
 
-## 普通用户：从这里开始
+### 部署使用
 
-1. 打开部署者提供的 **Cloudflare Worker 域名**。GitHub Pages 不是应用入口；直接访问 `https://uxudjs.github.io/UXUV-Pages/` 只显示部署指引，不会建立认证会话。
-2. 使用部署者提供的账户登录。首次部署默认用户名为 `admin`，密码为部署者设置的 `ADMIN_PASSWORD`。
-3. 点击右上角的用户首字符进入设置。单独添加来源时，在“个人视频源”填写名称与 HTTPS 接口地址。
-4. 导入 JSON 订阅时，依次进入“设置 → 视频源管理 → 导入 → 订阅”，填写名称与订阅链接，选择“预览并添加订阅”，确认后导入有效来源。也可以在“导入”中粘贴 JSON、选择 JSON 文件或填写来源链接。
-5. 等待设置页显示同步完成，然后返回首页搜索。第三方链接由已登录 Worker 在限制内读取，浏览器不会直接读取订阅链接。
+#### 1. 准备配置
 
-更改会先保存在当前设备，再通过 Worker 同步到当前账户 D1 配置文档。账户自己的来源与订阅以网页设置和账户 D1 配置文档为准，不要写入 `_worker.js`、公开 Pages、README 或 Git 仓库。`SUBSCRIPTION_SOURCES` 仅用于部署者提供统一的系统预设订阅，不是普通用户的配置入口，也不应存放私人订阅。
+- 创建 Cloudflare D1 数据库，并以 `DB` 绑定到 Worker
+- 设置 `ADMIN_PASSWORD` 作为首次管理员密码
+- 设置不少于 32 字符的高强度 `AUTH_SECRET`
 
-## 部署者：5 分钟部署
+#### 2. 创建 Worker
 
-1. 在 Cloudflare 创建 Worker，并将 `_worker.js` 作为完整 Worker 源码。
-2. 创建 D1 数据库，将 Worker 的 D1 binding 命名为 `DB`。
-3. 配置下面两个必需 Secret。
-4. 部署 Worker，访问 Worker 自身域名；首次登录默认用户名为 `admin`，密码为 `ADMIN_PASSWORD`。
-5. 登录后在网页设置中添加账户、来源和订阅；不要把真实账户数据或私人订阅写入源码。
+在 Cloudflare Dashboard 新建 Worker，粘贴仓库根目录的 [`_worker.js`](./_worker.js)，绑定 `DB` 并添加上述两个 Secret，然后部署。
 
-不要把密码、Token、订阅源或真实账户数据提交到仓库。D1 表和索引由 Worker 在首次需要时幂等创建。
+#### 3. 首次登录
 
-缺少 `DB`、`ADMIN_PASSWORD`，或 `AUTH_SECRET` 少于 32 字符时，认证会失败关闭并显示配置缺失。首次成功登录会在空 D1 中创建 `super_admin` 账户；D1 已存在任一账户后，`ADMIN_PASSWORD` 不再用于创建新的引导账户，现有账户使用 D1 中保存的密码凭据验证。
+访问 Worker 域名，使用用户名 `admin` 和 `ADMIN_PASSWORD` 登录。首次登录会创建管理账号，之后请在应用设置中新增和管理其他账号。
 
-### 必需 Secret
+`https://uxudjs.github.io/UXUV-Pages/` 是公开界面资源地址，GitHub Pages 不是应用入口；直接访问只会显示部署提示。
 
-| 名称 | 用途 |
-| --- | --- |
-| `ADMIN_PASSWORD` | 首个超级管理员的引导密码；D1 出现账户后不再用于新增引导账户 |
-| `AUTH_SECRET` | 会话、限流键和媒体访问 token 的签名材料；必须使用至少 32 字符的高熵随机值 |
+### 使用方法
 
-### 可选 Secret
+1. 登录后点击右上角的用户首字符进入设置。
+2. 添加单个来源：在“个人视频源”填写名称和 HTTPS 接口地址。
+3. 添加订阅：进入“设置 → 视频源管理 → 导入 → 订阅”，填写名称和链接，预览后导入有效来源。
+4. 等待设置页显示同步完成，返回首页即可搜索和播放。
 
-| 名称 | 用途 |
-| --- | --- |
-| `PREMIUM_PASSWORD` | Premium 会话验证 |
-| `CF_ANALYTICS_API_TOKEN` | super_admin 用量面板的只读 Cloudflare Analytics Token |
+网页设置是普通用户配置视频源和订阅的入口。同一账号的设置会通过部署者的 D1 数据库同步，方便在不同设备继续使用。订阅链接由 Worker 读取，浏览器不会直接请求该链接。
 
-Cloudflare 用量功能采用全有或全无配置。设置 `CF_ANALYTICS_API_TOKEN` 时，还必须同时设置 `CF_ACCOUNT_ID`、`CF_WORKER_SCRIPT_NAME` 和 `CF_D1_DATABASE_ID`；缺少任意一项时，设置页显示“未配置”，不会发出 Analytics 请求。
+`SUBSCRIPTION_SOURCES` 仅适合部署者提供统一预设；个人或家庭账号应在网页中分别维护自己的来源和订阅。不要把密码、Token、私人订阅或真实账号数据写入源码或提交到仓库。
 
-### 普通变量
+### 环境变量
 
-| 名称 | 用途 |
-| --- | --- |
-| `ADMIN_USERNAME` / `ADMIN_DISPLAY_NAME` | 首个管理员用户名与显示名 |
-| `CF_ACCOUNT_ID` | 用量查询所属账户 |
-| `CF_WORKER_SCRIPT_NAME` | 当前 Worker 脚本名 |
-| `CF_D1_DATABASE_ID` | 当前项目使用的 D1 数据库 ID |
-| `SITE_NAME` / `SITE_TITLE` / `SITE_DESCRIPTION` / `SITE_ICON_URL` | 站点品牌信息 |
-| `SUBSCRIPTION_SOURCES` | 部署者统一提供的系统预设订阅；认证后受控导入并同步到账户配置 |
-| `IPTV_SOURCES` | 有 `iptv_access` 权限的账户可见的 IPTV 系统预设 |
-| `DANMAKU_API_URL` | 弹幕聚合 API |
-| `MERGE_SOURCES` | `true` 或 `1` 时默认合并同名来源 |
-| `AD_KEYWORDS` | 逗号或换行分隔的广告关键词 |
-| `PERSIST_SESSION` | 设为 `false` 时使用非持久会话 Cookie |
-| `VIDEOTOGETHER_ENABLED` | 一起看默认可用；设为 `false` 或 `0` 时由部署管理员关闭 |
-| `VIDEOTOGETHER_SCRIPT_URL` / `VIDEOTOGETHER_SETTING_URL` | 可选 HTTPS 自定义覆盖；留空时使用 `_worker.js` 内置的固定官方入口，账户内开关仍默认关闭 |
+| 名称 | 类型 | 必填 | 默认值 | 说明 |
+| :--- | :---: | :---: | :--- | :--- |
+| `DB` | D1 绑定 | ✅ | 无 | 保存账号、会话和用户数据 |
+| `ADMIN_PASSWORD` | Secret | ✅ | 无 | 首次管理员登录密码 |
+| `AUTH_SECRET` | Secret | ✅ | 无 | 登录会话安全密钥，至少 32 字符 |
+| `ADMIN_USERNAME` | 变量 | ❌ | `admin` | 首次管理员用户名 |
+| `ADMIN_DISPLAY_NAME` | 变量 | ❌ | `admin` | 首次管理员显示名称 |
+| `PREMIUM_PASSWORD` | Secret | ❌ | 关闭 | Premium 访问密码 |
+| `SITE_NAME` / `SITE_TITLE` / `SITE_DESCRIPTION` / `SITE_ICON_URL` | 变量 | ❌ | 内置值 | 站点名称、标题、说明和图标 |
+| `SUBSCRIPTION_SOURCES` | 变量 | ❌ | 空 | 部署者统一提供的系统预设订阅 |
+| `IPTV_SOURCES` | 变量 | ❌ | 空 | IPTV 系统预设 |
+| `DANMAKU_API_URL` | 变量 | ❌ | 空 | 系统预设弹幕 API |
+| `MERGE_SOURCES` | 变量 | ❌ | `false` | 设为 `true` 或 `1` 时默认合并同名来源 |
+| `AD_KEYWORDS` | 变量 | ❌ | 空 | 逗号或换行分隔的广告关键词 |
+| `PERSIST_SESSION` | 变量 | ❌ | `true` | 设为 `false` 时关闭持久登录 |
+| `VIDEOTOGETHER_ENABLED` | 变量 | ❌ | `true` | 允许账号开启一起看；账号内默认关闭，设为 `false` 或 `0` 可全局禁用 |
+| `VIDEOTOGETHER_SCRIPT_URL` / `VIDEOTOGETHER_SETTING_URL` | 变量 | ❌ | 内置值 | 可选的 HTTPS 自定义入口 |
+| `CF_ANALYTICS_API_TOKEN` | Secret | ❌ | 关闭 | Cloudflare 用量面板的只读 Token |
+| `CF_ACCOUNT_ID` / `CF_WORKER_SCRIPT_NAME` / `CF_D1_DATABASE_ID` | 变量 | ❌ | 空 | 用量面板对应的账号、Worker 和 D1 标识 |
 
-VideoTogether 无需用户另找脚本 URL。账户管理员在应用的播放器设置中开启“一起看”后才会加载第三方脚本。官方入口的顶层文件已固定到 Git commit，但其上游 loader 仍可能请求 VideoTogether 自己维护的动态资源，因此不属于首方 Pages 完整性保证；不接受该边界时请设置 `VIDEOTOGETHER_ENABLED=false`。
+启用 Cloudflare 用量面板时，最后两行配置需要同时填写；未完整配置时，设置页会显示“未配置”。
 
-## Cloudflare Free 与用量
+### 使用限制
 
-当前实现以 Cloudflare Free 预算为保守目标：限制账户数、会话数、同步文档大小、写入频率、请求扇出、响应头等待和媒体清单大小。它是尽力而为的工程护栏，不是对未来套餐、真实来源质量或远端长连接稳定性的保证。
+- 项目以 Cloudflare Free 套餐和个人使用场景为主要目标，实际额度与计费以 Cloudflare 当前规则为准。
+- 搜索和播放质量取决于你配置的第三方来源；部分来源可能限制 Cloudflare 网络访问。
+- IPTV、弹幕和 VideoTogether 均为可选功能。VideoTogether 会加载其第三方资源，不需要时可通过 `VIDEOTOGETHER_ENABLED=false` 关闭。
 
-super_admin 设置页显示 Worker 请求、CPU、账户级 D1 行读写/存储，以及项目所用 D1 数据库的观测值。数据通过 Cloudflare GraphQL Analytics API 拉取，缓存 5 分钟；上游失败时最多回退 1 小时陈旧数据。Analytics Token 只用于 Worker 端请求，不进入 Pages、D1、缓存键或日志。
+### 更新与回滚
 
-## 本地验证
+- 界面的小版本更新通常会自动生效，无需重新配置账号或 D1。
+- 更新 Worker 前请保留当前 `_worker.js` 副本，然后在 Cloudflare Dashboard 替换源码并重新部署。
+- 如果新 Worker 出现问题，恢复上一份 `_worker.js` 即可；不要删除现有 D1 数据库或 Secret。
 
-无需安装运行时依赖：
+### 免责声明
 
-```powershell
-node --check _worker.js
-npm test
-npm run check:size
-```
-
-`npm test` 运行 `work-products/tests/` 中的 Worker 合同、D1、安全、预算、媒体、Pages 完整性与仓库边界测试。`check:size` 使用 gzip level 9 检查压缩后 Worker 是否小于 3 MiB。
-
-证据边界必须明确区分：
-
-- 本地单测只证明 fixture 与静态合同。
-- 本地 Pages Playwright 只证明静态导出、浏览器流程、无障碍和同源网络边界。
-- 只有单独授权的 Cloudflare 测试 Worker、测试 D1、真实 Analytics 和受控长流，才能证明远端行为。
-- 本地全绿不等于已 commit、已 push、已部署或生产可用。
-
-## 更新与回滚
-
-GitHub Pages 根目录只保留当前兼容产物，每次 GitHub Actions 运行的 artifact 负责审计与回滚。兼容的 Pages 小修订可以独立发布，不要求更新 Worker；`pagesVersion` 必须是语义版本，但同一版本允许修订当前内容。只有 API Contract 或 `workerRange` 不再兼容当前 Worker 时，才必须先更新并验证 Worker。公开 Pages 无需配置任何对接密钥。
-
-发布前保留上一份兼容 Pages artifact。若前端修订失败，重新发布上一份兼容 artifact 到 Pages 根目录并验证公开清单即可；只有 Worker 自身变更失败或兼容合同变化时才恢复上一版 `_worker.js`。`DB` binding、`ADMIN_PASSWORD`、`AUTH_SECRET` 及其他 Worker 私有配置不进入 Pages，本轮也未放宽其安全边界。D1 schema 变更必须保持向后兼容，回滚不得依赖破坏性迁移。
-
-## 项目声明、安全与许可
-
-- 本项目只提供自托管软件，不提供、不托管、不分发任何视频、直播、弹幕、元数据、订阅源或账户服务。
-- 内容、接口与订阅源的版权、许可、地区限制和服务条款由其各自权利人与提供方决定；部署者与用户负责确认并遵守适用法律及第三方条款。
-- 搜索、订阅导入与播放会让部署者的 Worker 向所选第三方来源发出请求；账户数据保存在部署者自己的 Cloudflare D1 中。部署者负责 Cloudflare 账户、访问控制、Secret、日志、数据保留与隐私告知。
-- Worker 会限制同源写入、私网目标、重定向、响应大小、超时、缓存和日志字段；这些保护只能降低风险，不能替代来源授权、账户安全或独立安全审查。
-- 第三方来源、Cloudflare 和 VideoTogether 的可用性及行为不受本项目控制。本地测试、Free 预算护栏或示例配置不构成服务等级、合规性、安全性或生产可用承诺。
-- 本项目沿用 [MIT License](./LICENSE)，保留原作者 Kuek Hao Yang 的版权归属，并按许可证“按原样”提供，不附带任何明示或默示担保。
+- 本项目仅供学习、研究与个人自托管使用，请遵守所在地法律法规以及内容来源的许可和服务条款。
+- 本项目不提供视频内容或订阅源，也不保证第三方来源、Cloudflare、IPTV、弹幕或 VideoTogether 的可用性。
+- 部署者负责保护 Cloudflare 账号、Secret 和用户数据，并自行承担使用第三方服务产生的费用与风险。
+- 本项目沿用 [MIT License](./LICENSE)，保留原作者 Kuek Hao Yang 的版权归属，并按许可证“按原样”提供。
