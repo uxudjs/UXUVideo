@@ -10,14 +10,21 @@ const root = fileURLToPath(new URL("../..", import.meta.url));
 const read = (path) => readFileSync(join(root, path), "utf8");
 
 test("repository product surface is Worker-only", () => {
-  const retiredDirectories = ["app", "components", "docs", "lib", "public", "tests", "types", "verification"];
+  const retiredDirectories = [
+    ".next", ".vercel", "app", "build", "components", "docs", "lib",
+    "node_modules", "out", "public", "tests", "types", "verification",
+  ];
   const tracked = execFileSync("git", ["ls-files", "--", ...retiredDirectories], { cwd: root, encoding: "utf8" })
     .split(/\r?\n/).filter(Boolean);
   assert.deepEqual(tracked.filter((path) => existsSync(join(root, path))), []);
+  assert.deepEqual(retiredDirectories.filter((path) => existsSync(join(root, path))), []);
 
   const retiredFiles = [
-    "app-release.json", "eslint.config.mjs", "eslint-suppressions.json", "next.config.ts",
-    "postcss.config.mjs", "tsconfig.json", ".npmrc", ".github/workflows/Github_Upstream_Sync.yml",
+    "app-release.json", "CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "SECURITY.md",
+    "eslint.config.mjs", "eslint-suppressions.json", "next.config.ts",
+    "postcss.config.mjs", "tsconfig.json", "next-env.d.ts", "tsconfig.tsbuildinfo",
+    "contrast-test-results.json", ".npmrc", ".github/pull_request_template.md",
+    ".github/workflows/Github_Upstream_Sync.yml",
   ];
   assert.deepEqual(retiredFiles.filter((path) => existsSync(join(root, path))), []);
   assert.equal(existsSync(join(root, "_worker.js")), true);
