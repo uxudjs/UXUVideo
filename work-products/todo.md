@@ -1,153 +1,83 @@
-# KVideo 4.9.19 完整复刻与定向 UI/更新任务清单
+# SPEC 第 21 节执行状态账本
 
-状态：**T54-T68、CP9-local 与 CP10-remote 均已完成；Worker 1.1.0、Pages 0.2.0 与生产 Edge 登录态复验已闭合；最终发布门 GO**。详细范围、验收、验证、依赖和回滚见 `work-products/plan.md`。
+状态：**LOCAL PLAN COMPLETE / VISUAL APPROVED / RELEASE HOLD**
 
-旧清单中已完成的 Worker/D1/登录/静态发布迁移继续作为架构基线；T42-T45 的 commit/SHA/pin 只记录 2026-08-10 的历史发布事实，不再是当前运行时发布合同。
+- 绑定计划：`work-products/plan.md`
+- 内部计划漂移检测：由机器证据处理，不作为人工审批门
+- 计划模式：`fast = false`
+- 安全并发上限：`1`
+- 唯一写入者：主代理
+- 当前批准：用户于 2026-08-19 明确批准当前及后续计划；人工审批只使用候选标签与可见预览
+- 替代关系：T08 attempt 1 已归档且 attempt 2 完成；T09 attempt 1 在业务写入前发现弹幕唯一入口/Premium 验证边界遗漏并归档；T10 attempt 1 在业务写入前发现 Premium 聚合目标与旧活动测试所有权冲突并归档；T11 attempt 1 在业务写入前发现 `MediaPlayer` 数据通路写集遗漏并归档；T13 attempt 1 的材质写入已保留并由 attempt 2 完成；T14 attempt 1 在业务写入前发现 fresh release 验证顺序与退休字段导入提示遗漏并归档；T14 attempt 2 的文档、导入提示、fresh release 与回滚证据写入已归档并由 attempt 3 接管；T15 attempt 1 的全量 E2E 在 117/122 暴露四项旧测试合同、两项真实布局遮挡、API 1 视觉 fixture 与成功性能 trace 缺口，已归档并由 attempt 2 精确接管；T15 attempt 2 的测试、API 2 候选与性能 trace 写入已归档并由 attempt 3 接管；T15 attempt 3 已修复播放器 sticky 顶栏纵向遮挡，但在 200% 文本缩放门发现播放器动作区、主题控件与历史浮动按钮产生 38 px 横向溢出，已归档并由 attempt 4 精确接管；T15 attempt 4 已闭合该 reflow，但内置浏览器在 320 px 测得历史浮动按钮与跳过设置入口相交 1900 px²，已归档并由 attempt 5 精确接管；T15 attempt 5 已闭合该碰撞，但正式全量 `123/124` 暴露标签管理旧绝对坐标断言未同步首页浮层避让，已归档并由 attempt 6 以 test-only 基线同步接管；attempt 6 已达成 `124/124`、fresh release 与候选冻结，但最终视觉抽检同时发现 320 px 历史浮动按钮与第三个可见标签相交 `252 px²`、英文移动播放器标题/控制区内部裁切，以及繁中播放器候选被滚动恢复竞态截走顶栏，现已归档并由 attempt 7 精确接管；attempt 7 已闭合三项视觉 blocker、达到正式 E2E `124/124` 并生成 fresh 性能 trace，但 Codex 内置浏览器在 320 px 经典滚动条下测得第二标签右侧 11 px 进入横向裁剪区，已归档并由 attempt 8 精确接管；attempt 8 已闭合经典滚动条边界并再次达到 `124/124`，但最终视觉抽检拒绝 320 px 搜索结果卡与两侧浮钮、1024 px 播放器来源卡与历史浮钮的交互遮挡，现已归档并由 attempt 9 精确接管；attempt 9 的 116 图批准仅保留为历史记录，后续产品、依赖、构建与测试字节变化使其不再覆盖当前候选；用户已固定 `esbuild@0.28.2` 并授权 attempt 10 重新生成收据；attempt 10 的 121 图候选已获得用户视觉批准；attempt 10 的收据与视觉批准已按原字节归档，review/debug 的产品与证据合同变更由 attempt 11 接管；既有修订均不失效 T01—T14
+- attempt 11 最终处置：自动化与稳定性证据仅作为历史事实保留；用户因未达到 iOS 27 Liquid Glass 视觉要求而明确拒绝，不能再转为批准或被新生成器覆盖
+- attempt 12 最终处置：材质修复与自动化作为历史事实保留；内部预呈交复核发现同步状态遮挡设置页返回入口和标题，该候选未呈交用户并已归档
+- attempt 13 最终处置：用户视觉批准作为不可变历史事实保留；ship 门禁中的常规 E2E 覆盖了活动候选截图，且后续 Worker 生命周期与配对回滚证据已修复，因此批准不再覆盖当前字节，失效链已归档
+- 当前执行：`S21-T15` attempt 14 `completed`；视觉候选 14 已获用户批准，本地计划完成，发布保持 HOLD
 
-## Phase 0：逐项权威基准
+## 状态合同
 
-- [x] T01 冻结三方基线，用户能力使用稳定 ID，架构差异使用无 ID 登记表。
-- [x] T02 为每个用户能力 ID 建立固定 KVideo 参考和 UXUV-Pages 0.1.2 RED。
-- [x] CP0 固定提交、273 个用户能力 ID、截图/DOM 基准与逐 ID RED 可复验。（用户已批准首次视觉基线）
+允许状态为 `pending`、`in_progress`、`blocked`、`failed`、`completed`。每个任务的显式 `state` 是权威值；checkbox 是同一次原子更新产生的派生镜像，只有 `completed` 可勾选。依赖、写集、串行屏障、回滚与解锁条件只引用绑定计划第 2、4、7、8 节，不在本账本复制。当前计划已批准且计划字节不可变；任务仍只可由已调用的实现流程按依赖串行启动。
 
-## Phase 1：首批可用纵向流程
+## Serial 0
 
-- [x] T03 恢复 KVideo 浏览器依赖与兼容工具。
-- [x] T04 复刻安全登录纵向切片，包含实际所需样式、原语和状态。
-- [x] T05 复刻登录后的基础首页纵向切片。
-- [x] T06 复刻全局导航、主题、语言与 TV 导航流程。
-- [x] T07 闭合公开直访、设置缺失与会话失效流程。
-- [x] CP1 登录、基础首页、导航/主题/语言/TV 均可独立 GREEN，无横向空基础层。
+- [x] `S21-T01`｜state: `completed`｜deps: `none`｜修复基线身份并重新冻结跨仓合同
 
-## Phase 2：首页、搜索与本地资料库
+## Serial 1
 
-- [x] T08 复刻首页与豆瓣发现流程，包含 TV 遥控焦点。
-- [x] T09 复刻标签管理、推荐与无限滚动。
-- [x] T10 复刻搜索输入、历史、繁简转换和遥控操作。
-- [x] T11 复刻搜索结果分组、卡片与徽章。
-- [x] T12 复刻筛选、排序、延迟与清晰度探测。
-- [x] T13 复刻收藏资料库与搜索收藏；只验本地行为。
-- [x] T14 复刻历史资料库与管理；只验本地行为。
-- [x] CP2 首页、搜索、收藏/历史本地能力对应 ID 转为 GREEN。
+- [x] `S21-T02`｜state: `completed`｜deps: `S21-T01`｜Worker 根路由合同复验
 
-## Phase 3：全部设置
+## Serial 2
 
-- [x] T15 复刻设置壳层、普通来源管理和遥控焦点；同步留给 T33。
-- [x] T16 复刻导入、订阅、批量来源及 TV/遥控模态行为。
-- [x] T17 复刻显示、主题、语言与搜索排序设置。
-- [x] T18 复刻播放器、跳过、代理、弹幕与广告设置。
-- [x] T19 复刻普通模式数据导入导出、版本检查和遥控模态。
-- [x] T20 依赖 T19，复刻 Premium 来源/设置并独占完整普通/Premium JSON 往返闭环。
-- [x] CP3 原设置分区、顺序、控件、本地数据和完整导入导出恢复。
+- [x] `S21-T06`｜state: `completed`｜deps: `S21-T01`｜Liquid Glass 基础材质与可访问性降级复验
 
-## Phase 4：自定义播放器
+## Serial 3
 
-- [x] T21 复刻播放页壳层、元数据、来源、选集、收藏及方向键隔离。
-- [x] T22 复刻桌面自定义播放器控制层。
-- [x] T23 复刻移动/TV 输入、全屏、PiP 与 Cast mock/禁用态；真实设备留给 T39。
-- [x] T24 复刻 HLS/代理/卡顿/切源，并接入设置及历史自动记录/断点。
-- [x] T25 复刻弹幕聚合、轨道与 Canvas。
-- [x] T26 复刻广告过滤、自动跳过与自动连播。
-- [x] CP4 自定义播放器及播放生命周期全部达到固定基准。
+- [x] `S21-T03`｜state: `completed`｜deps: `S21-T02`｜Worker 来源所有权与 IPTV 后端退役
 
-## Phase 5：IPTV 与 Premium
+## Serial 4
 
-- [x] T27 复刻 IPTV 来源、分组、搜索、三级浏览和遥控导航。
-- [x] T28 复刻 IPTV 多线路播放、兼容策略和 TV 快捷键。
-- [x] T29 复刻 Premium 首页、推荐、分类、搜索和遥控网格。
-- [x] T30 复刻 Premium 收藏/历史、本地物理隔离及遥控侧边栏/模态；同步留给 T34。
-- [x] CP5 IPTV 与 Premium 全部小规模成功/失败路径闭环。
+- [x] `S21-T05`｜state: `completed`｜deps: `S21-T02,S21-T06`｜Pages 根入口、角落状态与窗口生命周期
 
-## Phase 6：PWA、同步、新增 UI 与设备
+## Serial 5
 
-- [x] T31 复刻 PWA 安装与静态缓存生命周期；真实安装证据留给 T39/T54-T55。
-- [x] T32 建立文档无关、可独立回滚的本地优先同步基础。
-- [x] T33 逐类接入配置、来源与订阅同步。
-- [x] T34 接入普通/Premium 收藏与历史同步。
-- [x] T35 依赖 T33/T34，接入账户与所有文档类型的 D1 同步状态。
-- [x] T36 按 KVideo 视觉接入 Cloudflare 用量卡。
-- [x] T37 只汇总 TV、WebView 83、三语与 WCAG 证据；遗漏退回所属切片。
-- [x] T38 复刻 VideoTogether mock/禁用、配置、CSP 和遥控菜单；不加载真实脚本。
-- [x] T39 固定真实 VideoTogether 入口并以 Codex 内置浏览器完成临时房间流程；Cast 首方 API 合同 GREEN，真实设备由用户部署后验收且不作已验证声明。
-- [x] CP6 本地功能、真实 VideoTogether 房间与分层第三方证据全绿；Cloudflare/PWA/Cast 实际环境仍属于用户部署验收。
+- [x] `S21-T04`｜state: `completed`｜deps: `S21-T03`｜Worker 单来源 8 秒放弃与局部成功
 
-## Phase 7：完整性与本地候选
+## Serial 6
 
-- [x] T40 聚合既有证据闭合 273 个 ID：272 `pass`、1 `approved-difference`、零 `unverified`。
-- [x] T41 八路由 × 四断点全页视觉连续两轮 32/32 GREEN；关键区 ≤0.005、DOM 主布局 ≤2 CSS px。
-- [x] T42（历史）使 `.github/workflows/pages.yml` 校验 `expectedCommit == GITHUB_SHA` 并生成 artifact manifest，形成当时的内容冻结候选。
-- [x] CP7（历史）矩阵零 `unverified`、视觉连续两轮全绿、`0.2.0` 候选可复现。
+- [x] `S21-T07`｜state: `completed`｜deps: `S21-T05,S21-T06`｜搜索合并、卡片动作与折叠工具栏
 
-## Phase 8：历史精确身份结果
+## Serial 7
 
-- [x] T43（历史）已提交并推送 UXUV-Pages，公开发布身份曾固定到 `75b3dfbc20fbcfbd8d298056e57f3c34ab65539b`。
-- [x] T44（历史）已发布 `0.2.0`：`gh-pages` 为 `ebee3e674cbed5d7f577509162456823bd9a1da7`，公开 manifest 为 80 assets / `ddd6377e…175`。
-- [x] T45（历史）已验证 80/80 公开资产字节哈希，并把本地 Worker pin 到 `0.2.0` / `75b3dfbc…539b` / `ddd6377e…175`；该 pin 现由 T49-T53 取代，未部署。
-- [x] 原 T46-T48 已取代且禁止执行。
+- [x] `S21-T08`｜state: `completed`｜deps: `S21-T03,S21-T05,S21-T06`｜Pages 系统默认与 IPTV 运行表面退役
 
-## Phase 9：Pages 兼容发布本地迁移
+## Serial 8
 
-- [x] T49 已建立两仓 RED：UXUVideo 13/18 预期失败，UXUV-Pages 7/15 预期失败；根因均为旧 pin/旧发布结构，无测试语法或环境故障。
-- [x] T50 已最小修改 `_worker.js`：聚焦门 18/18 GREEN，动态传播兼容 manifest 版本并流式返回资产；旧版本/commit/SHA pin 已移除，Pages 请求不携带对接密钥。
-- [x] T51 已简化 UXUV-Pages 发布脚本/workflow：聚焦门 15/15 GREEN；使用单一 `release/current`、根目录发布和可修订同版本产物，移除 runtime/published commit/SHA/SRI 与版本目录逻辑。
-- [x] T52 已同步 README/CHANGELOG/边界测试：Pages 无对接密钥，兼容小改可独立发布，仅 API Contract/`workerRange` 不兼容才需更新 Worker；文档边界门 5/5 GREEN。
-- [x] T53 已跑五组合兼容矩阵与两仓全门：Worker 89/89、Pages 130/130、Playwright 107/107、lint/build/语法/体积/秘密/diff 门均通过；未执行 commit、push、Pages 发布或 Worker 部署。
-- [x] CP8-local 已闭合：无 runtime commit/SHA/Pages 密钥；旧/新 manifest 均可由新 Worker 加载；同版本修订与新兼容版本无需 Worker；不兼容合同失败关闭。
+- [x] `S21-T09`｜state: `completed`｜deps: `S21-T08`｜统一视频源与用户弹幕 API 管理
 
-## Phase 10：第 20 节本地定向 UI/更新增补
+## Serial 9
 
-- [x] T54 只写顶部导航与首字符设置入口 RED，锁定四个删除项、普通/Premium href、Unicode/空名/直接文本和零全名泄露。
-- [x] T55 只写全局更新、三列语言和默认图标 RED，并把新增合同纳入 UXUV-Pages `npm test`。
-- [x] T56 只写 Worker `artifact=worker` RED，保护默认 metadata GET、鉴权和 23 路径合同。
-- [x] CP9A 三组 RED 失败原因明确，既有无关合同仍 GREEN，未修改产品代码。
-- [x] T57 让 `ContentNavigation` 删除 GitHub/收藏/独立设置/语言，只保留首字符设置入口及原品牌/IPTV/主题/退出能力。
-- [x] T58 让普通/Premium 语言设置始终三等列，仅显示简体中文/繁體中文/English，保留三语持久化与其他 helper text。
-- [x] T59 在同一 `/api/app-update` 路由实现鉴权、按需、限长、版本一致、SHA-256 和稳定 401/409/413/502 的 Worker 源码响应。
-- [x] CP9B 顶栏、语言和 Worker artifact 分别 GREEN，三者可独立回滚。
-- [x] T60 把旧版本设置组件迁为唯一全局更新控件，闭合五状态、单 overlay、焦点、重试和安全复制，不保留两份实现。
-- [x] T61 只在认证 `application-shell` 挂载一次更新控件，并从普通/Premium 设置页移除大型版本首块；非认证分支零入口/零请求。
-- [x] T62 闭合四断点、安全区、200% 缩放、reduced-motion、八路由单入口、无障碍和无卡片套卡片 E2E。
-- [x] CP9C 单一全局控件、八路由/非认证边界、四断点与无障碍合同 GREEN。
-- [x] T63 生成固定蓝灰色的 1024 PNG U/V 默认图标与六档/两 mask 审阅 fixture；运行时自定义图标继续优先。
-- [x] T64 用户已审阅并明确批准图标、顶栏、版本入口/弹窗和语言区；第 20 节局部视觉基线已按原阈值冻结。
-- [x] CP9D 用户已审阅并明确批准图标候选与受影响区域局部视觉基线。
-- [x] T65 已运行两仓全门并闭合 SPEC 20.10；结果仅代表本地工作树候选。
-- [x] CP9-local 顶栏、语言、全局更新、按需复制、U/V 图标与局部视觉审批全部闭合，未 commit/push/发布/部署。
+- [x] `S21-T10`｜state: `completed`｜deps: `S21-T09`｜设置页六域信息架构与响应式控件
 
-## Phase 11：一次性远端迁移与清理
+## Serial 10
 
-- [x] **T66** Worker `1.1.0` 已部署，公开/控制台冒烟与 Edge 生产登录态 artifact 复制、版本、源码 SHA-256 均通过。
-- [x] **T67** 已授权并发布第 20 节 Pages；两个 Actions workflow 成功，公开字节一致，`gh-pages` 旧版本目录为零。
-- [x] **T68** `@uxu-code:ship` 已重跑；部署身份、公开字节、生产 Edge 登录态 artifact/设置 UI 与两仓最终门全部通过，结论 GO。
-- [x] CP10-remote 公开根 manifest/路由/版本头和第 20 节 UI 正确，旧版本目录清理完成，后续兼容 Pages 小改无需重新部署 Worker。
+- [x] `S21-T11`｜state: `completed`｜deps: `S21-T10`｜逐视频片头片尾规则与同步迁移
 
-## 每任务固定检查
+## Serial 11
 
-- [x] 只处理一个任务或明确的 ≤5 文件子批次，未清理相邻代码。
-- [x] 产品修改前已有该用户能力 ID 对固定 0.1.2 commit 的可执行 RED；遗漏立即退回 T01/T02。
-- [x] 当前切片同步闭合三语、键盘/焦点、适用四断点、TV/遥控和错误/空/加载状态。
-- [x] 新测试位于相应仓库 `work-products/tests/`，仓库文件引用使用相对路径。
-- [x] 更新对应矩阵 ID 和证据，不以源码字符串、路由存在或页面 200 代替行为证明。
-- [x] 运行聚焦测试、相关检查点和 `git diff --check`。
-- [x] 未 reset/checkout/覆盖用户工作；本地实施未删除任何远端发布物。
-- [x] 未记录 Secret、密码、Cookie、真实账户、订阅或完整媒体 URL。
-- [x] 明确本地、第三方 mock/真实、Actions artifact、gh-pages、公开 Pages、Worker deployment、D1 schema、真实媒体/设备证据层级。
-- [x] Pages 请求未发送 Cookie、Authorization、Token、Secret 或任何对接密钥。
-- [x] 任何版本头/运行时配置若包含 Pages 版本，都来自已验证 manifest，不来自 Worker 硬编码值。
-- [x] 第 20 节只改 SPEC 20.7 表面；无 `.ico`、新依赖、新业务路由、认证/D1/media 变更或全站 CSS/组件库重写。
-- [x] 默认 `/api/app-update` JSON 向后兼容；源码只在显式点击后获取，ahead/check-failed/loading 禁止复制，失败不复用陈旧候选。
-- [x] 八个认证路由共享一个版本入口；公开/登录/加载/错误分支零入口、零提前更新请求。
-- [x] T64 的图标和局部视觉基线于 2026-08-11 获用户明确批准，未通过自动快照接受或放宽阈值掩盖差异。
+- [x] `S21-T12`｜state: `completed`｜deps: `S21-T05,S21-T06,S21-T11`｜播放器影院布局、顶栏与网页全视窗
 
-## 当前授权边界
+## Serial 12
 
-- [x] 已批准：2026-08-11 Pages 兼容发布规格进入规划（用户调用 `@uxu-code:plan`）。
-- [x] 已批准：2026-08-11 SPEC 第 20 节及 20.3 五项解释进入规划（用户直接调用 `@uxu-code:plan`）。
-- [x] 已批准：用户于 2026-08-11 调用 `@uxu-code:build auto`，批准本次计划修订稿并授权连续本地实施 T54-T63。
-- [x] 已批准并完成：用户调用 `@uxu-code:build auto` 后完成 T49-T53 本地实施。
-- [x] 已批准：T39-T42 本地任务；真实 VideoTogether 脚本/临时房间已测试，真实 Cast 设备改为用户部署后验收，不阻断单文件 Worker 本地交付。
-- [x] 已批准并完成：UXUV-Pages commit、push 与 `0.2.0` Pages 发布（T43-T44）。
-- [x] 已批准：T54-T63 的本地产品、测试与图标候选实施；不含 commit、push、发布、部署或真实资源操作。
-- [x] 已批准：用户于 2026-08-11 回复“批准四项候选”，批准图标、顶栏、版本入口/弹窗和语言区，并授权继续 T65 本地总门。
-- [x] 已批准并执行：用户授权同步 Worker 1.1.0 权威源码、Cloudflare Worker 与 GitHub Pages 发布；T66-T67 与生产 Edge 登录态复验已完成。
-- [ ] 未批准：真实 D1、Secret、Analytics Token、生产数据迁移或不可逆 schema 变更。
+- [x] `S21-T13`｜state: `completed`｜deps: `S21-T07,S21-T10,S21-T12`｜其余页面与弹层材质收敛
+
+## Serial 13
+
+- [x] `S21-T14`｜state: `completed`｜deps: `S21-T04,S21-T08,S21-T13`｜README、版本与双仓发布合同同步
+
+## Serial 14
+
+- [x] `S21-T15`｜state: `completed`｜deps: `S21-T14`｜attempt 13 批准已按原字节归档但不覆盖当前候选；视觉候选 14 已获用户批准，本地计划完成，发布保持 HOLD
+
+## 审批与远程边界
+
+持续计划批准已生效，并通过既有 `@uxu-code:build auto` 与当前 `@uxu-code:debug` 调用完成本地串行修复。机器证据只在后台完成完整性绑定；人工视觉审批只展示候选标签与代表预览。用户已确认批准视觉候选 14，本地计划完成，发布保持 HOLD；该视觉批准不授权 commit、push、PR、GitHub Pages 发布、Cloudflare 部署、D1/Secret 变更或生产结论。

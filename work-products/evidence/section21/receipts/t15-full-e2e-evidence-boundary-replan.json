@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T22:58:00.0000000+08:00",
+  "reason": "T15 attempt 1 reached the formal Pages browser boundary and completed 117/122 tests. Three source-dialog locators and one usage-order assertion still encoded retired T09/T10 semantics; the unchanged app-update geometry gate exposed a real Premium settings overlap, visual inspection exposed a second home floating-control overlap, the 96 generated images still used API 1 fixture identities, and the successful performance run retained no trace.",
+  "planSha256": "853598fa00a91ad92ca73ab7a1dc64bbc0b72e1c895ff341cef7975558dbce56",
+  "predecessorPlanSha256": "d678e925b42f34651513e1c649d1f4b46d3d5cf211231de06b76b5f7f745ad7e",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t15-full-e2e-evidence-boundary.zip",
+  "archiveSha256": "79db236617bf3f3a143f2ebfe5f6b66b11aceb6fdbcfe92d50771cb032990e2c",
+  "archiveBytes": 30248,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10",
+    "S21-T11",
+    "S21-T12",
+    "S21-T13",
+    "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 1,
+      "path": "plan-revisions/2026-08-19-t15-full-e2e-evidence-boundary.zip::S21-T15.json",
+      "sha256": "fc8efbf4f6962134e0d04357793f004498dd836c04727d1314d36d12f994926a",
+      "bytes": 7860
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 1,
+    "receiptSha256": "fc8efbf4f6962134e0d04357793f004498dd836c04727d1314d36d12f994926a",
+    "businessCodeWrites": [],
+    "candidateCombinedSha256": "c121bb1f518e75006af4583475208a17cb71e8f0dd01640248f3bb241122c1d1",
+    "currentTreeRetained": true,
+    "rule": "attempt2 before must equal archived attempt1 after for adopted paths"
+  },
+  "requiredOwnershipAdditions": [
+    "pages:app/globals.css",
+    "pages:work-products/tests/app-flows.e2e.spec.ts",
+    "pages:work-products/tests/usage-ui.e2e.spec.ts",
+    "pages:work-products/tests/accessibility.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-settings-preferences.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts",
+    "pages:work-products/tests/static-server.mjs"
+  ],
+  "evidenceAdditions": [
+    "worker:work-products/evidence/section21/t15-candidate-evidence.json",
+    "worker:work-products/evidence/section21/t15-visual-review.md",
+    "worker:work-products/evidence/section21/t15-performance-trace.zip",
+    "worker:work-products/evidence/section21/red-matrix.md",
+    "worker:work-products/evidence/section21/binary-allowlist.json",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/"
+  ],
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

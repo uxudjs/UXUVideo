@@ -38,7 +38,7 @@ function request(cookie = '') {
   return new Request(`${ORIGIN}/api/app-update?artifact=worker`, { headers: { Cookie: cookie } });
 }
 
-function release(version = '1.1.4') {
+function release(version = '2.0.0') {
   return {
     currentVersion: version,
     releases: [{ version, publishedAt: '2026-08-11', title: 'Release', notes: [] }],
@@ -61,7 +61,7 @@ test('artifact download requires authentication before contacting GitHub', async
 test('artifact download returns exact verified Worker bytes and safety headers', async () => {
   const env = environment(createAuthD1Stub().db);
   const cookie = await login(env);
-  const source = "const WORKER_VERSION = '1.1.4';\nexport default { fetch() {} };\n";
+  const source = "const WORKER_VERSION = '2.0.0';\nexport default { fetch() {} };\n";
   const calls = [];
   const response = await withFetchStub(async (input, init = {}) => {
     const url = String(input);
@@ -81,7 +81,7 @@ test('artifact download returns exact verified Worker bytes and safety headers',
   assert.equal(response.headers.get('Content-Type'), 'text/javascript; charset=utf-8');
   assert.equal(response.headers.get('Cache-Control'), 'private, no-store');
   assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
-  assert.equal(response.headers.get('X-UXUVideo-Worker-Version'), '1.1.4');
+  assert.equal(response.headers.get('X-UXUVideo-Worker-Version'), '2.0.0');
   assert.equal(response.headers.get('X-UXUVideo-Worker-SHA256'), createHash('sha256').update(source).digest('hex'));
   assert.deepEqual(calls.map(({ url }) => url), [MANIFEST_PATH, SOURCE_PATH]);
   assert.ok(calls.every(({ redirect }) => redirect === 'manual'));
@@ -90,13 +90,13 @@ test('artifact download returns exact verified Worker bytes and safety headers',
 test('artifact download falls back to package.json when release manifest is missing', async () => {
   const env = environment(createAuthD1Stub().db);
   const cookie = await login(env);
-  const source = "const WORKER_VERSION = '1.1.4';\nexport default { fetch() {} };\n";
+  const source = "const WORKER_VERSION = '2.0.0';\nexport default { fetch() {} };\n";
   const calls = [];
   const response = await withFetchStub(async (input) => {
     const url = String(input);
     calls.push(url);
     if (url === MANIFEST_PATH) return new Response('Not Found', { status: 404 });
-    if (url === PACKAGE_PATH) return Response.json({ version: '1.1.4' });
+    if (url === PACKAGE_PATH) return Response.json({ version: '2.0.0' });
     if (url === SOURCE_PATH) return new Response(source);
     throw new Error(`unexpected URL ${url}`);
   }, () => worker.fetch(request(cookie), env, {}));
@@ -113,8 +113,8 @@ test('artifact download rejects a remote Worker older than the current Worker be
   const response = await withFetchStub(async (input) => {
     const url = String(input);
     calls.push(url);
-    if (url === MANIFEST_PATH) return Response.json(release('0.9.0'));
-    if (url === SOURCE_PATH) return new Response("const WORKER_VERSION = '0.9.0';\n");
+    if (url === MANIFEST_PATH) return Response.json(release('1.1.4'));
+    if (url === SOURCE_PATH) return new Response("const WORKER_VERSION = '1.1.4';\n");
     throw new Error(`unexpected URL ${url}`);
   }, () => worker.fetch(request(cookie), env, {}));
 
@@ -127,8 +127,8 @@ test('artifact download fails closed when source and release versions differ', a
   const env = environment(createAuthD1Stub().db);
   const cookie = await login(env);
   const response = await withFetchStub(async (input) => {
-    if (String(input) === MANIFEST_PATH) return Response.json(release('1.1.4'));
-    return new Response("const WORKER_VERSION = '1.0.9';\n");
+    if (String(input) === MANIFEST_PATH) return Response.json(release('2.0.0'));
+    return new Response("const WORKER_VERSION = '1.1.4';\n");
   }, () => worker.fetch(request(cookie), env, {}));
 
   assert.equal(response.status, 409);
@@ -157,6 +157,42 @@ test('artifact download rejects source larger than 3 MiB', async () => {
 
   assert.equal(response.status, 413);
   assert.equal((await response.json()).error.code, 'APP_UPDATE_ARTIFACT_TOO_LARGE');
+});
+
+test('artifact download keeps request abort active while reading Worker bytes', async () => {
+  const env = environment(createAuthD1Stub().db);
+  const cookie = await login(env);
+  const requestAbort = new AbortController();
+  let streamController;
+  let headersReturned;
+  const headersReady = new Promise((resolve) => { headersReturned = resolve; });
+  const responsePromise = withFetchStub(async (input, init) => {
+    if (String(input) === MANIFEST_PATH) return Response.json(release());
+    const response = new Response(new ReadableStream({
+      start(controller) {
+        streamController = controller;
+        init.signal.addEventListener('abort', () => controller.error(init.signal.reason), { once: true });
+      },
+    }));
+    headersReturned();
+    return response;
+  }, () => worker.fetch(new Request(`${ORIGIN}/api/app-update?artifact=worker`, {
+    signal: requestAbort.signal, headers: { Cookie: cookie },
+  }), env, {}));
+
+  await headersReady;
+  requestAbort.abort();
+  const outcome = await Promise.race([
+    responsePromise,
+    new Promise((resolve) => setTimeout(() => resolve(null), 200)),
+  ]);
+  if (!outcome) {
+    streamController.error(new Error('release stalled RED probe'));
+    await responsePromise;
+  }
+  assert.ok(outcome, 'artifact download remained pending after request abort');
+  assert.equal(outcome.status, 502);
+  assert.equal((await outcome.json()).error.code, 'APP_UPDATE_FETCH_FAILED');
 });
 
 test('artifact download maps upstream failures without echoing upstream content', async () => {

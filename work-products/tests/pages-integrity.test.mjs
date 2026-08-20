@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import worker, { validatePagesManifest } from '../../_worker.js';
 
-const RELEASE_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
+const RELEASE_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/app/';
 const encoder = new TextEncoder();
 
 const defaultBodies = {
@@ -12,13 +12,14 @@ const defaultBodies = {
   'index.html': Buffer.from('<h1>UXUVideo</h1>'),
   'settings/index.html': Buffer.from('<h1>Settings</h1>'),
 };
+const retiredPrefixBody = Buffer.from('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>页面不存在</title><body><h1>页面不存在</h1><p>PAGE_NOT_FOUND</p></body></html>');
 
 function manifestFixture(overrides = {}) {
   const manifest = {
     schemaVersion: 1,
-    pagesVersion: '0.2.1',
-    apiContract: 1,
-    workerRange: '>=1.0.0 <2.0.0',
+    pagesVersion: '0.3.0',
+    apiContract: 2,
+    workerRange: '>=2.0.0 <3.0.0',
     routes: {
       '/': 'index.html',
       '/settings': 'settings/index.html',
@@ -86,7 +87,7 @@ async function dispatch(path, options = {}) {
     }
 
     assert.equal(url.startsWith(RELEASE_BASE_URL), true, `unexpected Pages URL: ${url}`);
-    const relativePath = decodeURIComponent(new URL(url).pathname).slice('/UXUV-Pages/'.length);
+    const relativePath = decodeURIComponent(new URL(url).pathname).slice('/UXUV-Pages/app/'.length);
     const body = bodies[relativePath] ?? Buffer.from('missing');
     const asset = manifest.assets[`/${relativePath}`];
     const contentLength = options.contentLength ?? body.byteLength;
@@ -121,26 +122,28 @@ async function dispatch(path, options = {}) {
   }
 }
 
-test('accepts compatible Pages versions without commit, manifest SHA, or asset SHA fields', async () => {
-  for (const pagesVersion of ['0.2.1', '0.3.0']) {
+test('accepts API 2 compatible Pages versions without commit, manifest SHA, or asset SHA fields', async () => {
+  for (const pagesVersion of ['0.3.0', '0.4.0']) {
     const manifest = manifestFixture({ pagesVersion });
     assert.equal((await validatePagesManifest(bytes(manifest))).pagesVersion, pagesVersion);
   }
 
-  const legacy = manifestFixture({
-    pagesVersion: '0.2.2',
+  const decorated = manifestFixture({
+    pagesVersion: '0.3.1',
     gitCommit: 'a'.repeat(40),
   });
-  for (const asset of Object.values(legacy.assets)) {
+  for (const asset of Object.values(decorated.assets)) {
     asset.sha256 = 'A'.repeat(43) + '=';
     asset.sri = `sha256-${asset.sha256}`;
   }
-  assert.equal((await validatePagesManifest(bytes(legacy))).pagesVersion, '0.2.2');
+  assert.equal((await validatePagesManifest(bytes(decorated))).pagesVersion, '0.3.1');
 });
 
 test('supports the five-case Pages compatibility migration matrix', async () => {
   const legacyManifest = manifestFixture({
-    pagesVersion: '0.2.0',
+    pagesVersion: '0.2.1',
+    apiContract: 1,
+    workerRange: '>=1.0.0 <2.0.0',
     gitCommit: 'a'.repeat(40),
   });
   for (const asset of Object.values(legacyManifest.assets)) {
@@ -151,10 +154,22 @@ test('supports the five-case Pages compatibility migration matrix', async () => 
     manifest: legacyManifest,
     bodies: { 'index.html': Buffer.from('legacy manifest') },
   });
-  assert.equal(legacy.response.status, 200);
-  assert.equal(await legacy.response.text(), 'legacy manifest');
+  assert.equal(legacy.response.status, 503);
+  assert.equal(JSON.parse(legacy.messages[0]).failureReason, 'MANIFEST_API_INCOMPATIBLE');
 
-  const currentManifest = manifestFixture({ pagesVersion: '0.2.1' });
+  const v2WithLegacyRange = await dispatch('/', {
+    manifest: manifestFixture({ workerRange: '>=1.0.0 <2.0.0' }),
+  });
+  assert.equal(v2WithLegacyRange.response.status, 503);
+  assert.equal(JSON.parse(v2WithLegacyRange.messages[0]).failureReason, 'MANIFEST_RANGE_INCOMPATIBLE');
+
+  const v1WithCurrentRange = await dispatch('/', {
+    manifest: manifestFixture({ apiContract: 1 }),
+  });
+  assert.equal(v1WithCurrentRange.response.status, 503);
+  assert.equal(JSON.parse(v1WithCurrentRange.messages[0]).failureReason, 'MANIFEST_API_INCOMPATIBLE');
+
+  const currentManifest = manifestFixture({ pagesVersion: '0.3.0' });
   const current = await dispatch('/', {
     manifest: currentManifest,
     bodies: { 'index.html': Buffer.from('new manifest') },
@@ -169,12 +184,12 @@ test('supports the five-case Pages compatibility migration matrix', async () => 
   assert.equal(revised.response.status, 200);
   assert.equal(await revised.response.text(), 'same version revision');
 
-  const compatible = await dispatch('/', { manifest: manifestFixture({ pagesVersion: '0.3.0' }) });
+  const compatible = await dispatch('/', { manifest: manifestFixture({ pagesVersion: '0.4.0' }) });
   assert.equal(compatible.response.status, 200);
-  assert.equal(compatible.response.headers.get('X-UXUV-Pages-Version'), '0.3.0');
+  assert.equal(compatible.response.headers.get('X-UXUV-Pages-Version'), '0.4.0');
 
   const incompatible = await dispatch('/', {
-    manifest: manifestFixture({ workerRange: '>=2.0.0 <3.0.0' }),
+    manifest: manifestFixture({ workerRange: '>=3.0.0 <4.0.0' }),
   });
   assert.equal(incompatible.response.status, 503);
   assert.equal(JSON.parse(incompatible.messages[0]).failureReason, 'MANIFEST_RANGE_INCOMPATIBLE');
@@ -196,11 +211,11 @@ test('rejects invalid version and incompatible API or Worker ranges', async () =
     /semantic version/i,
   );
   await assert.rejects(
-    validatePagesManifest(bytes(manifestFixture({ apiContract: 2 }))),
+    validatePagesManifest(bytes(manifestFixture({ apiContract: 1 }))),
     /API contract/i,
   );
   await assert.rejects(
-    validatePagesManifest(bytes(manifestFixture({ workerRange: '>=2.0.0 <3.0.0' }))),
+    validatePagesManifest(bytes(manifestFixture({ workerRange: '>=3.0.0 <4.0.0' }))),
     /worker range/i,
   );
 });
@@ -314,7 +329,7 @@ test('returns the manifest 404 and fails closed on incompatible or unavailable m
   assert.equal(JSON.parse(missing.messages[0]).errorCode, 'PAGE_NOT_FOUND');
 
   const incompatible = await dispatch('/', {
-    manifest: manifestFixture({ workerRange: '>=2.0.0 <3.0.0' }),
+    manifest: manifestFixture({ workerRange: '>=3.0.0 <4.0.0' }),
   });
   assert.equal(incompatible.response.status, 503);
   assert.equal(JSON.parse(incompatible.messages[0]).failureReason, 'MANIFEST_RANGE_INCOMPATIBLE');
@@ -322,4 +337,24 @@ test('returns the manifest 404 and fails closed on incompatible or unavailable m
   const unavailable = await dispatch('/', { manifestStatus: 503 });
   assert.equal(unavailable.response.status, 503);
   assert.equal(JSON.parse(unavailable.messages[0]).failureReason, 'UPSTREAM_STATUS_REJECTED');
+});
+
+test('returns a true 404 for the retired UXUV-Pages browser prefix family', async () => {
+  for (const path of ['/UXUV-Pages', '/UXUV-Pages/', '/UXUV-Pages/settings']) {
+    const result = await dispatch(path, { manifestStatus: 503 });
+
+    assert.equal(result.response.status, 404);
+    assert.equal(result.response.headers.get('Location'), null);
+    assert.equal(result.response.headers.get('Content-Type'), 'text/html; charset=utf-8');
+    assert.equal(result.response.headers.get('X-Content-Type-Options'), 'nosniff');
+    assert.deepEqual(Buffer.from(await result.response.arrayBuffer()), retiredPrefixBody);
+    assert.equal(JSON.parse(result.messages[0]).errorCode, 'PAGE_NOT_FOUND');
+    assert.deepEqual(result.requests, []);
+  }
+
+  const head = await dispatch('/UXUV-Pages/settings', { method: 'HEAD', manifestError: new Error('offline') });
+  assert.equal(head.response.status, 404);
+  assert.equal((await head.response.arrayBuffer()).byteLength, 0);
+  assert.equal(head.response.headers.get('Content-Length'), String(retiredPrefixBody.byteLength));
+  assert.deepEqual(head.requests, []);
 });

@@ -42,17 +42,17 @@ test("Worker has no npm or local runtime dependency", () => {
   assert.equal(packageJson.scripts["check:size"], "node scripts/check-worker-size.mjs");
 });
 
-test("Worker release version 1.1.4 is synchronized", () => {
+test("Worker release version 2.0.0 is synchronized", () => {
   const workerVersion = /const WORKER_VERSION = ['"]([^'"]+)['"]/.exec(read("_worker.js"))?.[1];
   const packageVersion = JSON.parse(read("package.json")).version;
   const packageLock = JSON.parse(read("package-lock.json"));
 
-  assert.equal(workerVersion, "1.1.4");
+  assert.equal(workerVersion, "2.0.0");
   assert.equal(packageVersion, workerVersion);
   assert.equal(packageLock.version, workerVersion);
   assert.equal(packageLock.packages[""].version, workerVersion);
-  assert.match(read("README.md"), /版本 `1\.1\.4`/);
-  assert.match(read("CHANGELOG.md"), /## 1\.1\.4 - 2026-08-15/);
+  assert.match(read("README.md"), /版本 `2\.0\.0`/);
+  assert.match(read("CHANGELOG.md"), /## 2\.0\.0 - 2026-08-18/);
 });
 
 test("compressed Worker stays below the 3 MiB upload boundary", () => {
@@ -62,7 +62,7 @@ test("compressed Worker stays below the 3 MiB upload boundary", () => {
 
 test("Worker uses Pages version compatibility without commit or SHA pins", () => {
   const worker = read("_worker.js");
-  assert.match(worker, /const PAGES_BASE_URL = ['"]https:\/\/uxudjs\.github\.io\/UXUV-Pages\/['"]/);
+  assert.match(worker, /const PAGES_BASE_URL = ['"]https:\/\/uxudjs\.github\.io\/UXUV-Pages\/app\/['"]/);
   assert.doesNotMatch(worker, /\bPAGES_VERSION\b/);
   assert.doesNotMatch(worker, /\bPAGES_GIT_COMMIT\b/);
   assert.doesNotMatch(worker, /\bPAGES_MANIFEST_SHA256\b/);
@@ -75,7 +75,7 @@ test("README keeps user guidance separate from technical release records", () =>
   const spec = read("work-products/SPEC.md");
   for (const term of [
     "DB", "ADMIN_PASSWORD", "AUTH_SECRET", "CF_ANALYTICS_API_TOKEN", "CF_ACCOUNT_ID",
-    "CF_WORKER_SCRIPT_NAME", "CF_D1_DATABASE_ID", "https://uxudjs.github.io/UXUV-Pages/",
+    "CF_WORKER_SCRIPT_NAME", "CF_D1_DATABASE_ID", "https://uxudjs.github.io/UXUV-Pages/app/",
     "### 主要功能", "### 部署使用", "### 使用方法", "### 环境变量", "### 更新与回滚", "### 免责声明",
   ]) assert.match(readme, new RegExp(term));
   assert.doesNotMatch(readme, /API Contract|workerRange|pagesVersion|release manifest|GitHub Actions|artifact|fixture|D1 schema|node --check|npm test|check:size|PAGES_GIT_COMMIT|PAGES_MANIFEST_SHA256|资产 SHA-256/);
@@ -93,8 +93,8 @@ test("README explains the source workflow and responsibility boundary in user la
     "设置 → 视频源管理 → 导入 → 订阅",
     "网页设置是普通用户配置视频源和订阅的入口",
     "同一账号的设置会通过部署者的 D1 数据库同步",
-    "`SUBSCRIPTION_SOURCES` 仅适合部署者提供统一预设",
-    "本项目不提供视频内容或订阅源",
+    "所有视频源和弹幕 API 均由用户在网页设置中自行导入；系统不提供预设来源",
+    "本项目不内置视频内容或订阅源",
     "请遵守所在地法律法规",
   ]) assert.match(readme, new RegExp(term));
 
@@ -103,4 +103,38 @@ test("README explains the source workflow and responsibility boundary in user la
       && readme.indexOf("### 部署使用") < readme.indexOf("### 使用方法"),
     "the README should follow the user-facing feature, deployment, then usage flow",
   );
+});
+
+test("S21-T14 README uses the approved legal boundary and unified source/data workflow", () => {
+  const readme = read("README.md");
+  for (const retiredEnvironmentName of ["SUBSCRIPTION_SOURCES", "DANMAKU_API_URL", "IPTV_SOURCES"]) {
+    assert.doesNotMatch(readme, new RegExp(retiredEnvironmentName));
+  }
+  for (const term of [
+    "只使用自己有权访问的来源",
+    "不提供或存储视频",
+    "使用后删除自己下载或可控制的临时副本",
+    "不能使未经授权的使用自动合法",
+    "设置 → 数据管理",
+    "导入前会先验证并预览",
+    "已退休字段会被跳过并明确提示",
+  ]) assert.match(readme, new RegExp(term));
+  assert.doesNotMatch(readme, /个人视频源/);
+});
+
+test("S21-T14 documents one paired candidate and never authorizes remote release", () => {
+  assert.equal(existsSync(join(root, "work-products/evidence/section21/release-runbook.md")), true);
+  assert.equal(existsSync(join(root, "work-products/evidence/section21/pair-rollback.json")), true);
+  const readme = read("README.md");
+  const changelog = read("CHANGELOG.md");
+  const runbook = read("work-products/evidence/section21/release-runbook.md");
+  assert.match(readme, /不可只升级或回滚其中一仓/);
+  assert.match(readme, /release-runbook\.md/);
+  assert.match(changelog, /Worker `2\.0\.0`.*Pages `0\.3\.0`.*API Contract `2`/s);
+  assert.match(changelog, /21 条同源 API 路由/);
+  assert.match(changelog, /schema v2/);
+  assert.match(runbook, /Pages v2[\s\S]*manifest[\s\S]*公开字节[\s\S]*Worker v2/);
+  assert.match(runbook, /Pages v1[\s\S]*Worker v1/);
+  assert.match(runbook, /预先批准的维护窗/);
+  assert.match(runbook, /不授权.*commit.*push.*发布.*部署/s);
 });

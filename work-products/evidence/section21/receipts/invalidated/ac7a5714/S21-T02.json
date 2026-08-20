@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T02",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-18T01:02:00.0420213+08:00",
+  "completedAt": "2026-08-18T01:08:39.9220727+08:00",
+  "planSha256": "ac7a5714be0f6668e21e67269ec808272b8d0c3ffb870c647155cbe25364ca9d",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "uncommittedPatchSha256": "b6e5ecf546cbf9ec59251dcec4ed02f4bfb1d4b875918df46b0909e70a3471e1"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "uncommittedPatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "beforeSha256": {
+    "worker:_worker.js": "7be8e6253eacc3cfb30ca7147a16a9587388eccb3e4c0bad21f00819e5cb422b",
+    "worker:work-products/tests/pages-integrity.test.mjs": "cd387c6bed33a8adb0ad7b5511db411a8b8e8ccdace89525e07c51f4aa395861",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "895fe13f7fde1439520e306a03f9bf83677d4a23bfa40d021cd81b65a99cea1b",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4"
+  },
+  "afterSha256": {
+    "worker:_worker.js": "1c9ffb63f62a7835d90a0c35742997cdbb93ae99839c2ad1dd0654ad73ad3081",
+    "worker:work-products/tests/pages-integrity.test.mjs": "e4ed79d80351e2d02bb9a7c51f0329fa1f5f2a3f4d2c1ac954da757483e6bc0b",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "895fe13f7fde1439520e306a03f9bf83677d4a23bfa40d021cd81b65a99cea1b",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4"
+  },
+  "patches": {
+    "forward": {
+      "path": "work-products/evidence/section21/receipts/S21-T02.forward.patch",
+      "sha256": "e21d24a48df6635c2ada281d689461eac37e5546fec473ad9fad8fcd49cb0570"
+    },
+    "reverse": {
+      "path": "work-products/evidence/section21/receipts/S21-T02.reverse.patch",
+      "sha256": "bb1df765da7bd9e658e94f429d375b83b048c2b271b07c52323fd8ac820bddfa"
+    }
+  },
+  "validation": {
+    "focusedContract": "1/1 GREEN with 2 filtered skips",
+    "relatedContracts": "26/26 GREEN",
+    "syntax": "GREEN",
+    "diffCheck": "GREEN; only core.autocrlf warnings",
+    "identity": "Worker 1.1.4 / API Contract 1 retained",
+    "t01Amendment": "Static test slice corrected from non-existent handleRequest to existing logCompletion; product code contains no sentinel."
+  }
+}

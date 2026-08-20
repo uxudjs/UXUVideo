@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T01",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-18T16:25:40.1399220+08:00",
+  "completedAt": "2026-08-18T16:31:41.1154537+08:00",
+  "planSha256": "096e92fd1b7e084f118dd6939216003ace104ee9a7ad76155595ab38bbd8a77b",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "457865ceaa229cc3409a59ea49616f1cf7b01c2d635792cec16a322b248d26f4"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "cbe15f924933f3c61653d8699d6accc4c260fe678c55907664d7d7c915372655"
+    }
+  },
+  "writeSet": [
+    "worker:work-products/tests/section21-worker-contract.test.mjs",
+    "worker:work-products/tests/section21-plan-contract.test.mjs",
+    "worker:work-products/tests/candidate-hygiene.test.mjs",
+    "worker:work-products/tests/section21-inventory.mjs",
+    "worker:work-products/tests/section21-inventory-generator.mjs",
+    "worker:work-products/evidence/section21/red-matrix.md",
+    "worker:work-products/evidence/section21/receipts/",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "e1a37aa2f22e1e247014f95eda148d9642f57ec0fb42795ec3a0a9823b3aac6b",
+    "worker:work-products/tests/section21-plan-contract.test.mjs": "4782c34e611b2090a34b8ea523c9d7ca55f893054c3bb9cfe3b561568260c589",
+    "worker:work-products/tests/candidate-hygiene.test.mjs": "62ecf730551a20e8c82290f67a751b100daa87214b6871e1bbc33f23e6e1014e",
+    "worker:work-products/tests/section21-inventory.mjs": "323503662103e52eeff6a24a529324ccb196fcbb0d0a188c9451f29987c0cabd",
+    "worker:work-products/tests/section21-inventory-generator.mjs": "f73537a487223324e2f35b1f4798883663210973ab0f08da5e072788cb66fbad",
+    "worker:work-products/evidence/section21/red-matrix.md": "c9296ca4029dc597f5c7d20c664e512c8eedead6d542f7eeabc3a8aaa038d9bc",
+    "worker:work-products/evidence/section21/receipts/S21-T01.json": "0f669ebd71930ad9a8ebf970b998849eb2fd782723b9cbcccc2c9796612afd0b",
+    "worker:work-products/evidence/section21/receipts/S21-T02.json": "0fa89bba60a46eb60d7a4ec9d3ff6cf22c6a17508c223346d985f32bf925b114",
+    "worker:work-products/evidence/section21/receipts/S21-T02.forward.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker:work-products/evidence/section21/receipts/S21-T02.reverse.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker:work-products/evidence/section21/receipts/S21-T03.json": "033f5db3b8188fc348ef31883136db7f2e7a0535b2e5af21555b73e203ede6d6",
+    "worker:work-products/evidence/section21/receipts/S21-T06.json": "7c5aeeb54f30390eaa5055eb69326793adefa0f2e445714a25aac83f7bdeb70c",
+    "worker:work-products/evidence/section21/receipts/S21-T06.forward.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker:work-products/evidence/section21/receipts/S21-T06.reverse.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker:work-products/evidence/section21/receipts/replacement-invalidation.json": null,
+    "worker:work-products/evidence/section21/receipts/invalidated/8df83634/": null,
+    "worker:work-products/todo.md": "66d9dece53142b60102dba4e46d84778e27c55e9fab1df2e7c81d6098e5835e9"
+  },
+  "afterSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "e1a37aa2f22e1e247014f95eda148d9642f57ec0fb42795ec3a0a9823b3aac6b",
+    "worker:work-products/tests/section21-plan-contract.test.mjs": "ba29a55b22c7cc7e315e6175b11479a0226a37d29b5e83183e1b3f9247976f6c",
+    "worker:work-products/tests/candidate-hygiene.test.mjs": "9d3fc1d70418ec290bfe58f5105798d4f7b5870c842a5867871ad6ed59dfd342",
+    "worker:work-products/tests/section21-inventory.mjs": "2a88b52120e0566441b08cf8f57f90cc9aded835b49e44aafd1e4a9baa94577e",
+    "worker:work-products/tests/section21-inventory-generator.mjs": "9f2337972f584982868ebe85b4bacea4043e63a5b9cdedde85a3426ea511bd07",
+    "worker:work-products/evidence/section21/red-matrix.md": "c13192ec0ef6f5589784ef2683a95a289ad83630aee6822b815f862c4902abcb",
+    "worker:work-products/evidence/section21/receipts/replacement-invalidation.json": "e3866076622b0ebda1643c23dc7106dce98c95dcfff610563ebedfa6512c8d81"
+  },
+  "readOnlySha256": {
+    "worker:work-products/evidence/section21/root-prefix-inventory.txt": "d0b69bd64534c23c1238de550cc4e355a3b7a5cc0bd889bdec817e8b02c127ca",
+    "worker:work-products/evidence/section21/iptv-default-source-inventory.txt": "addb7fe723a0b6f640cb1fd56692b15313c291c11e5873a079134fc854cdb433",
+    "worker:work-products/tests/section21-security-baseline.test.mjs": "999b0077c26c0bedd6c6616265fe6cfc4866be2247366c32e36bb95eaa00865d",
+    "worker:work-products/evidence/section21/performance-baseline.json": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+    "worker:work-products/evidence/section21/binary-allowlist.json": "b6429e7d08029a34589e9c8956ef86dffab2fb6dd9ee37c08d5e9204e14cdbe6"
+  },
+  "validation": {
+    "red": "candidate hygiene reproduced the immutable baseline provenance mismatch; the todo parser also reproduced a false 16th task from the execution-status line",
+    "planContract": "10/10 GREEN",
+    "workerContract": "S21-T02 1/1 GREEN; S21-T03 5/5 GREEN",
+    "securityAndHygiene": "5/5 GREEN",
+    "pagesAggregate": "1/9 GREEN with 8 independently attributable planned RED tasks",
+    "playwrightDiscovery": "8 tests discovered across section21 flows, visual, and performance files",
+    "archive": "8/8 prior active artifacts match recorded SHA-256 and byte counts; no duplicate or newly fabricated zero-byte patch was created",
+    "pagesWriteBoundary": "Pages tracked patch SHA-256 remained cbe15f924933f3c61653d8699d6accc4c260fe678c55907664d7d7c915372655",
+    "diffCheck": "task write set GREEN"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

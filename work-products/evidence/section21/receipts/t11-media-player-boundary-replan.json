@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T20:19:52.2632675+08:00",
+  "reason": "T11 attempt 1 found before business edits that PlayerExperience owns the per-video identity while the unlisted MediaPlayer owns the only useAutoSkip call, so the original write set cannot carry an isolated rule without a leaking workaround.",
+  "planSha256": "6524f1488257520165e55860cfe8fa913c87799875c6467881845d48db2d5068",
+  "predecessorPlanSha256": "adc19a7401fa9083c5ecf131840f33ba81d72e7f8e5f3e1e239735d7305e26a1",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t11-media-player-boundary.zip",
+  "archiveSha256": "91587f739bddd04c10dfe77a5573b03e0a7bf5950a17a14881c53b2e454fab44",
+  "archiveBytes": 27134,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T11",
+      "attempt": 1,
+      "path": "plan-revisions/2026-08-19-t11-media-player-boundary.zip::S21-T11.json",
+      "sha256": "2906822c93e67de423270023962d9edd7ae274fc81f2123ab4d421ff792f70d1",
+      "bytes": 4113
+    }
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

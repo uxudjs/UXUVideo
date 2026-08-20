@@ -1,10 +1,10 @@
-const WORKER_VERSION = '1.1.4';
-const API_CONTRACT_VERSION = '1';
-const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
+const WORKER_VERSION = '2.0.0';
+const API_CONTRACT_VERSION = '2';
+const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/app/';
 const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
 const MAX_STATIC_ASSET_BYTES = 5 * 1024 * 1024;
-const PAGES_PUBLIC_PREFIX = PAGES_RELEASE_ROOT.pathname.replace(/\/$/, '');
 const FRONTEND_UNAVAILABLE_HTML = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>UXUVideo 暂不可用</title><body><h1>UXUVideo 暂不可用</h1><p>FRONTEND_INTEGRITY_ERROR</p></body></html>';
+const RETIRED_PREFIX_NOT_FOUND_HTML = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>页面不存在</title><body><h1>页面不存在</h1><p>PAGE_NOT_FOUND</p></body></html>';
 const STATIC_CONTENT_TYPES = new Set([
   'application/json; charset=utf-8',
   'application/manifest+json; charset=utf-8',
@@ -210,9 +210,25 @@ export async function controlledFetch(input, options = {}) {
     let response;
     try {
       response = await fetchImpl(url.href, { method, headers, body, redirect: 'manual', signal: controller.signal });
+      const location = response.headers.get('Location');
+      if (!REDIRECT_STATUSES.has(response.status) || !location) {
+        return typeof options.consume === 'function' ? await options.consume(response) : response;
+      }
+      if (redirects >= maximumRedirects) {
+        await response.body?.cancel();
+        throw new UpstreamError('UPSTREAM_REDIRECT_LIMIT', 'Upstream redirect limit exceeded.', 502);
+      }
+      await response.body?.cancel();
+      const next = validateUpstreamUrl(location, url);
+      url = next;
+      if (response.status === 303 && method !== 'HEAD') {
+        method = 'GET';
+        body = undefined;
+        headers.delete('Content-Type');
+      }
     } catch (error) {
-      if (timedOut) throw new UpstreamError('UPSTREAM_TIMEOUT', 'Upstream response headers timed out.', 504);
       if (options.signal?.aborted) throw new UpstreamError('UPSTREAM_ABORTED', 'Upstream request was aborted.', 499);
+      if (timedOut) throw new UpstreamError('UPSTREAM_TIMEOUT', 'Upstream response timed out.', 504);
       if (error instanceof UpstreamError) throw error;
       throw new UpstreamError('UPSTREAM_UNAVAILABLE', 'Upstream request failed.', 502);
     } finally {
@@ -221,20 +237,6 @@ export async function controlledFetch(input, options = {}) {
       endWaiting();
     }
 
-    const location = response.headers.get('Location');
-    if (!REDIRECT_STATUSES.has(response.status) || !location) return response;
-    if (redirects >= maximumRedirects) {
-      await response.body?.cancel();
-      throw new UpstreamError('UPSTREAM_REDIRECT_LIMIT', 'Upstream redirect limit exceeded.', 502);
-    }
-    const next = validateUpstreamUrl(location, url);
-    await response.body?.cancel();
-    url = next;
-    if (response.status === 303 && method !== 'HEAD') {
-      method = 'GET';
-      body = undefined;
-      headers.delete('Content-Type');
-    }
   }
 }
 
@@ -256,6 +258,7 @@ export function limitReadableStream(stream, maximumBytes) {
 export async function readLimitedBody(response, maximumBytes) {
   const declared = Number(response.headers.get('Content-Length'));
   if (Number.isFinite(declared) && declared > maximumBytes) {
+    await response.body?.cancel();
     throw new UpstreamError('UPSTREAM_BODY_TOO_LARGE', 'Upstream body exceeds the byte limit.', 413);
   }
   if (!response.body) return new Uint8Array();
@@ -668,6 +671,8 @@ const ACCOUNT_PERMISSIONS = new Set([
   'player_settings',
   'danmaku_appearance',
   'view_settings',
+]);
+const RETIRED_ACCOUNT_PERMISSIONS = new Set([
   'iptv_access',
   'iptv_source_management',
   'iptv_builtin_sources',
@@ -876,6 +881,17 @@ function clearedSessionCookie() {
   return `${AUTH_COOKIE_NAME}=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`;
 }
 
+function storedPermissions(value) {
+  try {
+    const permissions = JSON.parse(value);
+    return Array.isArray(permissions)
+      ? [...new Set(permissions.filter((permission) => ACCOUNT_PERMISSIONS.has(permission)))]
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 function accountFromRow(row) {
   if (!row) return null;
   return {
@@ -883,7 +899,7 @@ function accountFromRow(row) {
     username: row.username,
     name: row.display_name,
     role: row.role,
-    customPermissions: JSON.parse(row.permissions_json),
+    customPermissions: storedPermissions(row.permissions_json),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -894,10 +910,12 @@ function jsonRequest(request) {
 }
 
 function normalizedPermissions(value) {
-  if (!Array.isArray(value) || value.some((permission) => !ACCOUNT_PERMISSIONS.has(permission))) {
+  if (!Array.isArray(value)
+    || value.some((permission) => !ACCOUNT_PERMISSIONS.has(permission)
+      && !RETIRED_ACCOUNT_PERMISSIONS.has(permission))) {
     return null;
   }
-  return [...new Set(value)];
+  return [...new Set(value.filter((permission) => ACCOUNT_PERMISSIONS.has(permission)))];
 }
 
 function accountCreateInput(body) {
@@ -927,7 +945,7 @@ function accountPatchInput(body, current) {
   const role = Object.hasOwn(body, 'role') ? body.role : current.role;
   const permissions = Object.hasOwn(body, 'customPermissions')
     ? normalizedPermissions(body.customPermissions)
-    : JSON.parse(current.permissions_json);
+    : storedPermissions(current.permissions_json);
   const password = Object.hasOwn(body, 'password') ? body.password : null;
   if (!name
     || name.length > 80
@@ -947,7 +965,7 @@ function publicSession(session) {
     username: session.username,
     name: session.display_name,
     role: session.role,
-    customPermissions: JSON.parse(session.permissions_json),
+    customPermissions: storedPermissions(session.permissions_json),
     mode: 'managed',
   };
 }
@@ -1460,8 +1478,6 @@ const ROUTES = [
   { id: 'douban-image', pattern: /^\/api\/douban\/image$/, methods: ['GET'] },
   { id: 'douban-recommend', pattern: /^\/api\/douban\/recommend$/, methods: ['GET'] },
   { id: 'douban-tags', pattern: /^\/api\/douban\/tags$/, methods: ['GET'] },
-  { id: 'iptv', pattern: /^\/api\/iptv$/, methods: ['GET'] },
-  { id: 'iptv-stream', pattern: /^\/api\/iptv\/stream$/, methods: ['GET', 'OPTIONS'] },
   { id: 'ping', pattern: /^\/api\/ping$/, methods: ['POST'] },
   { id: 'premium-category', pattern: /^\/api\/premium\/category$/, methods: ['GET', 'POST'] },
   { id: 'premium-types', pattern: /^\/api\/premium\/types$/, methods: ['GET', 'POST'] },
@@ -1620,12 +1636,6 @@ function adKeywords(value) {
     .slice(0, 100);
 }
 
-function canAccessIptv(session) {
-  if (!session) return false;
-  if (session.role === 'super_admin' || session.role === 'admin') return true;
-  return JSON.parse(session.permissions_json).includes('iptv_access');
-}
-
 async function handleRuntimeConfig(request, env, requestId) {
   let manifest;
   try {
@@ -1665,8 +1675,7 @@ async function handleRuntimeConfig(request, env, requestId) {
     },
     capabilities: {
       premium: typeof env.PREMIUM_PASSWORD === 'string' && env.PREMIUM_PASSWORD.length > 0,
-      iptv: typeof env.IPTV_SOURCES === 'string' && env.IPTV_SOURCES.trim().length > 0,
-      danmaku: typeof env.DANMAKU_API_URL === 'string' && env.DANMAKU_API_URL.trim().length > 0,
+      danmaku: true,
     },
     adKeywords: adKeywords(env.AD_KEYWORDS),
     thirdPartyScripts: {
@@ -1677,10 +1686,7 @@ async function handleRuntimeConfig(request, env, requestId) {
 
   if (session) {
     response.sources = {
-      subscriptionSources: runtimeText(env.SUBSCRIPTION_SOURCES, '', 64 * 1024),
-      iptvSources: canAccessIptv(session) ? runtimeText(env.IPTV_SOURCES, '', 64 * 1024) : '',
       mergeSources: env.MERGE_SOURCES === 'true' || env.MERGE_SOURCES === '1',
-      danmakuApiUrl: runtimeText(env.DANMAKU_API_URL, '', 2048),
     };
   }
 
@@ -1696,6 +1702,15 @@ async function handleRuntimeConfig(request, env, requestId) {
 
 const DOCUMENT_TOMBSTONE_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 const DOCUMENT_REQUEST_OVERHEAD_BYTES = 16 * 1024;
+const DOCUMENT_COLLECTION_LIMITS = Object.freeze({
+  fields: 128,
+  sources: 200,
+  subscriptions: 50,
+  history: 200,
+  favorites: 200,
+  tombstones: 400,
+  videoSkipRules: 200,
+});
 
 function emptyDocumentPayload(kind) {
   return kind === 'config'
@@ -1736,27 +1751,71 @@ function timestampedEntry(value, timestampName) {
 function normalizeFields(value) {
   if (value === undefined) return {};
   if (!isRecord(value)) return null;
+  if (Object.keys(value).length > DOCUMENT_COLLECTION_LIMITS.fields) return null;
   const entries = [];
   for (const [key, field] of Object.entries(value)) {
     if (!/^[A-Za-z0-9_.-]{1,128}$/.test(key)
+      || ['__proto__', 'prototype', 'constructor'].includes(key)
       || !isRecord(field)
       || !Object.hasOwn(field, 'value')
       || !Number.isSafeInteger(field.updatedAt)
       || field.updatedAt < 0) return null;
-    entries.push([key, field]);
+    if (key === 'videoSkipRules') {
+      const rules = normalizeVideoSkipRules(field.value);
+      if (!rules) return null;
+      entries.push([key, { ...field, value: rules }]);
+    } else entries.push([key, field]);
   }
   return Object.fromEntries(entries.sort(([left], [right]) => left.localeCompare(right)));
 }
 
-function normalizeRecords(value, timestampName = 'updatedAt') {
+function encodeVideoSkipRuleKeyPart(value) {
+  return value.replaceAll('%', '%25').replaceAll(':', '%3A');
+}
+
+function validVideoSkipRuleKey(key) {
+  const parts = key.split(':');
+  if (parts.length !== 3 || !['standard', 'premium'].includes(parts[0])) return false;
+  const source = parts[1].replaceAll('%3A', ':').replaceAll('%25', '%');
+  const videoId = parts[2].replaceAll('%3A', ':').replaceAll('%25', '%');
+  return /^[A-Za-z0-9_.:-]{1,160}$/.test(source)
+    && videoId.length > 0 && videoId.length <= 256
+    && !/[\u0000-\u001f\u007f]/.test(videoId)
+    && `${parts[0]}:${encodeVideoSkipRuleKeyPart(source)}:${encodeVideoSkipRuleKeyPart(videoId)}` === key;
+}
+
+function normalizeVideoSkipRules(value) {
+  if (!isRecord(value) || Object.keys(value).length > DOCUMENT_COLLECTION_LIMITS.videoSkipRules) return null;
+  const entries = [];
+  for (const [key, rule] of Object.entries(value)) {
+    if (!validVideoSkipRuleKey(key)
+      || !isRecord(rule)
+      || typeof rule.introEnabled !== 'boolean'
+      || !Number.isInteger(rule.introSeconds) || rule.introSeconds < 0 || rule.introSeconds > 600
+      || typeof rule.outroEnabled !== 'boolean'
+      || !Number.isInteger(rule.outroSeconds) || rule.outroSeconds < 0 || rule.outroSeconds > 600
+      || !Number.isSafeInteger(rule.updatedAt) || rule.updatedAt < 0) return null;
+    entries.push([key, {
+      introEnabled: rule.introEnabled,
+      introSeconds: rule.introSeconds,
+      outroEnabled: rule.outroEnabled,
+      outroSeconds: rule.outroSeconds,
+      updatedAt: rule.updatedAt,
+    }]);
+  }
+  return Object.fromEntries(entries.sort(([left], [right]) => left.localeCompare(right)));
+}
+
+function normalizeRecords(value, maximum, timestampName = 'updatedAt') {
   if (value === undefined) return [];
-  if (!Array.isArray(value) || value.some((entry) => !timestampedEntry(entry, timestampName))) return null;
+  if (!Array.isArray(value) || value.length > maximum
+    || value.some((entry) => !timestampedEntry(entry, timestampName))) return null;
   return value.map((entry) => ({ ...entry }));
 }
 
 function normalizeTombstones(value, allowedCollections, now) {
   if (value === undefined) return [];
-  if (!Array.isArray(value)) return null;
+  if (!Array.isArray(value) || value.length > DOCUMENT_COLLECTION_LIMITS.tombstones) return null;
   const cutoff = now - DOCUMENT_TOMBSTONE_RETENTION_MS;
   const tombstones = [];
   for (const tombstone of value) {
@@ -1784,14 +1843,14 @@ function normalizeDocumentPayload(kind, value, now) {
   if (!tombstones) return null;
   if (kind === 'config') {
     const fields = normalizeFields(value.fields);
-    const sources = normalizeRecords(value.sources);
-    const subscriptions = normalizeRecords(value.subscriptions);
+    const sources = normalizeRecords(value.sources, DOCUMENT_COLLECTION_LIMITS.sources);
+    const subscriptions = normalizeRecords(value.subscriptions, DOCUMENT_COLLECTION_LIMITS.subscriptions);
     return fields && sources && subscriptions
       ? { fields, sources, subscriptions, tombstones }
       : null;
   }
-  const history = normalizeRecords(value.history);
-  const favorites = normalizeRecords(value.favorites);
+  const history = normalizeRecords(value.history, DOCUMENT_COLLECTION_LIMITS.history);
+  const favorites = normalizeRecords(value.favorites, DOCUMENT_COLLECTION_LIMITS.favorites);
   return history && favorites ? { history, favorites, tombstones } : null;
 }
 
@@ -1848,6 +1907,17 @@ function mergeDocumentPayload(kind, current, incoming) {
     favorites: mergeRecords(current.favorites, incoming.favorites, tombstones, 'favorites'),
     tombstones,
   };
+}
+
+function documentCollectionsWithinLimits(kind, payload) {
+  if (payload.tombstones.length > DOCUMENT_COLLECTION_LIMITS.tombstones) return false;
+  if (kind === 'config') {
+    return Object.keys(payload.fields).length <= DOCUMENT_COLLECTION_LIMITS.fields
+      && payload.sources.length <= DOCUMENT_COLLECTION_LIMITS.sources
+      && payload.subscriptions.length <= DOCUMENT_COLLECTION_LIMITS.subscriptions;
+  }
+  return payload.history.length <= DOCUMENT_COLLECTION_LIMITS.history
+    && payload.favorites.length <= DOCUMENT_COLLECTION_LIMITS.favorites;
 }
 
 function parseIfMatch(value) {
@@ -1937,6 +2007,9 @@ async function handleUserDocument(request, env, requestId, route) {
     return documentFailure(requestId, route.id, 400, 'INVALID_DOCUMENT', 'Document payload is invalid.');
   }
   const merged = mergeDocumentPayload(kind, current, incoming);
+  if (!documentCollectionsWithinLimits(kind, merged)) {
+    return documentFailure(requestId, route.id, 400, 'INVALID_DOCUMENT', 'Document payload exceeds collection limits.');
+  }
   const payloadJson = JSON.stringify(merged);
   if (new TextEncoder().encode(payloadJson).byteLength > D1_LIMITS.documentMaxBytes) {
     return documentFailure(requestId, route.id, 413, 'DOCUMENT_TOO_LARGE', 'Document exceeds 512 KiB.');
@@ -2007,17 +2080,19 @@ async function handleSourceImport(request, requestId) {
     throw new UpstreamError('INVALID_REQUEST', 'A valid subscription URL is required.', 400);
   }
   const target = validateUpstreamUrl(body.url.trim());
-  const response = await controlledFetch(target.href, {
+  const text = await controlledFetch(target.href, {
     signal: request.signal,
     timeoutMs: 10_000,
     headers: { Accept: 'application/json, text/plain;q=0.9' },
     budget: createRequestBudget({ maxSubrequests: 4, maxWaiting: 1 }),
+    consume: async (response) => {
+      if (!response.ok) {
+        await response.body?.cancel();
+        throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${response.status}.`, 502);
+      }
+      return new TextDecoder().decode(await readLimitedBody(response, SOURCE_IMPORT_BYTES));
+    },
   });
-  if (!response.ok) {
-    await response.body?.cancel();
-    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${response.status}.`, 502);
-  }
-  const text = new TextDecoder().decode(await readLimitedBody(response, SOURCE_IMPORT_BYTES));
   return {
     routeId: 'source-import',
     errorCode: null,
@@ -2027,17 +2102,23 @@ async function handleSourceImport(request, requestId) {
 }
 
 async function upstreamJson(url, budget, options = {}) {
-  const response = await controlledFetch(url, { ...options, budget });
-  if (!response.ok) {
-    await response.body?.cancel();
-    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${response.status}.`, 502);
-  }
-  const bytes = await readLimitedBody(response, options.maximumBytes ?? LOW_FANOUT_JSON_BYTES);
-  try {
-    return JSON.parse(new TextDecoder().decode(bytes));
-  } catch {
-    throw new UpstreamError('UPSTREAM_INVALID_RESPONSE', 'Upstream JSON is invalid.', 502);
-  }
+  const { maximumBytes = LOW_FANOUT_JSON_BYTES, ...fetchOptions } = options;
+  return controlledFetch(url, {
+    ...fetchOptions,
+    budget,
+    consume: async (response) => {
+      if (!response.ok) {
+        await response.body?.cancel();
+        throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${response.status}.`, 502);
+      }
+      const bytes = await readLimitedBody(response, maximumBytes);
+      try {
+        return JSON.parse(new TextDecoder().decode(bytes));
+      } catch {
+        throw new UpstreamError('UPSTREAM_INVALID_RESPONSE', 'Upstream JSON is invalid.', 502);
+      }
+    },
+  });
 }
 
 function safeRepository(env) {
@@ -2121,35 +2202,37 @@ async function handleAppUpdateArtifact(request, requestId, source, budget, state
   if (latestParts && currentParts && compareSemver(latestParts.slice(1), currentParts.slice(1)) < 0) {
     throw new UpstreamError('APP_UPDATE_VERSION_MISMATCH', 'The latest Worker release is older than the current Worker.', 409);
   }
-  let response;
+  let bytes;
   try {
-    response = await controlledFetch(source.workerUrl, {
+    bytes = await controlledFetch(source.workerUrl, {
       signal: request.signal,
       timeoutMs: 10_000,
       maxRedirects: 0,
       headers: { Accept: 'text/javascript, text/plain;q=0.9' },
       budget,
+      consume: async (response) => {
+        if (!response.ok) {
+          await response.body?.cancel();
+          throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be fetched.', 502);
+        }
+        const declared = Number(response.headers.get('Content-Length'));
+        if (Number.isFinite(declared) && declared > APP_UPDATE_ARTIFACT_BYTES) {
+          await response.body?.cancel();
+          throw new UpstreamError('APP_UPDATE_ARTIFACT_TOO_LARGE', 'The latest Worker file exceeds 3 MiB.', 413);
+        }
+        try {
+          return await readLimitedBody(response, APP_UPDATE_ARTIFACT_BYTES);
+        } catch (error) {
+          if (error instanceof UpstreamError && error.code === 'UPSTREAM_BODY_TOO_LARGE') {
+            throw new UpstreamError('APP_UPDATE_ARTIFACT_TOO_LARGE', 'The latest Worker file exceeds 3 MiB.', 413);
+          }
+          throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be read.', 502);
+        }
+      },
     });
-  } catch {
-    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be fetched.', 502);
-  }
-  if (!response.ok) {
-    await response.body?.cancel();
-    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be fetched.', 502);
-  }
-  const declared = Number(response.headers.get('Content-Length'));
-  if (Number.isFinite(declared) && declared > APP_UPDATE_ARTIFACT_BYTES) {
-    await response.body?.cancel();
-    throw new UpstreamError('APP_UPDATE_ARTIFACT_TOO_LARGE', 'The latest Worker file exceeds 3 MiB.', 413);
-  }
-  let bytes;
-  try {
-    bytes = await readLimitedBody(response, APP_UPDATE_ARTIFACT_BYTES);
   } catch (error) {
-    if (error instanceof UpstreamError && error.code === 'UPSTREAM_BODY_TOO_LARGE') {
-      throw new UpstreamError('APP_UPDATE_ARTIFACT_TOO_LARGE', 'The latest Worker file exceeds 3 MiB.', 413);
-    }
-    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be read.', 502);
+    if (error instanceof UpstreamError && error.code === 'APP_UPDATE_ARTIFACT_TOO_LARGE') throw error;
+    throw new UpstreamError('APP_UPDATE_FETCH_FAILED', 'The latest Worker file could not be fetched.', 502);
   }
   const text = new TextDecoder().decode(bytes);
   const version = /(?:^|\n)\s*const\s+WORKER_VERSION\s*=\s*['"]([^'"]+)['"]\s*;/.exec(text)?.[1];
@@ -2526,12 +2609,12 @@ async function handleLowFanoutRoute(request, env, requestId, route) {
 const HIGH_FANOUT_ROUTE_IDS = new Set([
   'premium-category', 'premium-types', 'probe-resolution', 'search-parallel',
 ]);
-const MEDIA_ROUTE_IDS = new Set(['iptv', 'iptv-stream', 'proxy']);
+const MEDIA_ROUTE_IDS = new Set(['proxy']);
+const SEARCH_SOURCE_TIMEOUT_MS = 8_000;
 const SEARCH_RATE_LIMIT = createTokenBucket({ limit: 6, windowMs: 60_000 });
 const PROBE_RATE_LIMIT = createTokenBucket({ limit: 6, windowMs: 60_000 });
 const MEDIA_RATE_LIMIT = createTokenBucket({ limit: 60, windowMs: 60_000 });
 const AGGREGATE_CACHE = new Map();
-const IPTV_PLAYLIST_CACHE = new Map();
 
 function sessionProfile(session, env) {
   const paid = session.role === 'admin'
@@ -2698,7 +2781,7 @@ async function searchSourcePage(source, query, page, budget, signal) {
     headers: { Accept: 'application/json' },
     userAgent: sourceHeader(source.headers, 'user-agent') ?? 'Mozilla/5.0',
     referer: sourceHeader(source.headers, 'referer') ?? undefined,
-    timeoutMs: 20_000,
+    timeoutMs: SEARCH_SOURCE_TIMEOUT_MS,
     maximumBytes: 2 * 1024 * 1024,
   });
   if (!isRecord(data) || !Array.isArray(data.list)) throw new UpstreamError('UPSTREAM_INVALID_RESPONSE', 'Search response is invalid.', 502);
@@ -2950,14 +3033,17 @@ function manifestVariants(content, baseUrl, maximum) {
 }
 
 async function upstreamText(url, budget, signal, maximumBytes = 1024 * 1024) {
-  const response = await controlledFetch(url, {
-    budget, signal, timeoutMs: 8_000, headers: { Accept: 'application/vnd.apple.mpegurl, application/x-mpegURL, text/plain' },
+  return controlledFetch(url, {
+    budget, signal, timeoutMs: 8_000,
+    headers: { Accept: 'application/vnd.apple.mpegurl, application/x-mpegURL, text/plain' },
+    consume: async (response) => {
+      if (!response.ok) {
+        await response.body?.cancel();
+        throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${response.status}.`, 502);
+      }
+      return new TextDecoder().decode(await readLimitedBody(response, maximumBytes));
+    },
   });
-  if (!response.ok) {
-    await response.body?.cancel();
-    throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${response.status}.`, 502);
-  }
-  return new TextDecoder().decode(await readLimitedBody(response, maximumBytes));
 }
 
 async function probeVideo(video, source, profile, budget, signal) {
@@ -3077,15 +3163,14 @@ function safeMediaText(value, maximum, code, message) {
   return text;
 }
 
-function mediaRequestOptions(request, routeId) {
+function mediaRequestOptions(request) {
   const query = new URL(request.url).searchParams;
   const rawTarget = safeMediaText(query.get('url'), 8_192, 'INVALID_MEDIA_URL', 'Media URL is invalid.');
   if (!rawTarget) throw new UpstreamError('INVALID_MEDIA_URL', 'Media URL is required.', 400);
   const target = validateUpstreamUrl(rawTarget).href;
   const userAgent = safeMediaText(query.get('ua'), 512, 'INVALID_MEDIA_HEADER', 'Media user agent is invalid.');
   const rawReferer = safeMediaText(query.get('referer'), 2_048, 'INVALID_MEDIA_HEADER', 'Media referer is invalid.');
-  const referer = rawReferer ? validateUpstreamUrl(rawReferer).href
-    : routeId === 'iptv-stream' || routeId === 'iptv' ? `${new URL(target).origin}/` : '';
+  const referer = rawReferer ? validateUpstreamUrl(rawReferer).href : '';
   const requestedAdMode = query.get('ad');
   const adFilterMode = ['keyword', 'heuristic', 'aggressive'].includes(requestedAdMode) ? requestedAdMode : 'off';
   const adKeywords = [...new Set(query.getAll('adkw').map((value) => safeMediaText(
@@ -3183,7 +3268,7 @@ async function mediaChildPath(routeId, target, userAgent, referer, signingKey, e
     query.set('ad', adFilterMode);
     for (const keyword of adKeywords) query.append('adkw', keyword);
   }
-  return `/api/${routeId === 'iptv-stream' ? 'iptv/stream' : 'proxy'}?${query}`;
+  return `/api/proxy?${query}`;
 }
 
 const AD_INTERSTITIAL_MARKERS = [
@@ -3325,14 +3410,22 @@ function copyMediaHeaders(upstream, request, requestId) {
 }
 
 async function mediaUpstream(request, requestId, routeId, options, env) {
-  const upstream = await controlledFetch(options.target, {
+  const fetched = await controlledFetch(options.target, {
     timeoutMs: 20_000,
     signal: request.signal,
     headers: request.headers,
     userAgent: options.userAgent || 'Mozilla/5.0 (compatible; UXUVideo/1.0)',
     referer: options.referer || undefined,
     budget: createRequestBudget({ maxSubrequests: 4, maxWaiting: 1 }),
+    consume: async (upstream) => {
+      if (!upstream.ok && upstream.status !== 206) return { upstream, manifest: null };
+      const contentType = upstream.headers.get('Content-Type') || '';
+      const manifest = isMediaManifest(options.target, contentType)
+        ? new TextDecoder().decode(await readLimitedBody(upstream, MEDIA_MANIFEST_BYTES)) : null;
+      return { upstream, manifest };
+    },
   });
+  const { upstream, manifest } = fetched;
   if (!upstream.ok && upstream.status !== 206) {
     await upstream.body?.cancel();
     if (routeId === 'proxy' && upstream.status === 403) {
@@ -3343,9 +3436,7 @@ async function mediaUpstream(request, requestId, routeId, options, env) {
     }
     throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${upstream.status}.`, 502);
   }
-  const contentType = upstream.headers.get('Content-Type') || '';
-  if (isMediaManifest(options.target, contentType)) {
-    const manifest = new TextDecoder().decode(await readLimitedBody(upstream, MEDIA_MANIFEST_BYTES));
+  if (manifest !== null) {
     const rewritten = await rewriteMediaManifest(
       manifest, options.target, routeId, options.userAgent, options.referer, env.AUTH_SECRET,
       options.adFilterMode, options.adKeywords,
@@ -3359,62 +3450,22 @@ async function mediaUpstream(request, requestId, routeId, options, env) {
   return new Response(body, { status: upstream.status, headers });
 }
 
-function cachedIptvPlaylist(key) {
-  const cached = IPTV_PLAYLIST_CACHE.get(key);
-  if (!cached || cached.expiresAt <= Date.now()) {
-    IPTV_PLAYLIST_CACHE.delete(key);
-    return null;
-  }
-  return cached.value;
-}
-
-async function handleIptvPlaylist(request, requestId, options) {
-  const key = `${options.target}\n${options.userAgent}\n${options.referer}`;
-  let text = cachedIptvPlaylist(key);
-  let cacheStatus = 'hit';
-  if (text === null) {
-    cacheStatus = 'miss';
-    const upstream = await controlledFetch(options.target, {
-      timeoutMs: 20_000,
-      signal: request.signal,
-      userAgent: options.userAgent || 'Mozilla/5.0 (compatible; UXUVideo/1.0)',
-      referer: options.referer,
-      budget: createRequestBudget({ maxSubrequests: 4, maxWaiting: 1 }),
-    });
-    if (!upstream.ok) {
-      await upstream.body?.cancel();
-      throw new UpstreamError('UPSTREAM_HTTP_ERROR', `Upstream returned HTTP ${upstream.status}.`, 502);
-    }
-    text = new TextDecoder().decode(await readLimitedBody(upstream, MEDIA_MANIFEST_BYTES));
-    if (IPTV_PLAYLIST_CACHE.size >= 32) IPTV_PLAYLIST_CACHE.delete(IPTV_PLAYLIST_CACHE.keys().next().value);
-    IPTV_PLAYLIST_CACHE.set(key, { value: text, expiresAt: Date.now() + (5 * 60 * 1000) });
-  }
-  const headers = responseHeaders(requestId, 'text/plain; charset=utf-8', { cacheControl: 'private, max-age=60' });
-  sameOriginCors(request, headers);
-  return { routeId: 'iptv', errorCode: null, upstreamClass: 'iptv-playlist', cacheStatus, response: new Response(text, { headers }) };
-}
-
 async function handleMediaRoute(request, env, requestId, route) {
   if (request.method === 'OPTIONS') return mediaPreflight(request, requestId, route.id);
   const hasToken = new URL(request.url).searchParams.has('token');
   try {
-    if (route.id === 'iptv' && hasToken) throw new UpstreamError('MEDIA_TOKEN_INVALID', 'Media token is invalid.', 401);
     let session = null;
     if (!hasToken) {
       session = await getAuthSession(request, env, requestId);
       if (!session) return authFailureResult(requestId, route.id, 401, 'AUTH_REQUIRED', 'Authentication is required.');
-      if ((route.id === 'iptv' || route.id === 'iptv-stream') && !canAccessIptv(session)) {
-        return authFailureResult(requestId, route.id, 403, 'IPTV_ACCESS_REQUIRED', 'IPTV access is required.');
-      }
       if (!MEDIA_RATE_LIMIT.consume(session.token_hash)) {
         throw new UpstreamError('MEDIA_RATE_LIMITED', 'Media request rate limit exceeded.', 429);
       }
     }
-    const options = mediaRequestOptions(request, route.id);
+    const options = mediaRequestOptions(request);
     if (hasToken && !await verifyMediaToken(
       env.AUTH_SECRET, route.id, options.target, options.userAgent, options.referer, options.token,
     )) throw new UpstreamError('MEDIA_TOKEN_INVALID', 'Media token is invalid or expired.', 401);
-    if (route.id === 'iptv') return await handleIptvPlaylist(request, requestId, options);
     return { routeId: route.id, errorCode: null, upstreamClass: 'media', response: await mediaUpstream(request, requestId, route.id, options, env) };
   } catch (error) {
     return mediaFailure(requestId, route.id, error);
@@ -3875,12 +3926,7 @@ async function loadPagesManifest() {
 }
 
 function pagesLookupPath(pathname) {
-  let path = normalizePath(pathname);
-  if (path === PAGES_PUBLIC_PREFIX) return '/';
-  if (path.startsWith(`${PAGES_PUBLIC_PREFIX}/`)) {
-    path = path.slice(PAGES_PUBLIC_PREFIX.length);
-  }
-  return normalizePath(path);
+  return normalizePath(pathname);
 }
 
 function staticContentSecurityPolicy(env = {}) {
@@ -3978,6 +4024,19 @@ function frontendUnavailableResponse(requestId, head, env, pagesVersion = null) 
   headers.set('Retry-After', '60');
   applyStaticSecurityHeaders(headers, env);
   return new Response(head ? null : bytes, { status: 503, headers });
+}
+
+function retiredPrefixNotFound(requestId, head, env) {
+  const bytes = new TextEncoder().encode(RETIRED_PREFIX_NOT_FOUND_HTML);
+  const headers = responseHeaders(requestId, 'text/html; charset=utf-8');
+  headers.set('Content-Length', String(bytes.byteLength));
+  applyStaticSecurityHeaders(headers, env);
+  return {
+    routeId: 'pages',
+    errorCode: 'PAGE_NOT_FOUND',
+    cacheStatus: 'bypass',
+    response: new Response(head ? null : bytes, { status: 404, headers }),
+  };
 }
 
 function frontendIntegrityReason(stage, error) {
@@ -4177,6 +4236,11 @@ async function routeRequest(request, requestId, env) {
         sse: route.sse,
       }),
     };
+  }
+
+  const isRetiredPages404 = path === '/UXUV-Pages' || path.startsWith('/UXUV-Pages/');
+  if (isRetiredPages404) {
+    return retiredPrefixNotFound(requestId, method === 'HEAD', env);
   }
 
   if (method !== 'GET' && method !== 'HEAD') {

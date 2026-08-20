@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 11,
+  "receiptKind": "visual_approval",
+  "candidateLabel": "S21-T15 视觉候选 11",
+  "recordedAt": "2026-08-20T10:35:26.367Z",
+  "preapprovalEvidence": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-candidate-evidence-attempt11-rejected.json",
+    "sha256": "8b34d9d39feb0bdcf63b2f367ef1063486459d687a1c287b11b2f1e8c594f9db",
+    "gateStatus": "local_validation_passed_visual_pending"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-review-attempt11-rejected.md",
+    "sha256": "1bcc953ba52ba6de717f3f356853a5919cd8c26f91c78d7e731c880faca911d2"
+  },
+  "machineBinding": {
+    "candidateCombinedSha256": "2d6a8b0d5759087cbea0e940608566bbda49a6a0c012a8af0e463aa09d46bc15",
+    "releaseScopeSha256": "4956f6aead919e090f73098dc42304a67ac51c71ff2f353b6839430d544e8c1a"
+  },
+  "previewPaths": [
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-1440.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-320.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-1024.png"
+  ],
+  "decision": "REJECTED",
+  "decidedAt": "2026-08-20T10:58:27.959Z",
+  "decisionSummary": "未达到已批准的苹果 iOS 27 Liquid Glass 视觉要求；人工视觉审批不得要求用户提供或确认机器身份值。",
+  "feedback": [
+    "玻璃功能层仍像近不透明的普通卡片，缺少可见背景扩散、暗边与镜面高光。",
+    "后续人工审批只使用候选标签和可见预览。"
+  ],
+  "humanDecisionContract": {
+    "shaRequired": false,
+    "approvePhrase": "批准视觉候选 11",
+    "rejectPhrase": "拒绝视觉候选 11：说明问题"
+  },
+  "supersedesApproval": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt10.json",
+    "disposition": "历史 attempt 10 批准保留；后续产品与证据合同变更后失效"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T15",
+  "attempt": 9,
+  "state": "completed",
+  "startedAt": "2026-08-20T02:13:30.7125178+08:00",
+  "completedAt": "2026-08-20T12:06:36.6586746+08:00",
+  "planSha256": "c06f97d5bf33c44455c1541f06801d6258b50acf4487bd04f45e43475d04dd30",
+  "repositories": {
+    "worker": { "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3" },
+    "pages": { "head": "9e084f486953850f8de3d23bcd63cc2b71336b64" }
+  },
+  "adoptedAttempt": {
+    "attempt": 8,
+    "archive": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-candidate-floating-sidebar-content-boundary.zip",
+    "archiveSha256": "ffc3383f72ee863415d3c931f90606a22785675491ac81dbcc7b633418f0d587",
+    "archiveBytes": 37118,
+    "receiptSha256": "da06f7e503d8c2591337a77ffe8c5ea4b37fef9dcffeb5e1e22e7dd2dabd95dd",
+    "receiptBytes": 13996,
+    "focusedRed": "final visual review rejected fixed sidebar controls overlapping interactive search-result cards at 320px and the current-source card at 1024px",
+    "boundary": "attempt 9 owns one shared floating-sidebar content exclusion-zone CSS semantic and its existing search/player geometry regressions; no path ownership is added",
+    "formalE2E": "124/124 GREEN in attempt 8; must be rerun after the CSS remediation",
+    "inAppBrowser": "attempt 8 classic-scrollbar tag lane GREEN; search/player blockers remain RED",
+    "rejectedCandidateCount": 116,
+    "rejectedCandidateBytes": 16099136,
+    "rejectedCandidateCombinedSha256": "00292fbe3967580217ab50a88a25f1443f86e40069a1399c15aaec4cd324b7d8",
+    "historicalPerformanceTraceSha256": "88b6bc3d4eb9f76f5955eaa6d01337e7b7842974f11aa82ce385681552c3df0c",
+    "implementationWrites": [
+      "pages:app/globals.css",
+      "pages:work-products/tests/section21-visual.e2e.spec.ts",
+      "pages:work-products/tests/fixtures/ui-review/section21-candidate/*.png"
+    ]
+  },
+  "allowedWriteScope": [
+    "worker:work-products/plan.md",
+    "worker:work-products/todo.md",
+    "worker:work-products/tests/section21-plan-contract.test.mjs",
+    "worker:work-products/evidence/section21/",
+    "pages:app/globals.css",
+    "pages:work-products/tests/app-flows.e2e.spec.ts",
+    "pages:work-products/tests/usage-ui.e2e.spec.ts",
+    "pages:work-products/tests/accessibility.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-settings-preferences.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts",
+    "pages:work-products/tests/static-server.mjs",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/"
+  ],
+  "writeSet": [
+    "pages:app/globals.css",
+    "pages:work-products/tests/app-flows.e2e.spec.ts",
+    "pages:work-products/tests/usage-ui.e2e.spec.ts",
+    "pages:work-products/tests/accessibility.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-settings-preferences.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts",
+    "pages:work-products/tests/static-server.mjs",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/*.png",
+    "worker:work-products/evidence/section21/t15-candidate-evidence.json",
+    "worker:work-products/evidence/section21/t15-visual-review.md",
+    "worker:work-products/evidence/section21/t15-performance-trace.zip",
+    "worker:work-products/evidence/section21/red-matrix.md",
+    "worker:work-products/evidence/section21/binary-allowlist.json",
+    "worker:work-products/evidence/section21/pair-rollback.json",
+    "worker:work-products/evidence/section21/worker-v1.reverse.patch",
+    "worker:work-products/evidence/section21/pages-v1.reverse.patch",
+    "worker:work-products/evidence/section21/worker-v2.forward.patch",
+    "worker:work-products/evidence/section21/pages-v2.forward.patch",
+    "worker:work-products/evidence/section21/receipts/S21-T15.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "pages:app/globals.css": "bd71e110f71b8d8b76f81638ca09e25210015452b4d0ed76ca32126704d9b88c",
+    "pages:work-products/tests/app-flows.e2e.spec.ts": "f594a885f286384fa5283f03294129f953fc4657ca1bd29e2da7c538766d734f",
+    "pages:work-products/tests/usage-ui.e2e.spec.ts": "1627cbb9b5d15dbed396d5d24cc60a1efe1b59ea2232669ffa05942cd5d58b73",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "e745c7c77aa757cb57f368023dc7aad57dd4f9bca85567999a5ad1f4fded3147",
+    "pages:work-products/tests/kvideo-settings-preferences.e2e.spec.ts": "e7c0db3d6fcb7e065ed2bef7e98bc6f594f5b552cff39a1ecce412791beca78c",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts": "d0343676114be58cdacc0fe47ed6b60e5acbc595f54fcbe3be9d91cd36adf83f",
+    "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts": "3b5b474531e68d36e0926a8caa34d2c1935860a0b1ed0fd7c99905ca3cf61d57",
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts": "dca987705916a9943ae9d308fbf1107d610193bf0af4955761bedbfdc5c2ebd3",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts": "ea4593e0230420d58175d9b044541b6d9544045c8b266941cf14c39c0a0a24d0",
+    "pages:work-products/tests/static-server.mjs": "0d630cc33ef7c61ec6407c094baa2c409f6e2b0dcf8249de55f042bdc403ab00",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/*.png": "00292fbe3967580217ab50a88a25f1443f86e40069a1399c15aaec4cd324b7d8",
+    "worker:work-products/evidence/section21/t15-candidate-evidence.json": null,
+    "worker:work-products/evidence/section21/t15-visual-review.md": null,
+    "worker:work-products/evidence/section21/t15-performance-trace.zip": "88b6bc3d4eb9f76f5955eaa6d01337e7b7842974f11aa82ce385681552c3df0c",
+    "worker:work-products/evidence/section21/red-matrix.md": "a85dc0130bffd923743a042bd86450db52ef36a5c6938c1583f564af2a49e331",
+    "worker:work-products/evidence/section21/binary-allowlist.json": "d02848f45505f4a48659f0cf28adc29f3a3c858084557e4765d086f1fcc607d3",
+    "worker:work-products/evidence/section21/pair-rollback.json": "6245a1f24463bd1972f614dc5ba2a26306ebcda074f27c293353573668650381",
+    "worker:work-products/evidence/section21/worker-v1.reverse.patch": "8081714cab39a85810ba4c5a7f396018edbdb35a8389789127a36cc885a87268",
+    "worker:work-products/evidence/section21/pages-v1.reverse.patch": "5fd2a6a29a76fba4d6c4d46bdfc4fd316d5abd941289cdb16267fdb7c16ba6f6",
+    "worker:work-products/evidence/section21/worker-v2.forward.patch": "4f48ca8cc7bf58d43032f617b141f128b3be9f9aaeba2249a64154af0f0795c6",
+    "worker:work-products/evidence/section21/pages-v2.forward.patch": "133c7a7e01d02711b69e65c3fc22acd38e995fcb3fc9738ac382ff214e5445c4",
+    "worker:work-products/todo.md": "5253f8fc99a81d14f1a15c0c869674d96efa8a738c2f56e4e4f1727d5053ec66"
+  },
+  "afterSha256": {
+    "pages:app/globals.css": "bfa9d3a507706f4be099f3d71df554a88905ae4dc1e538d7780efe63128137e8",
+    "pages:work-products/tests/app-flows.e2e.spec.ts": "f594a885f286384fa5283f03294129f953fc4657ca1bd29e2da7c538766d734f",
+    "pages:work-products/tests/usage-ui.e2e.spec.ts": "1627cbb9b5d15dbed396d5d24cc60a1efe1b59ea2232669ffa05942cd5d58b73",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "e745c7c77aa757cb57f368023dc7aad57dd4f9bca85567999a5ad1f4fded3147",
+    "pages:work-products/tests/kvideo-settings-preferences.e2e.spec.ts": "e7c0db3d6fcb7e065ed2bef7e98bc6f594f5b552cff39a1ecce412791beca78c",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts": "6bd5127e8fe99f2a4aeefac4e40712ddda1e24ea8d1d427ac21fb3cf9f01e56a",
+    "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts": "8dda587fdcaff7524802f1233339e856b84009225b9b03bc326eab4d33648248",
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts": "dca987705916a9943ae9d308fbf1107d610193bf0af4955761bedbfdc5c2ebd3",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts": "ea4593e0230420d58175d9b044541b6d9544045c8b266941cf14c39c0a0a24d0",
+    "pages:work-products/tests/static-server.mjs": "0d630cc33ef7c61ec6407c094baa2c409f6e2b0dcf8249de55f042bdc403ab00",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/*.png": "4ffcaa4267f35bf64931f00d826effae58482f91ff88886c47674081387cb25e",
+    "worker:work-products/evidence/section21/t15-candidate-evidence.json": "8cac4854c6a4763a62c9e2e4dee8783b44cf5a0f7ce9cb224dbc49cdae4437d1",
+    "worker:work-products/evidence/section21/t15-visual-review.md": "f38e39a01df35a24a904bff8c7ed1714ae846435e40136c56f0d962d5082f6b6",
+    "worker:work-products/evidence/section21/t15-performance-trace.zip": "3530577f9bf8e4cde4abcfdada2517de26b454a6deb87fb4b2f81a925e64c402",
+    "worker:work-products/evidence/section21/red-matrix.md": "0f3145abce30e1101e686bc156cbda421c976f1d5d526ae3f5929bed631b415a",
+    "worker:work-products/evidence/section21/binary-allowlist.json": "50f21dc43dd87e5def34003d38b243e8c268757da6664805987d57fabad47568",
+    "worker:work-products/evidence/section21/pair-rollback.json": "e2ba31d7f42e0f70f1df987acc42cf05c4f62d67db91fbf138fa0e0dfdd3395c",
+    "worker:work-products/evidence/section21/worker-v1.reverse.patch": "8081714cab39a85810ba4c5a7f396018edbdb35a8389789127a36cc885a87268",
+    "worker:work-products/evidence/section21/pages-v1.reverse.patch": "fcc290b3321cb7a71709fd26fee7c8992849a6e6535bfa8acddf9fb130b80eb3",
+    "worker:work-products/evidence/section21/worker-v2.forward.patch": "4f48ca8cc7bf58d43032f617b141f128b3be9f9aaeba2249a64154af0f0795c6",
+    "worker:work-products/evidence/section21/pages-v2.forward.patch": "97a4490a25393269926f7557993eca671b14f8f76045d3a94076874464a6acbf",
+    "worker:work-products/todo.md": "e37ec13a632ffd1546744fcde6bf79d2f24596f7c08f2e9413ddbc8c25a29a49"
+  },
+  "failureBoundary": {
+    "classification": "adopted real floating-sidebar controls overlapping interactive search and player content",
+    "searchCandidates": [
+      "routes-search-ready-en-320.png@dec487287df251b818a4b29d8b652126e7b804ac219e1074044d757ed8cdeb62",
+      "routes-search-ready-zh-CN-320.png@6ca4e08c9bf4af46097bac025895ff093984c880eb6b19b1fee9d0e4d3085ed2"
+    ],
+    "playerCandidate": "routes-player-ready-en-1024.png@e83e55561eed5d6c006513cbc1b9d69720a5bdd1f39a8c5a1d77f97ed2865cad",
+    "excludedCandidate": "routes-player-ready-zh-TW-320.png@9190bc25d974204ca764cc1bfe245d57461cf2eb7fcd7a775999d68bbd6c6de1",
+    "requiredOwnershipAdditions": []
+  },
+  "validation": {
+    "planningGate": "25/25 GREEN",
+    "searchFloatingSafeLane": "RED zh-CN/320 grid=[16,304], gaps=-50/-56, both overlap areas=2500px2, 2 tracks; GREEN in focused search/player 7/7 with 320 one-column and three-language four-width safe-lane checks",
+    "playerFloatingSafeLane": "RED zh-CN/1024 overlapArea=594.513px2 and sourceGap=-30.984px; GREEN in focused search/player 7/7 with three-language four-width source/history checks",
+    "excludedPlayerOrigin": "GREEN negative control; no additional scroll-restoration change authorized",
+    "inAppBrowser": "GREEN strict API 2: 320x1000 classic scrollbar innerWidth=320/clientWidth=305, search grid=[80,225], favorites=[16,66], history=[248,298], gaps=14/23, overlap=0, one track; 1024x900 ready-player clientWidth=1009, currentSource=[665.664,904]x[369,441.195], history=[952,1002]x[422,472], gap=48, overlap=0; tab closed, viewport reset, service stopped",
+    "fullE2E": "GREEN 124/124 in 5.0m; final candidate producers completed",
+    "finalCandidate": "GREEN exact 116 PNG, 16088817 bytes, combined SHA-256 4ffcaa4267f35bf64931f00d826effae58482f91ff88886c47674081387cb25e",
+    "freshPerformanceTrace": "GREEN 3 samples; median p95 10.100000000000364ms, long tasks 0ms, dropped frames 0; trace SHA-256 3530577f9bf8e4cde4abcfdada2517de26b454a6deb87fb4b2f81a925e64c402",
+    "freshRelease": "GREEN build -> release:build -> Node 162/162 -> lint -> typecheck; 70 out/release payloads exact; manifest SHA-256 13e915f9a8da15182771a2cbee69f43e0dc8a6e639e7a55d2b6e81f828357b8c",
+    "freshRollbackDrill": "GREEN pair e2ba31d7f42e0f70f1df987acc42cf05c4f62d67db91fbf138fa0e0dfdd3395c; bootstrap-v2, reverse-v1, forward-restore-v2 passed in isolated clones",
+    "workerGate": "GREEN syntax, Node 153/153, gzip 39372/3145728 bytes, empty runtime dependency tree",
+    "binaryAudit": "GREEN actual=expected=132 (16 Worker ZIP + 116 Pages PNG); duplicate/missing/unexpected/metadata mismatch all zero",
+    "candidateHygiene": "GREEN 3/3 after evidence and receipt refresh; final handoff scan passed",
+    "visualReview": "APPROVED by user at 2026-08-20T12:05:46.5767690+08:00 with exact text '批准当前视觉候选'; approval is bound to 116 PNG combined SHA-256 4ffcaa4267f35bf64931f00d826effae58482f91ff88886c47674081387cb25e"
+  },
+  "evidenceSnapshot": {
+    "candidateEvidence": {
+      "path": "work-products/evidence/section21/t15-candidate-evidence.json",
+      "bytes": 7387,
+      "sha256": "8cac4854c6a4763a62c9e2e4dee8783b44cf5a0f7ce9cb224dbc49cdae4437d1"
+    },
+    "visualReview": {
+      "path": "work-products/evidence/section21/t15-visual-review.md",
+      "bytes": 4050,
+      "sha256": "f38e39a01df35a24a904bff8c7ed1714ae846435e40136c56f0d962d5082f6b6"
+    },
+    "acceptanceMatrix": {
+      "path": "work-products/evidence/section21/red-matrix.md",
+      "bytes": 5811,
+      "sha256": "0f3145abce30e1101e686bc156cbda421c976f1d5d526ae3f5929bed631b415a"
+    },
+    "binaryAllowlist": {
+      "path": "work-products/evidence/section21/binary-allowlist.json",
+      "bytes": 47504,
+      "sha256": "50f21dc43dd87e5def34003d38b243e8c268757da6664805987d57fabad47568"
+    }
+  },
+  "releaseState": "LOCAL_CANDIDATE_APPROVED",
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

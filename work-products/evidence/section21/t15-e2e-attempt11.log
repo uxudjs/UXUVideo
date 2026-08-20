@@ -1,0 +1,150 @@
+
+> uxuv-pages@0.3.0 test:e2e
+> playwright test
+
+
+[WebServer] (node:33736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:35268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:30576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 125 tests using 1 worker
+
+[1/125] work-products\tests\accessibility.e2e.spec.ts:84:1 › all seven static entries keep the AA, viewport, console, and same-origin network gates
+[2/125] work-products\tests\accessibility.e2e.spec.ts:123:1 › service worker replaces old static caches and bypasses API and media
+[3/125] work-products\tests\accessibility.e2e.spec.ts:152:1 › Liquid Glass keeps theme tokens, reduced motion, forced-color focus, and 44px controls
+[4/125] work-products\tests\accessibility.e2e.spec.ts:216:1 › Section 21 route candidates › writes isolated Section 21 route candidates without replacing approved baselines
+[5/125] work-products\tests\app-flows.e2e.spec.ts:477:1 › auth: direct GitHub Pages shows guidance and makes no authentication request
+[6/125] work-products\tests\app-flows.e2e.spec.ts:498:1 › auth: Worker origin supports login, account CRUD, permission state, and logout
+[7/125] work-products\tests\app-flows.e2e.spec.ts:573:1 › auth: ordinary users cannot request or render account management
+[8/125] work-products\tests\app-flows.e2e.spec.ts:597:1 › auth: an expired account-management request invalidates the local session
+[9/125] work-products\tests\app-flows.e2e.spec.ts:618:1 › auth: loading and expired-session states return safely to login
+[10/125] work-products\tests\app-flows.e2e.spec.ts:639:1 › auth: configuration failure renders a retry state
+[11/125] work-products\tests\app-flows.e2e.spec.ts:654:1 › sync: local changes remain queued while storage is unavailable and recover explicitly
+[12/125] work-products\tests\app-flows.e2e.spec.ts:681:1 › sync: a disconnected write stays local and the online event retries it
+[13/125] work-products\tests\app-flows.e2e.spec.ts:699:1 › sync: settings exposes the pending phase while a write is in flight
+[14/125] work-products\tests\app-flows.e2e.spec.ts:714:1 › sync: quota errors preserve local data and explain UTC reset, cleanup, and upgrade
+[15/125] work-products\tests\app-flows.e2e.spec.ts:733:1 › sync: a non-retryable server error remains visible without discarding local data
+[16/125] work-products\tests\app-flows.e2e.spec.ts:750:1 › settings: a standalone video source is synced and becomes available to search
+[17/125] work-products\tests\app-flows.e2e.spec.ts:773:1 › sync: two browser contexts explain a CAS conflict and converge without reviving stale state
+[18/125] work-products\tests\app-flows.e2e.spec.ts:811:1 › sync: standard sources survive offline and quota failures, then converge without crossing premium data
+[19/125] work-products\tests\app-flows.e2e.spec.ts:865:1 › sync: subscriptions retain tombstones and mode isolation across offline, quota, and CAS recovery
+[20/125] work-products\tests\app-flows.e2e.spec.ts:951:1 › sync: standard and Premium favorites stay isolated through offline, quota, and CAS recovery
+[21/125] work-products\tests\app-flows.e2e.spec.ts:1014:1 › sync: a stale offline progress write cannot revive remotely deleted history
+[22/125] work-products\tests\app-flows.e2e.spec.ts:1094:1 › content: search streams results, navigates to detail, and persists favorites
+[23/125] work-products\tests\app-flows.e2e.spec.ts:1126:1 › content: search renders deterministic empty and error states
+[24/125] work-products\tests\app-flows.e2e.spec.ts:1141:1 › premium: server authorization unlocks content, favorites, and synced source settings
+[25/125] work-products\tests\app-flows.e2e.spec.ts:1176:1 › premium: search cancellation, resolution probing, and expired authorization stay visible
+[26/125] work-products\tests\app-update-control.e2e.spec.ts:88:3 › global app update control › checks once across client navigation and copies only a freshly verified Worker
+[27/125] work-products\tests\app-update-control.e2e.spec.ts:135:3 › global app update control › restores focus after the textarea clipboard fallback
+[28/125] work-products\tests\app-update-control.e2e.spec.ts:153:3 › global app update control › renders one non-overlapping entry on all seven routes and four breakpoints
+[29/125] work-products\tests\app-update-control.e2e.spec.ts:188:3 › global app update control › does not mount or check for updates before authentication
+[30/125] work-products\tests\kvideo-auth-parity.e2e.spec.ts:74:3 › reviewed KVideo login › matches the approved 1024px visual and layout contract
+[31/125] work-products\tests\kvideo-auth-parity.e2e.spec.ts:98:3 › reviewed KVideo login › keeps four breakpoints keyboard accessible and axe-clean
+[32/125] work-products\tests\kvideo-auth-parity.e2e.spec.ts:129:3 › reviewed KVideo login › submits credentials only to the same-origin POST body and enters the app
+[33/125] work-products\tests\kvideo-auth-parity.e2e.spec.ts:151:3 › reviewed KVideo login › announces invalid credentials and restores focus to the password
+[34/125] work-products\tests\kvideo-auth-parity.e2e.spec.ts:169:5 › login locale zh-CN › renders localized labels
+[35/125] work-products\tests\kvideo-auth-parity.e2e.spec.ts:169:5 › login locale zh-TW › renders localized labels
+[36/125] work-products\tests\kvideo-auth-parity.e2e.spec.ts:169:5 › login locale en-US › renders localized labels
+[37/125] work-products\tests\kvideo-data-settings.e2e.spec.ts:78:3 › KVideo T19 data and update settings › exports safe bytes and imports only after a complete transactional preview
+[38/125] work-products\tests\kvideo-data-settings.e2e.spec.ts:172:3 › KVideo T19 data and update settings › renders three update outcomes and keeps dialogs operable at TV and mobile widths
+[39/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:284:3 › KVideo T22 desktop player › drives controls, virtual time, shortcuts, deterministic hiding, and reduced motion
+[40/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:361:3 › KVideo T23 mobile and device controls › drives touch, fullscreen, standard PiP, Cast, responsive captures, and TV arrow isolation
+[41/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:438:3 › KVideo T23 mobile and device controls › keeps unavailable PiP and Cast controls visible with reasons
+[42/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:450:3 › KVideo T23 mobile and device controls › uses the Android bridge when standard PiP is unavailable
+[43/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:465:3 › KVideo T24 playback lifecycle › resumes and throttles history, reports stalls and resolution, then switches failed sources once by latency
+[44/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:550:6 › KVideo T24 playback lifecycle › none mode uses its selected primary media route
+[45/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:550:6 › KVideo T24 playback lifecycle › always mode uses its selected primary media route
+[46/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:639:3 › KVideo T25 danmaku canvas › uses the selected user API and renders bounded scrolling, top, and bottom tracks across playback changes
+[47/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:678:54 › KVideo T25 danmaku canvas › empty danmaku remains non-blocking
+[48/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:678:54 › KVideo T25 danmaku canvas › error danmaku remains non-blocking
+[49/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:742:3 › KVideo T26 playback automation › skips bounded intro and advances once at outro or ended without crossing the final episode
+[50/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:763:3 › KVideo T26 playback automation › finishes the current episode when automatic next is disabled
+[51/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:776:3 › KVideo T26 playback automation › switches all four ad modes live and keeps bounded options on the same-origin media route
+[52/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:847:3 › KVideo T38 VideoTogether controller › keeps the disabled entry explanatory, localized, and TV-keyboard operable without loading a script
+[53/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:881:3 › KVideo T38 VideoTogether controller › creates, joins, configures, rejects failures, and keeps room state out of storage and requests
+[54/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:928:3 › KVideo T38 VideoTogether controller › reports a locally intercepted script-load failure without exposing room controls
+[55/125] work-products\tests\kvideo-desktop-player.e2e.spec.ts:945:3 › KVideo T38 VideoTogether controller › adapts the official asynchronous videoTogetherExtension API
+[56/125] work-products\tests\kvideo-entry-states.e2e.spec.ts:62:3 › direct Pages zh-CN remains public-only and responsive
+[57/125] work-products\tests\kvideo-entry-states.e2e.spec.ts:62:3 › direct Pages zh-TW remains public-only and responsive
+[58/125] work-products\tests\kvideo-entry-states.e2e.spec.ts:62:3 › direct Pages en-US remains public-only and responsive
+[59/125] work-products\tests\kvideo-entry-states.e2e.spec.ts:83:1 › missing runtime setup retries into the focused login flow
+[60/125] work-products\tests\kvideo-entry-states.e2e.spec.ts:112:1 › an expired server session returns to login with an announced reason
+[61/125] work-products\tests\kvideo-entry-states.e2e.spec.ts:136:1 › account permission fallback is localized and never requests account data
+[62/125] work-products\tests\kvideo-favorites.e2e.spec.ts:52:3 › KVideo T13 favorites library › switches grid/list, removes items, opens the keyboard sidebar, and stays responsive
+[63/125] work-products\tests\kvideo-favorites.e2e.spec.ts:109:3 › KVideo T13 favorites library › isolates the same video id across standard, premium, and another account
+[64/125] work-products\tests\kvideo-favorites.e2e.spec.ts:131:3 › KVideo T13 favorites library › shows the fixed 100-item capacity boundary
+[65/125] work-products\tests\kvideo-global-shell.e2e.spec.ts:49:3 › KVideo global shell › keeps the reviewed nav geometry and operates theme, settings, locale, and session actions
+[66/125] work-products\tests\kvideo-global-shell.e2e.spec.ts:115:3 › KVideo global shell › restores scroll and exposes a keyboard-operable back-to-top action
+[67/125] work-products\tests\kvideo-global-shell.e2e.spec.ts:134:3 › KVideo TV shell › uses arrow keys for spatial card focus without trapping text cursor keys
+[68/125] work-products\tests\kvideo-history.e2e.spec.ts:52:3 › KVideo T14 watch history › continues, confirms removal and clear, localizes, and stays responsive
+[69/125] work-products\tests\kvideo-history.e2e.spec.ts:117:3 › KVideo T14 watch history › isolates the same video across standard, premium, and another account
+[70/125] work-products\tests\kvideo-history.e2e.spec.ts:142:3 › KVideo T14 watch history › shows only the newest 50 records without deleting overflow
+[71/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:130:3 › reviewed KVideo basic home › uses the same-origin feed and keeps the approved grid usable at four breakpoints
+[72/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:189:3 › reviewed KVideo basic home › keeps empty, failure, and retry states deterministic
+[73/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:204:3 › reviewed KVideo basic home › keeps unrelated search results visible instead of opening the wrong home movie
+[74/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:215:3 › reviewed KVideo basic home › shows a source error instead of an empty result when every search source fails
+[75/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:232:3 › reviewed KVideo basic home › opens a decorated title returned for the selected home movie
+[76/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:242:3 › reviewed KVideo basic home › switches movie, TV, and server-provided Douban categories inside the reviewed home shell
+[77/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:279:3 › reviewed KVideo basic home › preserves original queries while history, conversion, keyboard, and account isolation stay deterministic
+[78/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:365:5 › basic home locale zh-CN › renders localized controls
+[79/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:365:5 › basic home locale zh-TW › renders localized controls
+[80/125] work-products\tests\kvideo-home-search-parity.e2e.spec.ts:365:5 › basic home locale en-US › renders localized controls
+[81/125] work-products\tests\kvideo-player-settings.e2e.spec.ts:75:3 › KVideo T18 player and danmaku settings › persists visible settings, rejects credential URLs, and updates the live player snapshot
+[82/125] work-products\tests\kvideo-player-settings.e2e.spec.ts:171:3 › KVideo T18 player and danmaku settings › migrates a legacy snapshot once and keeps defaults isolated for a restricted second account
+[83/125] work-products\tests\kvideo-player-settings.e2e.spec.ts:195:3 › KVideo T18 player and danmaku settings › edits an isolated per-video rule without resetting playback and restores focus
+[84/125] work-products\tests\kvideo-player-shell.e2e.spec.ts:144:3 › KVideo T21 player shell › switches grouped sources and 51 episodes while keeping cinema navigation and content aligned
+[85/125] work-products\tests\kvideo-player-shell.e2e.spec.ts:258:3 › KVideo T21 player shell › migrates legacy grouped URLs and preserves empty, missing, and history episode states
+[86/125] work-products\tests\kvideo-player-shell.e2e.spec.ts:276:3 › KVideo T21 player shell › captures the final API 2 ready-player candidates in all languages and breakpoints
+[87/125] work-products\tests\kvideo-premium-home.e2e.spec.ts:68:3 › KVideo T29 Premium home › isolates sources and history, pages interleaved content, searches, restores authorization, and keeps TV focus
+[88/125] work-products\tests\kvideo-premium-home.e2e.spec.ts:117:3 › KVideo T29 Premium home › localizes loading-safe Premium home controls in all three languages
+[89/125] work-products\tests\kvideo-premium-library.e2e.spec.ts:72:3 › KVideo T30 Premium library › isolates Premium records, preserves standard records, and traps keyboard and TV focus
+[90/125] work-products\tests\kvideo-premium-library.e2e.spec.ts:134:3 › KVideo T30 Premium library › clears the in-memory view on account switch and restores each account's own data
+[91/125] work-products\tests\kvideo-premium-library.e2e.spec.ts:151:3 › KVideo T30 Premium library › localizes the Premium library and both sidebar controls in all three languages
+[92/125] work-products\tests\kvideo-premium-settings.e2e.spec.ts:82:3 › KVideo T20 Premium settings › fails closed on server authorization and isolates Premium source and player changes
+[93/125] work-products\tests\kvideo-premium-settings.e2e.spec.ts:181:3 › KVideo T20 Premium settings › round-trips both modes and preserves Premium data when importing a v1 standard backup
+[94/125] work-products\tests\kvideo-pwa.e2e.spec.ts:50:3 › KVideo T31 PWA › is browser-installable and preserves the approved shell in standalone mode
+[95/125] work-products\tests\kvideo-pwa.e2e.spec.ts:97:3 › KVideo T31 PWA › upgrades static caches, excludes protected requests, and refreshes from the offline shell
+[96/125] work-products\tests\kvideo-search-results.e2e.spec.ts:125:3 › KVideo T11 streamed result cards › renders stable incremental cards and fixed source, type, and language metadata
+[97/125] work-products\tests\kvideo-search-results.e2e.spec.ts:187:3 › KVideo T11 streamed result cards › groups trimmed case-insensitive titles and keeps the mode account-scoped
+[98/125] work-products\tests\kvideo-search-results.e2e.spec.ts:214:3 › KVideo T11 streamed result cards › filters, stably sorts, pings, blocks categories, and probes without dropping failures
+[99/125] work-products\tests\kvideo-search-results.e2e.spec.ts:260:3 › KVideo T11 streamed result cards › keeps the collapsed toolbar and capability hint usable across locales and breakpoints
+[100/125] work-products\tests\kvideo-settings-preferences.e2e.spec.ts:53:3 › KVideo T17 account preferences › applies reviewed defaults, persists live settings, and isolates another account
+[101/125] work-products\tests\kvideo-settings-preferences.e2e.spec.ts:147:3 › KVideo T17 account preferences › migrates legacy global theme and locale once without leaking them to a second account
+[102/125] work-products\tests\kvideo-settings-preferences.e2e.spec.ts:167:3 › KVideo T17 account preferences › keeps the S21-T10 settings structure stable in three languages and four viewports
+[103/125] work-products\tests\kvideo-settings-sources.e2e.spec.ts:54:3 › KVideo T15 settings and standard sources › adds, edits, toggles, orders, confirms deletion, localizes, and stays responsive
+[104/125] work-products\tests\kvideo-settings-sources.e2e.spec.ts:135:3 › KVideo T15 settings and standard sources › keeps another account's source document isolated
+[105/125] work-products\tests\kvideo-source-import.e2e.spec.ts:84:3 › KVideo T16 source import and subscriptions › previews four import paths, rejects unsafe input, manages subscriptions, and restores TV focus
+[106/125] work-products\tests\kvideo-tag-management.e2e.spec.ts:92:3 › KVideo T09 tags, recommendations, and pagination › adds, deletes, restores, keyboard-sorts, and isolates persisted tags
+[107/125] work-products\tests\kvideo-tag-management.e2e.spec.ts:170:3 › KVideo T09 tags, recommendations, and pagination › appends unique popular titles and stops at a short page
+[108/125] work-products\tests\kvideo-tag-management.e2e.spec.ts:181:3 › KVideo T09 tags, recommendations, and pagination › does not append a cancelled stale page after switching content type
+[109/125] work-products\tests\media-flows.e2e.spec.ts:90:1 › player loads detail, falls back from the Worker media route, and switches episodes
+[110/125] work-products\tests\media-flows.e2e.spec.ts:105:1 › smart retry rebuilds HLS on the direct URL after the Worker media route fails
+[111/125] work-products\tests\section21-flows.e2e.spec.ts:86:1 › S21-T05 focus performs no document pull
+[112/125] work-products\tests\section21-flows.e2e.spec.ts:96:1 › S21-T05 brand activation navigates to the logical root
+[113/125] work-products\tests\section21-flows.e2e.spec.ts:105:1 › S21-T05 brand activation clears transient search results
+[114/125] work-products\tests\section21-flows.e2e.spec.ts:114:1 › S21-T07 keeps anime and TV results apart
+[115/125] work-products\tests\section21-flows.e2e.spec.ts:122:1 › S21-T07 exposes a compact collapsed toolbar
+[116/125] work-products\tests\section21-flows.e2e.spec.ts:131:1 › S21-T07 keeps probe and favorite actions 44px apart without overlap
+[117/125] work-products\tests\section21-performance.e2e.spec.ts:84:1 › S21-T06 preserves the fixed 120-card scroll and 30-second muted-video budget
+work-products\tests\section21-performance.e2e.spec.ts:84:1 › S21-T06 preserves the fixed 120-card scroll and 30-second muted-video budget
+
+
+S21-T06 performance {"samples":[{"p95RafIntervalMs":8.5,"longTaskTotalMs":0,"droppedFrames":0,"totalFrames":899},{"p95RafIntervalMs":8.5,"longTaskTotalMs":0,"droppedFrames":0,"totalFrames":899},{"p95RafIntervalMs":8.5,"longTaskTotalMs":0,"droppedFrames":0,"totalFrames":899}],"median":{"p95RafIntervalMs":8.5,"longTaskTotalMs":0,"droppedFrames":0}}
+
+(node:19584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[118/125] work-products\tests\section21-visual.e2e.spec.ts:188:1 › S21-T06 Liquid Glass tokens and accessibility fallbacks are active at all four widths
+[119/125] work-products\tests\section21-visual.e2e.spec.ts:211:1 › S21-T15 captures visible sync states with bounded corner geometry
+[120/125] work-products\tests\section21-visual.e2e.spec.ts:255:1 › S21-T15 writes the eight final theme, contrast, zoom, and setup-error candidates
+[121/125] work-products\tests\usage-ui.e2e.spec.ts:125:1 › super_admin sees the ordered four-metric usage card and non-dismissible global warning
+[122/125] work-products\tests\usage-ui.e2e.spec.ts:196:1 › usage card exposes stale, unconfigured, and failure states without exposing credentials
+[123/125] work-products\tests\usage-ui.e2e.spec.ts:214:1 › usage warning levels preserve the 70, 85, 95, and 100 percent boundaries
+[124/125] work-products\tests\usage-ui.e2e.spec.ts:227:1 › ordinary users never request or render precise usage
+[125/125] work-products\tests\usage-ui.e2e.spec.ts:236:1 › direct Pages entry never requests the usage API
+  125 passed (4.9m)

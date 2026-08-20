@@ -265,6 +265,11 @@ test('allows only a super admin to list and create at most eight sanitized accou
   const anonymous = await request('/api/auth/accounts', { db });
   assert.equal(anonymous.status, 401);
   assert.equal((await readError(anonymous)).code, 'AUTH_REQUIRED');
+  const legacyIptvAccount = state.accounts.get(viewerId); legacyIptvAccount.permissions_json = '["iptv_access"]';
+  const migratedIptvResponse = await accountRequest(db, adminLogin.cookie, `/api/auth/accounts/${viewerId}`, { method: 'PATCH', body: { name: 'Migrated Viewer' } });
+  assert.equal(migratedIptvResponse.status, 200);
+  assert.deepEqual((await migratedIptvResponse.json()).account.customPermissions, []);
+  const storedIptvAccount = state.accounts.get(viewerId); assert.equal(storedIptvAccount.permissions_json, '[]');
 
   const viewerLogin = await login(db, 'viewer-1', 'viewer-password-1', '192.0.2.20');
   assert.equal(viewerLogin.response.status, 200);

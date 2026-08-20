@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T14:55:00+08:00",
+  "reason": "T08 attempt 1 proved that the frozen Section 21 flows fixture still advertised API 1 while the task atomically switched Pages to API 2. The replacement assigns only that fixture envelope and current-stage test discovery to T08 without changing product requirements or completed task behavior.",
+  "planSha256": "376af11dc82d3c89b7a2d658e597494364c692bc51275d99f7b12ee18b6a8324",
+  "predecessorPlanSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t08-e2e-boundary.zip",
+  "archiveSha256": "29e6af876752b12f485fbb42331af15b34fb71a559bcb1faf4e458500a5ebd29",
+  "archiveBytes": 26676,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T08",
+      "attempt": 1,
+      "path": "plan-revisions/2026-08-19-t08-e2e-boundary.zip::S21-T08.json",
+      "sha256": "3b39c1444670ef9c974dbbb6903b79f97e17d79470c951b02b1e6ff4612d4444",
+      "bytes": 6737
+    }
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

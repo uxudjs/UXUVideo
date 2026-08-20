@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-20T01:27:00.0000000+08:00",
+  "reason": "T15 attempt 7 reached 124/124 and produced a fresh candidate and trace, but the required in-app browser review showed that a 15px classic scrollbar shrinks the tag containing block and clips 11px from the second tag; the sixth mobile safe-lane repair must use viewport coordinates without widening file ownership.",
+  "planSha256": "1b86105166b284c152682aebf761127492249c08597370a3a747c05c7985f881",
+  "predecessorPlanSha256": "01815674befb8c7836b4d04fdb3a00df6f20d102b54287f55703a7ff315e5074",
+  "standingApproval": {
+    "active": true,
+    "source": "user: 批准所有计划，不再设置sha",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-classic-scrollbar-boundary.zip",
+  "archiveSha256": "4364684549da4f42c80bfc5f1907b378bd55f4cfe7981f6d1f9ad23251b595ae",
+  "archiveBytes": 36251,
+  "preservesCompletedTasks": [
+    "S21-T01", "S21-T02", "S21-T03", "S21-T04", "S21-T05", "S21-T06", "S21-T07", "S21-T08", "S21-T09", "S21-T10", "S21-T11", "S21-T12", "S21-T13", "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 7,
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-classic-scrollbar-boundary.zip::S21-T15.json",
+      "sha256": "abc692875763e0c49b514ef9c1357efc2d774471d8d6bcfab0d96589c02f145b",
+      "bytes": 13803
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 7,
+    "receiptSha256": "abc692875763e0c49b514ef9c1357efc2d774471d8d6bcfab0d96589c02f145b",
+    "formalE2E": "124/124 GREEN",
+    "candidateCount": 116,
+    "candidateBytes": 15995153,
+    "candidateCombinedSha256": "9dd300806976f5bab51113f8789efb66c6bed6f28ffb5119e3195d6d6d82f46c",
+    "candidateDisposition": "automated GREEN but rejected by the final classic-scrollbar browser boundary; retained only as historical attempt 7 evidence",
+    "performanceTraceSha256": "88b6bc3d4eb9f76f5955eaa6d01337e7b7842974f11aa82ce385681552c3df0c",
+    "performanceTraceBytes": 17283041,
+    "performanceTraceDisposition": "valid for attempt 7 CSS only; must be replaced after the final CSS refinement",
+    "currentTreeRetained": true,
+    "rule": "attempt8 before must equal archived attempt7 after for adopted non-control-plane paths"
+  },
+  "observedClassicScrollbar": {
+    "fixture": "strict local Worker 2.0.0 / Pages 0.3.0 / API 2 home with two recommendation cards",
+    "browser": "Codex in-app browser",
+    "viewport": { "innerWidth": 320, "clientWidth": 305, "height": 900, "scrollbarWidth": 15 },
+    "tagList": { "left": 18, "right": 225, "top": 385, "bottom": 440 },
+    "secondTag": { "left": 158, "right": 236, "top": 388, "bottom": 428 },
+    "historyToggle": { "left": 248, "right": 298, "top": 422, "bottom": 472 },
+    "secondTagClippedPx": 11,
+    "laneHistoryGapPx": 23,
+    "classification": "the second tag is clipped by its own horizontal scrollport; this is not a history-toggle overlap"
+  },
+  "requiredOwnershipAdditions": [],
+  "scopeClarification": {
+    "existingOwnedPaths": [
+      "pages:app/globals.css",
+      "pages:work-products/tests/section21-visual.e2e.spec.ts"
+    ],
+    "allowed": [
+      "refine only the sixth CSS remediation by replacing the 64px containing-block margin with inline-size: calc(100vw - 98px) while retaining the 4px column gap",
+      "use two fixed local recommendation subjects and record overlay scrollbar geometry in the existing visual E2E",
+      "prove the real 15px classic scrollbar boundary with the Codex in-app browser before final evidence"
+    ],
+    "forbidden": [
+      "moving, hiding, shrinking, clipping, or disabling either floating button",
+      "hiding or removing the third tag or disabling horizontal scrolling",
+      "overflow hidden or clip as a substitute for a safe lane",
+      "disabling classic scrollbars or forcing overlay scrollbars",
+      "changing components, hooks, drag storage, APIs, candidate names, counts, or unrelated CSS",
+      "weakening tag visibility, safe-gap, scrollability, or full-E2E assertions"
+    ]
+  },
+  "evidenceRefresh": {
+    "candidateRequired": true,
+    "freshPerformanceRequired": true,
+    "freshReleaseRequired": true,
+    "freshRollbackRequired": true,
+    "paths": [
+      "worker:work-products/evidence/section21/t15-performance-trace.zip",
+      "worker:work-products/evidence/section21/pair-rollback.json",
+      "worker:work-products/evidence/section21/worker-v1.reverse.patch",
+      "worker:work-products/evidence/section21/pages-v1.reverse.patch",
+      "worker:work-products/evidence/section21/worker-v2.forward.patch",
+      "worker:work-products/evidence/section21/pages-v2.forward.patch"
+    ]
+  },
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

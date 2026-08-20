@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T23:58:00.0000000+08:00",
+  "reason": "T15 attempt 3 closed the sticky-navbar vertical overlap but the authorized 200% gate exposed a distinct 38px horizontal reflow defect; the plan's explicit three-CSS-remediation cap requires a fourth scoped semantic authorization before implementation.",
+  "planSha256": "7ce03e23ba613b65d5793eda24b4ccf882ce8de1fda20b0ef7549f1e9db669f5",
+  "predecessorPlanSha256": "f396b346b80604e5e78d0609ee5dac4013f5fe212b1198565e3b417f88a06ec3",
+  "standingApproval": {
+    "active": true,
+    "source": "user: 批准所有计划，不再设置sha",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "work-products/evidence/section21/plan-revisions/2026-08-19-t15-player-200-percent-reflow-boundary.zip",
+  "archiveSha256": "326191508c5ff698bc3b5ef837cbe1cf4bc744f7597525349de7a66b3cfa82a2",
+  "archiveBytes": 32321,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10",
+    "S21-T11",
+    "S21-T12",
+    "S21-T13",
+    "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 3,
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t15-player-200-percent-reflow-boundary.zip::S21-T15.json",
+      "sha256": "9999fa77e44c0598c6fd357e28af8a0448f917b733b26ac29a5d9c2e6fcd98b6",
+      "bytes": 10669
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 3,
+    "receiptSha256": "9999fa77e44c0598c6fd357e28af8a0448f917b733b26ac29a5d9c2e6fcd98b6",
+    "candidateCount": 116,
+    "candidateCombinedSha256": "ad66de052ca700e6d5da54f625db18df485fbfd8a03c8850dc0804bdc43ddb82",
+    "performanceTraceSha256": "86c55fec6dc35034eb946b4f34d3eefd512d678347f275cf58d6406ae90c2ebf",
+    "currentTreeRetained": true,
+    "rule": "attempt4 before must equal archived attempt3 after for adopted non-control-plane paths"
+  },
+  "observedReflow": {
+    "viewportWidth": 640,
+    "rootFontSize": "200%",
+    "scrollWidth": 678,
+    "overflowPx": 38,
+    "offenders": [
+      ".player-navbar-actions",
+      ".theme-switcher",
+      ".history-sidebar-toggle"
+    ]
+  },
+  "requiredOwnershipAdditions": [],
+  "scopeClarification": {
+    "existingOwnedPaths": [
+      "pages:app/globals.css",
+      "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts"
+    ],
+    "allowed": "fourth CSS remediation only for player 200% horizontal reflow: locally rebind icon-only player actions to 44px and floating toggles to their existing 50px box",
+    "forbidden": [
+      "overflow-x:hidden or equivalent clipping",
+      "hiding or removing controls",
+      "weakening the scrollWidth, viewport-rect, or hit-target assertions",
+      "changing the root control-hit token",
+      "changing PlayerNavbar, PlayerExperience, ThemeSwitcher, sidebar components, floating-position hooks, or drag storage"
+    ]
+  },
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

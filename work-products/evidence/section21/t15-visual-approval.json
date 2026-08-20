@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 14,
+  "receiptKind": "visual_approval",
+  "candidateLabel": "S21-T15 视觉候选 14",
+  "recordedAt": "2026-08-20T14:56:08.937Z",
+  "preapprovalEvidence": {
+    "path": "work-products/evidence/section21/t15-candidate-evidence.json",
+    "sha256": "3399a2242f888186061136c689978d464dbef7880bb8597f38fb0b16004b1d13",
+    "gateStatus": "local_validation_passed_visual_pending"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/t15-visual-review.md",
+    "sha256": "71d9691261271a24bd9f4945658c42aa3f9f894181f3d53be929bb089db825f0"
+  },
+  "machineBinding": {
+    "candidateCombinedSha256": "ecd34b9d3b650caa864039ceb899409358f7229782464e9fb8855a63bde8c9b3",
+    "releaseScopeSha256": "6d7994163aaeb016f9893b3e16ba68ab646f052732ab5845b5c5eac3f08ba9df"
+  },
+  "previewPaths": [
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-1440.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-320.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-1024.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-CN-1024.png"
+  ],
+  "decision": "APPROVED",
+  "decidedAt": "2026-08-20T15:26:22.698Z",
+  "decisionSummary": "用户明确批准视觉候选 14。",
+  "exactApprovalText": "批准视觉候选 14",
+  "feedback": [],
+  "humanDecisionContract": {
+    "shaRequired": false,
+    "approvePhrase": "批准视觉候选 14",
+    "rejectPhrase": "拒绝视觉候选 14：说明问题"
+  },
+  "supersedesDecision": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-approved-candidate-attempt13-invalidation.json",
+    "sha256": "1291351339f373680929ed0615903fb0d42891ed5c649287b4a8cb7417aa6310",
+    "disposition": "attempt 13 approval is retained as historical evidence but invalidated for current bytes; attempt 14 requires a new visible candidate and a new user decision"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  },
+  "evidenceCorrection": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-attempt14-sanitized-report-correction.json",
+    "sha256": "6155c324b68d9ecd265de0660aa33ba4430a50e2558bce4451999c893547b34e",
+    "disposition": "Machine-absolute paths were removed from the retained Playwright report; candidate images, visual review, release scope, and PENDING decision are unchanged."
+  }
+}

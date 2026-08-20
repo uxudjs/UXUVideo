@@ -16,8 +16,6 @@ const ROUTES = [
   ['/api/douban/image', ['GET']],
   ['/api/douban/recommend', ['GET']],
   ['/api/douban/tags', ['GET']],
-  ['/api/iptv', ['GET']],
-  ['/api/iptv/stream', ['GET', 'OPTIONS']],
   ['/api/ping', ['POST']],
   ['/api/premium/category', ['GET', 'POST']],
   ['/api/premium/types', ['GET', 'POST']],
@@ -43,8 +41,6 @@ const IMPLEMENTED_PATHS = new Set([
   '/api/douban/image',
   '/api/douban/recommend',
   '/api/douban/tags',
-  '/api/iptv',
-  '/api/iptv/stream',
   '/api/ping',
   '/api/premium/category',
   '/api/premium/types',
@@ -62,8 +58,8 @@ const PAGES_VERSION = '0.4.3';
 const PAGES_MANIFEST = {
   schemaVersion: 1,
   pagesVersion: PAGES_VERSION,
-  apiContract: 1,
-  workerRange: '>=1.0.0 <2.0.0',
+  apiContract: 2,
+  workerRange: '>=2.0.0 <3.0.0',
   routes: { '/': 'index.html' },
   assets: {
     '/404.html': { path: '404.html', contentType: 'text/html; charset=utf-8' },
@@ -75,7 +71,7 @@ async function withPagesManifest(operation) {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input instanceof Request ? input.url : input);
-    assert.equal(url, 'https://uxudjs.github.io/UXUV-Pages/release-manifest.json');
+    assert.equal(url, 'https://uxudjs.github.io/UXUV-Pages/app/release-manifest.json');
     assert.equal(init.redirect, 'manual');
     const body = `${JSON.stringify(PAGES_MANIFEST)}\n`;
     return new Response(body, {
@@ -115,9 +111,9 @@ async function dispatch(path, method) {
 function assertVersionHeaders(response) {
   const requestId = response.headers.get('X-Request-Id');
   assert.match(requestId ?? '', REQUEST_ID_PATTERN);
-  assert.equal(response.headers.get('X-UXUV-Worker-Version'), '1.1.4');
+  assert.equal(response.headers.get('X-UXUV-Worker-Version'), '2.0.0');
   assert.equal(response.headers.get('X-UXUV-Pages-Version'), null);
-  assert.equal(response.headers.get('X-UXUV-API-Contract'), '1');
+  assert.equal(response.headers.get('X-UXUV-API-Contract'), '2');
   return requestId;
 }
 
@@ -144,8 +140,8 @@ async function assertStructuredError(response, expectedStatus, expectedCode, isS
   assert.equal(body.error.details, null);
 }
 
-test('registers all 23 implemented API contracts', () => {
-  assert.equal(ROUTES.length, 23);
+test('registers all 21 implemented API contracts', () => {
+  assert.equal(ROUTES.length, 21);
   const pendingRoutes = ROUTES.filter(([path]) => !IMPLEMENTED_PATHS.has(path));
   assert.deepEqual(pendingRoutes, []);
 });
@@ -216,10 +212,7 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
     SITE_TITLE: 'Family Video Library',
     SITE_DESCRIPTION: 'Private household media',
     SITE_ICON_URL: 'https://assets.example/icon.png',
-    SUBSCRIPTION_SOURCES: '["https://source.example/sub.json"]',
-    IPTV_SOURCES: '[{"name":"Home","url":"https://source.example/live.m3u"}]',
     MERGE_SOURCES: 'true',
-    DANMAKU_API_URL: 'https://danmaku.example/api',
     AD_KEYWORDS: 'ad, sponsor, ad',
     VIDEOTOGETHER_ENABLED: 'true',
     VIDEOTOGETHER_SCRIPT_URL: 'https://scripts.example/video-together.js',
@@ -229,14 +222,14 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
   const publicResponse = await fetchWorker(new Request('https://worker.example/api/config'), env);
   assert.equal(publicResponse.status, 200);
   const publicConfig = await publicResponse.json();
-  assert.deepEqual(publicConfig.release, { worker: '1.1.4', pages: PAGES_VERSION, apiContract: 1 });
+  assert.deepEqual(publicConfig.release, { worker: '2.0.0', pages: PAGES_VERSION, apiContract: 2 });
   assert.deepEqual(publicConfig.site, {
     name: 'Family Video',
     title: 'Family Video Library',
     description: 'Private household media',
     iconUrl: 'https://assets.example/icon.png',
   });
-  assert.deepEqual(publicConfig.capabilities, { premium: false, iptv: true, danmaku: true });
+  assert.deepEqual(publicConfig.capabilities, { premium: false, danmaku: true });
   assert.deepEqual(publicConfig.adKeywords, ['ad', 'sponsor']);
   assert.deepEqual(publicConfig.thirdPartyScripts.videoTogether, {
     enabled: true,
@@ -263,10 +256,7 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
   const privateConfig = await privateResponse.json();
   assert.equal(privateConfig.authenticated, true);
   assert.deepEqual(privateConfig.sources, {
-    subscriptionSources: env.SUBSCRIPTION_SOURCES,
-    iptvSources: env.IPTV_SOURCES,
     mergeSources: true,
-    danmakuApiUrl: env.DANMAKU_API_URL,
   });
 
   const created = await fetchWorker(new Request('https://worker.example/api/auth/accounts', {
@@ -301,8 +291,7 @@ test('GET /api/config separates public runtime metadata from authenticated sourc
     headers: { Cookie: viewerCookie },
   }), env);
   const viewerConfig = await viewerResponse.json();
-  assert.equal(viewerConfig.sources.subscriptionSources, env.SUBSCRIPTION_SOURCES);
-  assert.equal(viewerConfig.sources.iptvSources, '');
+  assert.deepEqual(viewerConfig.sources, { mergeSources: true });
 });
 
 test('normalizes trailing slashes without widening dynamic account paths', async () => {

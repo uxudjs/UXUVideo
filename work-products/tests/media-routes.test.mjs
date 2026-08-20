@@ -20,16 +20,6 @@ async function login(env, username = 'admin', password = env.ADMIN_PASSWORD) {
   return response.headers.get('Set-Cookie').split(';', 1)[0];
 }
 
-async function viewer(env, permissions = []) {
-  const admin = await login(env);
-  const created = await worker.fetch(new Request(`${ORIGIN}/api/auth/accounts`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json', Origin: ORIGIN, Cookie: admin },
-    body: JSON.stringify({ username: `viewer-${permissions.length}`, name: 'Viewer', password: 'viewer-password', role: 'viewer', customPermissions: permissions }),
-  }), env, {});
-  assert.equal(created.status, 201);
-  return login(env, `viewer-${permissions.length}`, 'viewer-password');
-}
-
 async function withFetchStub(fetchImpl, run) {
   const original = globalThis.fetch;
   globalThis.fetch = fetchImpl;
@@ -194,56 +184,55 @@ test('proxy rewrites a production-sized VOD manifest with 1,651 child resources'
   assert.equal([...rewritten.matchAll(/\/api\/proxy\?/g)].length, 1_651);
 });
 
-test('IPTV playlist requires iptv_access, validates headers, and uses a bounded isolate cache', async () => {
+test('proxy keeps request abort active while reading a bounded manifest body', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db);
-  const deniedCookie = await viewer(env);
-  let fetches = 0;
-  const target = 'https://iptv.example/list.m3u';
-  const denied = await withFetchStub(async () => { fetches += 1; return new Response(); }, () => worker.fetch(new Request(`${ORIGIN}/api/iptv?url=${encodeURIComponent(target)}`, { headers: { Cookie: deniedCookie } }), env, {}));
-  assert.equal(denied.status, 403);
-  assert.equal(fetches, 0);
+  const cookie = await login(env);
+  const requestAbort = new AbortController();
+  let streamController;
+  let headersReturned;
+  const headersReady = new Promise((resolve) => { headersReturned = resolve; });
+  const target = 'https://media.example/stalled.m3u8';
+  const responsePromise = withFetchStub(async (_input, init) => {
+    const response = new Response(new ReadableStream({
+      start(controller) {
+        streamController = controller;
+        init.signal.addEventListener('abort', () => controller.error(init.signal.reason), { once: true });
+      },
+    }), { headers: { 'Content-Type': 'application/vnd.apple.mpegurl' } });
+    headersReturned();
+    return response;
+  }, () => worker.fetch(new Request(`${ORIGIN}/api/proxy?url=${encodeURIComponent(target)}`, {
+    signal: requestAbort.signal, headers: { Cookie: cookie },
+  }), env, {}));
 
-  const allowedCookie = await viewer(env, ['iptv_access']);
-  const path = `${ORIGIN}/api/iptv?url=${encodeURIComponent(target)}&ua=${encodeURIComponent('UXUV Test')}&referer=${encodeURIComponent('https://iptv.example/')}`;
-  await withFetchStub(async () => { fetches += 1; return new Response('#EXTM3U\n#EXTINF:-1,News\nhttps://stream.example/live.m3u8'); }, async () => {
-    const first = await worker.fetch(new Request(path, { headers: { Cookie: allowedCookie } }), env, {});
-    const second = await worker.fetch(new Request(path, { headers: { Cookie: allowedCookie } }), env, {});
-    assert.match(await first.text(), /^#EXTM3U/);
-    assert.match(await second.text(), /^#EXTM3U/);
-  });
-  assert.equal(fetches, 1);
-
-  const invalid = await worker.fetch(new Request(`${ORIGIN}/api/iptv?url=${encodeURIComponent(target)}&ua=${encodeURIComponent('bad\nheader')}`, { headers: { Cookie: allowedCookie } }), env, {});
-  assert.equal(invalid.status, 400);
+  await headersReady;
+  requestAbort.abort();
+  const outcome = await Promise.race([
+    responsePromise,
+    new Promise((resolve) => setTimeout(() => resolve(null), 200)),
+  ]);
+  if (!outcome) {
+    streamController.error(new Error('release stalled RED probe'));
+    await responsePromise;
+  }
+  assert.ok(outcome, 'manifest proxy remained pending after request abort');
+  assert.equal(outcome.status, 499);
+  assert.equal((await outcome.json()).error.code, 'UPSTREAM_ABORTED');
 });
 
-test('IPTV stream tokens cannot cross scopes and manifests are capped at one MiB', async () => {
-  const { db, calls } = createAuthD1Stub();
+test('proxy rejects a manifest that exceeds the streaming byte limit', async () => {
+  const { db } = createAuthD1Stub();
   const env = environment(db);
-  const cookie = await viewer(env, ['iptv_access']);
-  const target = 'https://iptv.example/live/master.m3u8';
-  let fetches = 0;
-  await withFetchStub(async (input) => {
-    fetches += 1;
-    if (String(input) === target) return new Response('#EXTM3U\n#EXTINF:10,\nsegment.ts', { headers: { 'Content-Type': 'application/vnd.apple.mpegurl' } });
-    return new Response(Uint8Array.from([7]), { headers: { 'Content-Type': 'video/mp2t' } });
-  }, async () => {
-    const response = await worker.fetch(new Request(`${ORIGIN}/api/iptv/stream?url=${encodeURIComponent(target)}`, { headers: { Cookie: cookie } }), env, {});
-    const childPath = (await response.text()).split('\n').find((line) => line.startsWith('/api/iptv/stream?'));
-    assert.ok(childPath);
-    const crossScope = new URL(childPath, ORIGIN);
-    crossScope.pathname = '/api/proxy';
-    const cross = await worker.fetch(new Request(crossScope), env, {});
-    assert.equal(cross.status, 401);
-    const preparedBeforeChild = calls.prepared.length;
-    const child = await worker.fetch(new Request(new URL(childPath, ORIGIN)), env, {});
-    assert.deepEqual(new Uint8Array(await child.arrayBuffer()), Uint8Array.from([7]));
-    assert.equal(calls.prepared.length, preparedBeforeChild);
-  });
+  const cookie = await login(env);
+  const target = 'https://media.example/oversized.m3u8';
+  const payload = `#EXTM3U\n${'x'.repeat(1024 * 1024)}`;
+  const response = await withFetchStub(async () => new Response(payload, {
+    headers: { 'Content-Type': 'application/vnd.apple.mpegurl' },
+  }), () => worker.fetch(new Request(`${ORIGIN}/api/proxy?url=${encodeURIComponent(target)}`, {
+    headers: { Cookie: cookie },
+  }), env, {}));
 
-  const large = `#EXTM3U\n${'x'.repeat((1024 * 1024) + 1)}`;
-  const oversized = await withFetchStub(async () => new Response(large, { headers: { 'Content-Type': 'application/vnd.apple.mpegurl' } }), () => worker.fetch(new Request(`${ORIGIN}/api/iptv/stream?url=${encodeURIComponent('https://iptv.example/large.m3u8')}`, { headers: { Cookie: cookie } }), env, {}));
-  assert.equal(oversized.status, 413);
-  assert.ok(fetches >= 2);
+  assert.equal(response.status, 413);
+  assert.equal((await response.json()).error.code, 'UPSTREAM_BODY_TOO_LARGE');
 });

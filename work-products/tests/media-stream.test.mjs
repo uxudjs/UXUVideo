@@ -4,8 +4,12 @@ import test from 'node:test';
 import { limitReadableStream, readLimitedBody } from '../../_worker.js';
 
 test('rejects an oversized declared content length before reading', async () => {
-  const response = new Response('small', { headers: { 'Content-Length': '100' } });
+  let cancelled = false;
+  const response = new Response(new ReadableStream({
+    cancel() { cancelled = true; },
+  }), { headers: { 'Content-Length': '100' } });
   await assert.rejects(readLimitedBody(response, 10), (error) => error?.code === 'UPSTREAM_BODY_TOO_LARGE');
+  assert.equal(cancelled, true);
 });
 
 test('rejects an oversized streamed textual body', async () => {

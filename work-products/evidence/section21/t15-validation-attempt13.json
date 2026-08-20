@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 13,
+  "generatedAt": "2026-08-20T12:14:23.292Z",
+  "status": "passed",
+  "e2e": {
+    "command": "npm run test:e2e",
+    "discovered": 125,
+    "passed": 125,
+    "duration": "5.3m",
+    "log": {
+      "path": "work-products/evidence/section21/t15-e2e-attempt13.log",
+      "bytes": 21771,
+      "sha256": "669db7941ee39b7b9d8931b95d17faec273acee801b75b376752f348d51690ae"
+    }
+  },
+  "performance": {
+    "command": "npx playwright test work-products/tests/section21-performance.e2e.spec.ts --config work-products/tests/section21-playwright.config.ts --trace on --workers=1",
+    "discovered": 1,
+    "passed": 1,
+    "duration": "1.8m",
+    "samples": [
+      {
+        "p95RafIntervalMs": 10.10000000000582,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 900
+      },
+      {
+        "p95RafIntervalMs": 10.19999999999709,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      },
+      {
+        "p95RafIntervalMs": 10.19999999999709,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 900
+      }
+    ],
+    "median": {
+      "p95RafIntervalMs": 10.19999999999709,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0
+    },
+    "log": {
+      "path": "work-products/evidence/section21/t15-performance-attempt13.log",
+      "bytes": 1497,
+      "sha256": "da5f3b8bfd8faa3df5681c6bdd9d87ebda7bca07e500de556064dd67cd57452f"
+    },
+    "trace": {
+      "path": "work-products/evidence/section21/t15-performance-trace.zip",
+      "bytes": 18328869,
+      "sha256": "94e84a3e81562d4c9ef0be3a2fe7f121ae45a43579c4c7c7e3f80e64aa704122",
+      "sanitization": "passed"
+    }
+  },
+  "rollback": {
+    "generateCommand": "node work-products/tests/section21-rollback-drill.test.mjs --generate",
+    "replayCommand": "node --test work-products/tests/section21-rollback-drill.test.mjs",
+    "pair": {
+      "path": "work-products/evidence/section21/pair-rollback.json",
+      "bytes": 98573,
+      "sha256": "42092cc377eebb157ed18d12d4e3663fe24118264f026dca0a4db18896a9fe9e"
+    },
+    "phases": [
+      {
+        "name": "bootstrap-v2",
+        "status": "passed"
+      },
+      {
+        "name": "reverse-v1",
+        "status": "passed"
+      },
+      {
+        "name": "forward-restore-v2",
+        "status": "passed"
+      }
+    ],
+    "compatibility": {
+      "field": "videoSkipRules",
+      "status": "passed",
+      "behavior": "v1 import, timestamped config merge, and remote validation preserve the unknown v2 field"
+    }
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T21:54:24.2754746+08:00",
+  "reason": "T14 preflight found two direct ownership omissions before business writes: the Pages workflow tests stale release/current bytes because release materialization follows npm test, and settings import silently drops specification-required retired fields without reporting the skipped result in the preview UI.",
+  "planSha256": "9d4ef7667fcf3952347e4eed8500ecbc7cc3b6bc91d29974266bf56aa6cc7dd8",
+  "predecessorPlanSha256": "52ee4faff154a24319ecf77dacff834e8406a8ceeca94736fa786abfed403200",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t14-release-boundary.zip",
+  "archiveSha256": "9de0a0ce1f79f20249be80e94b83fe890870bffa452447f373c62064e2b43d36",
+  "archiveBytes": 27949,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10",
+    "S21-T11",
+    "S21-T12",
+    "S21-T13"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T14",
+      "attempt": 1,
+      "path": "plan-revisions/2026-08-19-t14-release-boundary.zip::S21-T14.json",
+      "sha256": "ce446c4ab8d7536913a3d51b8f30f075a4884bb2572eac820ac6bc080905b709",
+      "bytes": 5001
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T14",
+    "attempt": 1,
+    "businessCodeWrites": [],
+    "currentTreeRetained": true,
+    "rule": "attempt2 starts from the unchanged business tree; only the archived plan ledger and failed receipt identify attempt1"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

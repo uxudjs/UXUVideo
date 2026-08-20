@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 10,
+  "planSha256": "c06f97d5bf33c44455c1541f06801d6258b50acf4487bd04f45e43475d04dd30",
+  "generatedAt": "2026-08-20T07:46:45.531Z",
+  "gateStatus": "automated_gates_passed_visual_approval_required",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "version": "2.0.0",
+      "apiContract": 2,
+      "candidateManifestSha256": "6a7f28ed3a21485f96486a17717bd9fafbe80936d53782a4fc426047b7bf8762",
+      "runtime": {
+        "path": "_worker.js",
+        "bytes": 167976,
+        "sha256": "0855233baa1218f5f1a92af8d50f53f3d9164e99fab95c8c434cececbd80ff6c",
+        "gzipBytes": 39995,
+        "gzipLimitBytes": 3145728
+      }
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "version": "0.3.0",
+      "apiContract": 2,
+      "workerRange": ">=2.0.0 <3.0.0",
+      "candidateManifestSha256": "e04d03c1eacbe5243eafb72c3653d9084d32a8df5c6168c6f1d7e0611a2b2abf",
+      "packageSha256": "fc97494237638279a8854a6ad25c05c7090bfe27dbd858889029f6eaad085336",
+      "packageLockSha256": "a18b5b12f18b370ad745c8b9ff79bcf871a9000282b19ce0f00d84df0be41fde",
+      "nextEnvSha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+      "buildDependency": {
+        "name": "esbuild",
+        "declared": "0.28.2",
+        "locked": "0.28.2"
+      }
+    }
+  },
+  "candidate": {
+    "repository": "pages",
+    "pathPrefix": "work-products/tests/fixtures/ui-review/section21-candidate/",
+    "fileCount": 121,
+    "totalBytes": 18471671,
+    "fileNameSetSha256": "8ab918b20b708f6d29ed570ff3e54dc15856a412fe0a681048ce6c42b3516554",
+    "fileNameSetAlgorithm": "sort repository-relative file names, join with LF without a trailing LF, then SHA-256 the UTF-8 bytes",
+    "combinedSha256": "ba392ff93e963f2190dc91d03be4d3fff02dc9c5b36f2f828a793ba22fff6167",
+    "combinedAlgorithm": "sort repository-relative file paths, concatenate each file's lowercase SHA-256 hexadecimal digest, then SHA-256 the UTF-8 bytes",
+    "producerCommand": "npm run test:e2e",
+    "producerResult": "125/125 GREEN"
+  },
+  "coverage": {
+    "routeCandidates": 108,
+    "routeSurfaces": [
+      "home",
+      "favorites",
+      "premium",
+      "premium-favorites",
+      "premium-settings",
+      "settings",
+      "not-found",
+      "search-ready",
+      "player-ready"
+    ],
+    "locales": [
+      "zh-CN",
+      "zh-TW",
+      "en"
+    ],
+    "widths": [
+      320,
+      768,
+      1024,
+      1440
+    ],
+    "specialStateCandidates": 13,
+    "specialStates": [
+      "theme-light",
+      "contrast-more",
+      "forced-colors",
+      "reduced-transparency",
+      "text-200-percent",
+      "setup-error-zh-CN",
+      "setup-error-zh-TW",
+      "setup-error-en",
+      "sync-synced",
+      "sync-offline",
+      "sync-quota",
+      "sync-conflict",
+      "sync-error-text-200"
+    ]
+  },
+  "performance": {
+    "command": "npx playwright test work-products/tests/section21-performance.e2e.spec.ts --config work-products/tests/section21-playwright.config.ts --trace on --workers=1",
+    "samples": [
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      },
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      },
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 900
+      }
+    ],
+    "median": {
+      "p95RafIntervalMs": 8.5,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0
+    },
+    "baseline": {
+      "path": "work-products/evidence/section21/performance-baseline.json",
+      "sha256": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+      "median": {
+        "p95RafIntervalMs": 10.200000000000728,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0
+      }
+    },
+    "thresholdComparisons": {
+      "p95RafRegression": false,
+      "longTaskRegression": false,
+      "droppedFrameDeltaWithinOne": true,
+      "status": "passed"
+    },
+    "trace": {
+      "path": "work-products/evidence/section21/t15-performance-trace.zip",
+      "bytes": 17145750,
+      "sha256": "6f5d8ec552d9f51b5722e47d13b77a2860a23dd098a3a7754aa20faa3f75e1eb",
+      "sanitization": "740 members rewritten with repository-relative or redacted machine paths; recursive hygiene scan found no machine path"
+    }
+  },
+  "validation": {
+    "pagesE2E": "125/125 GREEN",
+    "pagesNode": "163/163 GREEN; formal Section 21 discovery 9/9 GREEN",
+    "pagesBuild": "GREEN",
+    "pagesReleaseBuild": "GREEN",
+    "pagesLint": "GREEN",
+    "pagesTypecheck": "GREEN",
+    "pagesDependencyTree": "exit 0; esbuild@0.28.2 resolved; platform-optional packages reported according to npm tree semantics",
+    "workerSyntax": "GREEN",
+    "workerSize": "GREEN; 167976 source bytes and 39995 gzip bytes",
+    "workerDependencyTree": "exit 0; empty runtime dependency tree",
+    "workerNode": "159/159 GREEN after attempt 10 receipt generation",
+    "candidateHygiene": "6/6 GREEN with recursive ZIP scan, current identity binding, binary receipts, and pending visual-decision chain"
+  },
+  "release": {
+    "sequence": [
+      "npm run build",
+      "npm run release:build",
+      "npm test",
+      "npm run lint",
+      "npx tsc --noEmit"
+    ],
+    "out": {
+      "payloadCount": 71,
+      "totalBytes": 4071236,
+      "namespaceSha256": "ec35b0209dd22c95d7dd7ebe58a5faf941affeb3d537948cb5e280123975905c"
+    },
+    "releaseCurrent": {
+      "assetCount": 72,
+      "outPayloadExactMatch": true,
+      "releaseOnlyPaths": [
+        "LICENSE"
+      ],
+      "namespaceSha256": "a6652ddc80e040a8bd2f79c22fa9ccd3dd2b46b128ac87711a3cc3098ecd3d52"
+    },
+    "releaseManifest": {
+      "path": "release/current/release-manifest.json",
+      "bytes": 10743,
+      "sha256": "21d4284f897cadb7f148ee2e2f0a5f0bacf21c16d7e58fe99c68a046690d8e32",
+      "pagesVersion": "0.3.0",
+      "apiContract": 2,
+      "workerRange": ">=2.0.0 <3.0.0",
+      "routeCount": 7,
+      "assetCount": 72
+    }
+  },
+  "rollback": {
+    "pairRollback": {
+      "path": "work-products/evidence/section21/pair-rollback.json",
+      "bytes": 98573,
+      "sha256": "27715855a73f4f85548802996de5786c46daa49b58893dde03ec2444346e9560"
+    },
+    "patches": [
+      {
+        "path": "work-products/evidence/section21/worker-v1.reverse.patch",
+        "bytes": 31600,
+        "sha256": "d04ed4e44577d45630d8def83bdedc6df7380f702b7428d080681e15ba2c8bf0"
+      },
+      {
+        "path": "work-products/evidence/section21/pages-v1.reverse.patch",
+        "bytes": 369747,
+        "sha256": "d0d805063a2617d1b4b3bb6fa11d5b2b63608080efd5d0cb664c98937abbf445"
+      },
+      {
+        "path": "work-products/evidence/section21/worker-v2.forward.patch",
+        "bytes": 31600,
+        "sha256": "dd5d709e988792290638fddd5d0f6b1465ac9be63b028cc168173b46bd194482"
+      },
+      {
+        "path": "work-products/evidence/section21/pages-v2.forward.patch",
+        "bytes": 369701,
+        "sha256": "b6f6de21b797cc7d24170df5ae23e768e1fd1567df999da0b38060c044093afb"
+      }
+    ],
+    "phases": [
+      {
+        "name": "bootstrap-v2",
+        "status": "passed"
+      },
+      {
+        "name": "reverse-v1",
+        "status": "passed"
+      },
+      {
+        "name": "forward-restore-v2",
+        "status": "passed"
+      }
+    ],
+    "compatibility": {
+      "field": "videoSkipRules",
+      "status": "passed",
+      "behavior": "v1 import, timestamped config merge, and remote validation preserve the unknown v2 field"
+    },
+    "productionRollbackBoundary": "frozen historical production identity; not live-reverified in this task"
+  },
+  "binaryAudit": {
+    "allowlist": {
+      "path": "work-products/evidence/section21/binary-allowlist.json",
+      "bytes": 49257,
+      "sha256": "5ee45d74b510e772f3670cad704d9adc0bcb2baf777e1675eacf58e95585beec"
+    },
+    "actualCount": 137,
+    "expectedCount": 137,
+    "workerZipCount": 16,
+    "pagesPngCount": 121,
+    "duplicateKeys": [],
+    "missing": [],
+    "unexpected": [],
+    "metadataMismatch": [],
+    "status": "passed"
+  },
+  "recommendedAudits": {
+    "npmAuditHigh": "unperformed; external registry access was not separately authorized",
+    "npmAuditSignatures": "unperformed; external registry access was not separately authorized"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/t15-visual-review.md",
+    "approvalRequired": true
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 11,
+  "planSha256": "947e9c22521be7cccccf90659d3c9d27ccac8354bcba0ca8b80b32c9fc5abed0",
+  "generatedAt": "2026-08-20T10:35:26.367Z",
+  "gateStatus": "local_validation_passed_visual_pending",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "version": "2.0.0",
+      "apiContract": 2,
+      "candidateManifestSha256": "7eada0da31dc0a759cdedec3ba257a6c8e7afe163aa7cbc154fb8a06d3a3ac2b",
+      "runtime": {
+        "path": "_worker.js",
+        "bytes": 169027,
+        "sha256": "ba251afba642b177dfd5ea158134bc913efbe47c26ab33a7fd8beb9b9112b39a",
+        "gzipBytes": 40214,
+        "gzipLimitBytes": 3145728
+      }
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "version": "0.3.0",
+      "apiContract": 2,
+      "workerRange": ">=2.0.0 <3.0.0",
+      "candidateManifestSha256": "8d60680604538d8e7a78b5f3409bed15094dfe0255105c1a34ce531a5aff16d0",
+      "packageSha256": "fc97494237638279a8854a6ad25c05c7090bfe27dbd858889029f6eaad085336",
+      "packageLockSha256": "a18b5b12f18b370ad745c8b9ff79bcf871a9000282b19ce0f00d84df0be41fde",
+      "nextEnvSha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+      "releaseScope": {
+        "fileCount": 303,
+        "sha256": "4956f6aead919e090f73098dc42304a67ac51c71ff2f353b6839430d544e8c1a",
+        "algorithm": "sort release-scope paths; for each path hash bytes with SHA-256; hash path NUL digest records joined by NUL"
+      },
+      "buildDependency": {
+        "name": "esbuild",
+        "declared": "0.28.2",
+        "locked": "0.28.2"
+      }
+    }
+  },
+  "candidate": {
+    "repository": "pages",
+    "pathPrefix": "work-products/tests/fixtures/ui-review/section21-candidate/",
+    "fileCount": 121,
+    "totalBytes": 19789409,
+    "fileNameSetSha256": "8ab918b20b708f6d29ed570ff3e54dc15856a412fe0a681048ce6c42b3516554",
+    "fileNameSetAlgorithm": "sort repository-relative file names, join with LF without a trailing LF, then SHA-256 the UTF-8 bytes",
+    "combinedSha256": "2d6a8b0d5759087cbea0e940608566bbda49a6a0c012a8af0e463aa09d46bc15",
+    "combinedAlgorithm": "sort repository-relative file paths, concatenate each file's lowercase SHA-256 hexadecimal digest, then SHA-256 the UTF-8 bytes",
+    "producerCommand": "npm run test:e2e",
+    "producerResult": "UNVERIFIED; this generator records artifact identity only"
+  },
+  "coverage": {
+    "routeCandidates": 108,
+    "routeSurfaces": [
+      "home",
+      "favorites",
+      "premium",
+      "premium-favorites",
+      "premium-settings",
+      "settings",
+      "not-found",
+      "search-ready",
+      "player-ready"
+    ],
+    "locales": [
+      "zh-CN",
+      "zh-TW",
+      "en"
+    ],
+    "widths": [
+      320,
+      768,
+      1024,
+      1440
+    ],
+    "specialStateCandidates": 13,
+    "specialStates": [
+      "theme-light",
+      "contrast-more",
+      "forced-colors",
+      "reduced-transparency",
+      "text-200-percent",
+      "setup-error-zh-CN",
+      "setup-error-zh-TW",
+      "setup-error-en",
+      "sync-synced",
+      "sync-offline",
+      "sync-quota",
+      "sync-conflict",
+      "sync-error-text-200"
+    ]
+  },
+  "performance": {
+    "status": "passed",
+    "reason": "Derived from the separately retained performance log and validation receipt; this generator does not execute validation commands.",
+    "command": "npx playwright test work-products/tests/section21-performance.e2e.spec.ts --config work-products/tests/section21-playwright.config.ts --trace on --workers=1",
+    "baseline": {
+      "path": "work-products/evidence/section21/performance-baseline.json",
+      "sha256": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+      "median": {
+        "p95RafIntervalMs": 10.200000000000728,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0
+      }
+    },
+    "samples": [
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      },
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      },
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      }
+    ],
+    "median": {
+      "p95RafIntervalMs": 8.5,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0
+    },
+    "trace": {
+      "path": "work-products/evidence/section21/t15-performance-trace.zip",
+      "bytes": 16625561,
+      "sha256": "66494880613fca243e7421e17ffe794ec7ce14cdcbea92e7483af3f3d6fe8eb9",
+      "sanitization": "passed; identity bound by the independent validation receipt"
+    }
+  },
+  "validation": {
+    "status": "passed",
+    "reason": "This generator does not execute validation commands; it verifies a separately generated receipt against retained logs and current artifact hashes.",
+    "receipt": {
+      "path": "work-products/evidence/section21/t15-validation-attempt11.json",
+      "bytes": 2649,
+      "sha256": "765b2b30d558285d6b92aca8bed7ac253c9094d129501d4e846752d3d9d30948"
+    },
+    "e2e": {
+      "discovered": 125,
+      "passed": 125
+    },
+    "rollback": [
+      {
+        "name": "bootstrap-v2",
+        "status": "passed"
+      },
+      {
+        "name": "reverse-v1",
+        "status": "passed"
+      },
+      {
+        "name": "forward-restore-v2",
+        "status": "passed"
+      }
+    ]
+  },
+  "release": {
+    "sequence": [
+      "npm run build",
+      "npm run release:build",
+      "npm test",
+      "npm run lint",
+      "npx tsc --noEmit"
+    ],
+    "out": {
+      "payloadCount": 71,
+      "totalBytes": 4071500,
+      "namespaceSha256": "ad3ce2328c4f905c9955c0cde7ef4f02f5e5b588ff5fe8842a55b2b1461395f5"
+    },
+    "releaseCurrent": {
+      "assetCount": 72,
+      "outPayloadExactMatch": true,
+      "releaseOnlyPaths": [
+        "LICENSE"
+      ],
+      "namespaceSha256": "74399da6c6ee25e1d511e534198f07d7277d1e52711c7cfcf9fa6b36381884ec"
+    },
+    "releaseManifest": {
+      "path": "release/current/release-manifest.json",
+      "bytes": 10743,
+      "sha256": "ab2c985ce0c5539b6dd0fd44fbd494a0a393da96bd938e2d86fd7948925f4554",
+      "pagesVersion": "0.3.0",
+      "apiContract": 2,
+      "workerRange": ">=2.0.0 <3.0.0",
+      "routeCount": 7,
+      "assetCount": 72
+    }
+  },
+  "rollback": {
+    "pairRollback": {
+      "path": "work-products/evidence/section21/pair-rollback.json",
+      "bytes": 98573,
+      "sha256": "a89e25b4d2e654f83462b749a7e056e91ff7013dce04c0adb6d4a3f38fd68e87"
+    },
+    "patches": [
+      {
+        "path": "work-products/evidence/section21/worker-v1.reverse.patch",
+        "bytes": 39268,
+        "sha256": "cd8e1e29daa61a38d4295790a6fc53b23019106142538a65d96bc1319bec7e36"
+      },
+      {
+        "path": "work-products/evidence/section21/pages-v1.reverse.patch",
+        "bytes": 371586,
+        "sha256": "bf5ac50a61a1797db60450772d580d4e261105be1c1feae7fa63add02431f5f0"
+      },
+      {
+        "path": "work-products/evidence/section21/worker-v2.forward.patch",
+        "bytes": 39338,
+        "sha256": "51b98f86c0449ff8c3d54f915614a7cadba7eca92e5a4974a1f6d66c1500b6c2"
+      },
+      {
+        "path": "work-products/evidence/section21/pages-v2.forward.patch",
+        "bytes": 371540,
+        "sha256": "a26f2d7e434da625b0867eaad61ac61589654a931ac5d809f8810327ea85ebdb"
+      }
+    ],
+    "phases": [
+      {
+        "name": "bootstrap-v2",
+        "status": "passed"
+      },
+      {
+        "name": "reverse-v1",
+        "status": "passed"
+      },
+      {
+        "name": "forward-restore-v2",
+        "status": "passed"
+      }
+    ],
+    "compatibility": {
+      "field": "videoSkipRules",
+      "status": "passed",
+      "behavior": "v1 import, timestamped config merge, and remote validation preserve the unknown v2 field"
+    },
+    "productionRollbackBoundary": "frozen historical production identity; not live-reverified in this task"
+  },
+  "binaryAudit": {
+    "allowlist": {
+      "path": "work-products/evidence/section21/binary-allowlist.json",
+      "bytes": 49257,
+      "sha256": "1a1baf07e9a47981a4a9e76f7e783a255c8b5380f122946f0ff0d2fd2f3edabd"
+    },
+    "actualCount": 137,
+    "expectedCount": 137,
+    "workerZipCount": 16,
+    "pagesPngCount": 121,
+    "duplicateKeys": [],
+    "missing": [],
+    "unexpected": [],
+    "metadataMismatch": [],
+    "status": "passed"
+  },
+  "recommendedAudits": {
+    "npmAuditHigh": "unperformed; external registry access was not separately authorized",
+    "npmAuditSignatures": "unperformed; external registry access was not separately authorized"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/t15-visual-review.md",
+    "approvalRequired": true
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

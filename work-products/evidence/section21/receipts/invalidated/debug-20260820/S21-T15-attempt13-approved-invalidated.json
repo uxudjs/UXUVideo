@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 13,
+  "state": "completed",
+  "planSha256": "cbbc27518ec5db9579a80373ecdcb989d102f25addd6e5e7329beffe3e4d95ff",
+  "startedAt": "2026-08-20T11:49:02.116Z",
+  "completedAt": "2026-08-20T13:58:26.833Z",
+  "objective": "Remove the duplicate settings sync overlay, prove navigation-safe geometry, and make evidence transitions executable and fail-closed.",
+  "priorAttempt": {
+    "attempt": 12,
+    "state": "failed",
+    "visualDecision": "REJECTED",
+    "receipt": "work-products/evidence/section21/receipts/invalidated/debug-20260820/S21-T15-attempt12-rejected.json",
+    "approval": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt12-rejected.json",
+    "automationDisposition": "Attempt 12 automation and material repair remain historical evidence, but internal pre-presentation review rejected its settings navigation occlusion."
+  },
+  "historicalArchiveCorrections": [
+    {
+      "attempt": 11,
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-archive-correction-attempt11.json",
+      "sha256": "5f02260ab8a2e2d4b341c2fade4bb653d76e051dcb08f817e55db0728e3e8f38",
+      "disposition": "Rejected decision retained; original attempt-specific previews are unavailable and mutable current-candidate paths must not be used."
+    },
+    {
+      "attempt": 12,
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-archive-correction-attempt12.json",
+      "sha256": "8bd6d76c7ceeb09b36421e2691c2ae547d08d256b0972879fb7c9a9893d41c15",
+      "disposition": "Internal rejection retained; stale PENDING and candidate-ready fields are predecision snapshots and original attempt-specific previews are unavailable."
+    }
+  ],
+  "visualDecision": {
+    "decision": "APPROVED",
+    "candidateLabel": "S21-T15 视觉候选 13",
+    "decidedAt": "2026-08-20T13:58:26.833Z",
+    "exactApprovalText": "批准视觉候选 13",
+    "approvalPath": "work-products/evidence/section21/t15-visual-approval.json",
+    "approvalSha256": "a42d76ceea30d3b71eb5187ab99f5b0233ca82de6249759084f35349ceed5bd7",
+    "scope": "Visual approval applies only to candidate 13 and does not authorize commit, push, deployment, or remote changes."
+  },
+  "scope": {
+    "pages": [
+      "app/globals.css",
+      "components/SyncStatus.tsx",
+      "work-products/tests/global-shell-contract.test.mjs",
+      "work-products/tests/section21-ui-contract.test.mjs",
+      "work-products/tests/section21-visual.e2e.spec.ts",
+      "work-products/tests/accessibility.e2e.spec.ts",
+      "work-products/tests/section21-performance.e2e.spec.ts",
+      "work-products/tests/fixtures/ui-review/section21-candidate/"
+    ],
+    "workerEvidence": [
+      "work-products/plan.md",
+      "work-products/todo.md",
+      "work-products/tests/section21-plan-contract.test.mjs",
+      "work-products/tests/candidate-hygiene.test.mjs",
+      "work-products/tests/generate-t15-attempt10-receipts.mjs",
+      "work-products/tests/generate-t15-validation-receipt.mjs",
+      "work-products/tests/t15-evidence-generator.test.mjs",
+      "work-products/tests/t15-evidence-transition.mjs",
+      "work-products/tests/t15-validation-receipt.test.mjs",
+      "work-products/evidence/section21/"
+    ]
+  },
+  "verification": {
+    "red": [
+      "persistent settings sync overlay covered the back navigation and title at 320px and 200 percent text",
+      "source-text-only evidence tests could remain green while transition guards were bypassed",
+      "attempt 11 archived approval pointed at the mutable active candidate evidence path",
+      "attempt 11 and 12 historical preview references were broken or mutable, and attempt 12 retained superseded predecision fields"
+    ],
+    "focusedGreen": {
+      "syncGeometry": "15/15 Node contracts and 1/1 focused Playwright state matrix",
+      "evidenceTransition": "30/30 plan and executable transition checks",
+      "candidateEvidence": "40/40 combined identity, archive closure, transition, validation, and recursive-hygiene checks",
+      "historicalArchiveClosure": "1/1 dedicated RED/GREEN closure"
+    },
+    "fullGreen": {
+      "pagesNode": "163/163 plus Section 21 9/9",
+      "pagesE2e": "125/125",
+      "performance": "1/1; three-sample median p95 interval 10.2 ms, long tasks 0 ms, dropped frames 0",
+      "pagesBuild": "passed",
+      "pagesRelease": "passed",
+      "pagesLint": "passed",
+      "pagesTypecheck": "passed",
+      "pagesDependencies": "passed",
+      "rollback": "1/1 with bootstrap-v2, reverse-v1, and forward-restore-v2",
+      "inAppBrowser": "desktop and 320 px fail-closed pages inspected without console warnings or horizontal overflow"
+    },
+    "remaining": []
+  },
+  "gate": {
+    "local": "GREEN",
+    "release": "HOLD",
+    "visualApproval": "APPROVED"
+  },
+  "releaseState": "LOCAL_CANDIDATE_APPROVED",
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

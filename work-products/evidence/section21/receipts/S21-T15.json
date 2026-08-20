@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 14,
+  "state": "completed",
+  "planSha256": "cbbc27518ec5db9579a80373ecdcb989d102f25addd6e5e7329beffe3e4d95ff",
+  "startedAt": "2026-08-20T14:56:08.937Z",
+  "completedAt": "2026-08-20T15:26:22.698Z",
+  "objective": "Repair the post-ship response-body lifecycle, visual-candidate ownership, paired rollback scope, and current evidence binding without changing the approved UI design.",
+  "priorAttempt": {
+    "attempt": 13,
+    "state": "completed",
+    "visualDecision": "APPROVED",
+    "invalidation": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-approved-candidate-attempt13-invalidation.json",
+      "sha256": "1291351339f373680929ed0615903fb0d42891ed5c649287b4a8cb7417aa6310"
+    },
+    "disposition": "The user approval remains immutable historical evidence, but routine E2E rewrote the active PNG bytes and later debug fixes changed Worker and rollback identities, so it cannot approve the current candidate."
+  },
+  "historicalArchiveCorrections": [
+    {
+      "attempt": 11,
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-archive-correction-attempt11.json",
+      "sha256": "5f02260ab8a2e2d4b341c2fade4bb653d76e051dcb08f817e55db0728e3e8f38",
+      "disposition": "Rejected decision retained; original attempt-specific previews are unavailable and mutable current-candidate paths must not be used."
+    },
+    {
+      "attempt": 12,
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-archive-correction-attempt12.json",
+      "sha256": "8bd6d76c7ceeb09b36421e2691c2ae547d08d256b0972879fb7c9a9893d41c15",
+      "disposition": "Internal rejection retained; stale PENDING and candidate-ready fields are predecision snapshots and original attempt-specific previews are unavailable."
+    }
+  ],
+  "visualDecision": {
+    "decision": "APPROVED",
+    "candidateLabel": "S21-T15 视觉候选 14",
+    "decidedAt": "2026-08-20T15:26:22.698Z",
+    "exactApprovalText": "批准视觉候选 14",
+    "approvalPath": "work-products/evidence/section21/t15-visual-approval.json",
+    "approvalSha256": "4880bb774376dee2c39bc36ce30117cde82a02364569bccc0068f654a5077f2e",
+    "evidenceCorrection": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-attempt14-sanitized-report-correction.json",
+      "sha256": "6155c324b68d9ecd265de0660aa33ba4430a50e2558bce4451999c893547b34e"
+    },
+    "scope": "Visual approval applies only to candidate 14 and does not authorize commit, push, deployment, or remote changes."
+  },
+  "scope": {
+    "workerRuntime": [
+      "_worker.js",
+      "work-products/tests/media-stream.test.mjs",
+      "work-products/tests/upstream-stream-resilience.test.mjs"
+    ],
+    "pagesCandidateOwnership": [
+      "work-products/tests/accessibility.e2e.spec.ts",
+      "work-products/tests/kvideo-player-shell.e2e.spec.ts",
+      "work-products/tests/kvideo-search-results.e2e.spec.ts",
+      "work-products/tests/section21-visual.e2e.spec.ts",
+      "work-products/tests/section21-ui-contract.test.mjs",
+      "work-products/tests/fixtures/ui-review/section21-candidate/"
+    ],
+    "workerEvidence": [
+      "work-products/tests/section21-rollback-drill.test.mjs",
+      "work-products/tests/generate-t15-attempt10-receipts.mjs",
+      "work-products/tests/generate-t15-validation-receipt.mjs",
+      "work-products/tests/t15-evidence-generator.test.mjs",
+      "work-products/tests/t15-evidence-transition.mjs",
+      "work-products/tests/t15-validation-receipt.test.mjs",
+      "work-products/tests/section21-plan-contract.test.mjs",
+      "work-products/debug/correct-t15-attempt14-evidence.mjs",
+      "work-products/evidence/section21/",
+      "work-products/todo.md"
+    ]
+  },
+  "verification": {
+    "red": [
+      "declared Content-Length overflow and blocked redirect both returned an error without cancelling the upstream response body",
+      "routine npm run test:e2e overwrote five byte identities inside the approved candidate directory",
+      "paired rollback scope omitted the deployment-required public/github-pages.html",
+      "the active final acceptance matrix remained bound to attempt 10 while active evidence moved to later attempts"
+    ],
+    "focusedGreen": {
+      "upstreamBodyLifecycle": "7/7 targeted tests after a deterministic 2/7 RED",
+      "candidateOwnership": "10/10 contract tests plus 1/1 real Playwright producer; 12 draft screenshots and zero approved-candidate changes",
+      "rollback": "1/1 independent replay after a deterministic scope RED; public/github-pages.html is present in v2 and absent in v1",
+      "evidenceTransition": "7/7 executable transition and validation receipt tests",
+      "candidateGeneration": "125/125 Playwright with explicit candidate write; 121 PNG bound to candidate 14"
+    },
+    "fullGreen": {
+      "pagesE2e": "125/125",
+      "pagesNative": "npm test 163/163 plus Section 21 10/10; grouped cache and settings transfer 4/4; build, release build, lint, typecheck, dependency tree, and diff check passed",
+      "workerNative": "node --check passed; npm test 175/175; gzip 40,217/3,145,728 bytes; empty runtime dependency tree; diff check passed",
+      "candidateHygiene": "9/9 including active final-matrix binding and recursive binary hygiene",
+      "performance": "fresh three-sample median p95 interval 8.5 ms, long tasks 0 ms, dropped frames 0; sanitized trace reused only across exact Pages release-scope bytes",
+      "rollback": "bootstrap-v2, reverse-v1, and forward-restore-v2 passed"
+    },
+    "remaining": []
+  },
+  "gate": {
+    "local": "GREEN",
+    "release": "HOLD",
+    "visualApproval": "APPROVED"
+  },
+  "releaseState": "LOCAL_CANDIDATE_APPROVED",
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

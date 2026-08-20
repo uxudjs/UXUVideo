@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 12,
+  "receiptKind": "historical_visual_archive_correction",
+  "recordedAt": "2026-08-20T12:26:36.793Z",
+  "targets": {
+    "approval": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt12-rejected.json",
+      "sha256": "20450425fc2f4717e8185e654cb9ff1b844eb7fd40de045e8d51f9a5fcbc554e"
+    },
+    "candidateEvidence": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-candidate-evidence-attempt12-rejected.json",
+      "sha256": "6d8bdfd60eb074298d799aa540386784a9660adffceb5624a3ef660eb13de149"
+    },
+    "visualReview": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-review-attempt12-rejected.md",
+      "sha256": "819343e1331671df1586909989fc28fdd59e3734ebd7834cc4fdfdc5b6088fdb"
+    },
+    "taskReceipt": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/S21-T15-attempt12-rejected.json",
+      "sha256": "fb6c33ec9757427fbbbeef8fbbcacd8457454c466e5e7427e37488d7eb8765c8"
+    }
+  },
+  "authoritativeDecision": {
+    "status": "REJECTED",
+    "sourcePath": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt12-rejected.json",
+    "sourceSha256": "20450425fc2f4717e8185e654cb9ff1b844eb7fd40de045e8d51f9a5fcbc554e"
+  },
+  "originalCandidate": {
+    "fileCount": 121,
+    "totalBytes": 41388438,
+    "combinedSha256": "c556a6fa6eb2175b251e3a2c6b58e70423d425d6fbe62b49454d8aa4ebcccac0"
+  },
+  "previewDisposition": {
+    "status": "UNAVAILABLE",
+    "reason": "The shared Pages candidate directory was regenerated before attempt-isolated PNG copies were retained. The archived review links are broken, and the archived approval preview paths now identify later mutable bytes.",
+    "legacyPathsMustNotResolve": true,
+    "currentCandidateMustNotBeUsed": true,
+    "recoverablePaths": []
+  },
+  "reviewDisposition": {
+    "status": "PREDECISION_PENDING_SNAPSHOT_SUPERSEDED",
+    "explanation": "The archived review is a generated predecision snapshot. Its PENDING state and user prompt were superseded by the archived approval and task receipt, which record an internal rejection before user presentation."
+  },
+  "taskReceiptDisposition": {
+    "status": "PREDECISION_READINESS_FIELDS_SUPERSEDED",
+    "explanation": "The task receipt's candidate-ready text and remaining user-decision item are stale predecision fields. Its REJECTED gate, failure block, and userPresented false field are the authoritative terminal state."
+  },
+  "presentation": {
+    "userPresented": false,
+    "decisionSource": "internal pre-presentation visual review"
+  },
+  "preservation": {
+    "archivedTargetsRewritten": false,
+    "decisionChanged": false
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

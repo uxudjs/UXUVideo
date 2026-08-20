@@ -1,0 +1,964 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-en-1024.png",
+      "mime": "image/png",
+      "sha256": "eafd90cb59ce62ee37c1bb8bfb55bec80d576d0c4d43b6826af2c63a91bdf1a4",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-en-1440.png",
+      "mime": "image/png",
+      "sha256": "11bae633bcee4f2a3bf513b8722634ecabe5c26670ebe9ad188f254ef035c4b4",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-en-320.png",
+      "mime": "image/png",
+      "sha256": "453926a170e673ba593ddb12e4edc4eec0a5d8e9c2416296162f2d5cd8d5619d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-en-768.png",
+      "mime": "image/png",
+      "sha256": "017516e33f101b19ca0823874b15e776ee878a9673b20ec5141dd99df7e7e2f1",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "674a44da65e8a650afe64205934a252985db35542a30f2b45628fe4eeed6b727",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "ca50457cb134c0a9f87ecced9f184e5e3cfd75f5ca4c5caa1b9dd0dd76aae7a6",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "e71b3c2eb0a78d10563b02db12c0e727e71d2dd488c9ab43bae11475b50cd93c",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "6bd383a63e9e2372b2b7ea8366f9d0882a9ef4ead978cae1d818bcb910e8cbe4",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "2901a1ff4de94dd4d48cd63e3a1c02392b2a7410f8d7ebd3a556cc840262d313",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "88fe06d7e10c6826ff7f3829c9d180f3f6c24d2a50bba72d19840a522cc696d7",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "25c418c5999552526a31b5b79cdb5f5fe13e703e7d9a2496752b4c2d74ec0915",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-favorites-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "395fd9bb9c2c2f788f0ca77152ca3c814335d2b1b3ec6d0993f64d565a1bacb3",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-en-1024.png",
+      "mime": "image/png",
+      "sha256": "b3dc47f963f0cafb625e6fb346027f9fa66fc89cfacad0a11f5077e3573eb669",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-en-1440.png",
+      "mime": "image/png",
+      "sha256": "0f701d3487752bce8bf7fb332e4619a26e006ed1bf3acc9df6dbc17c9424aff6",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-en-320.png",
+      "mime": "image/png",
+      "sha256": "b72a1332522c894e4c03baca4da57edef076e23f2478c97838a9df288d843063",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-en-768.png",
+      "mime": "image/png",
+      "sha256": "16c6ac897da28e51d9c42aec5692c90a94503f543cad9241925df0b72cb46dc3",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "4bc60a704a77b70bb062b7441b6197bb42ff2793b8c43a5207d19684475f72ce",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "55d35619811929378a487e8555d9cb99186c0a8fae63195029184eab3ad0ecf0",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "9a0a37e9c5235b5d4fdca062eda26134f51da0d3ba3b29cf7e88b82ed43e26bd",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "af2709b4ac376f14776f8c0fded31b2cf88ed3ba2af01f4ed6ea10bd7375dfd7",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "bcbc1a9b88ec88156bdf1e31cd8faa28e9c7e2fe01949ebafcf50c3107894436",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "e6aa482dcbd5e760090de65ef1b72c17f28eec8c261982e9ceb4bb757c6f1322",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "c1126cc371dc76ade1f455cf2c50001163f1ebc236cf0abcc637c8add33a49b5",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "2c4bcb91aa210f47d4a484f4f780c7c8dd0595b95aac612708f74fefafc7c568",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-en-1024.png",
+      "mime": "image/png",
+      "sha256": "c5c8f98090fa036b1c088468289f66aba112724847ba8dfff78c5508a0e4b090",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-en-1440.png",
+      "mime": "image/png",
+      "sha256": "cd1ae2863411e4c8d914f2207332f866b5523b7beacc3553c80ae65e9e51a000",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-en-320.png",
+      "mime": "image/png",
+      "sha256": "e42dcd81d61b86dfc46e6a6f2c9fdea2a0599572ce738b4a41965adb7351f87e",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-en-768.png",
+      "mime": "image/png",
+      "sha256": "d819cb1eb8ca59f9fd4ae9114ce876a248396ab8749cb3c76cb25dc48c076da9",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "c5c8f98090fa036b1c088468289f66aba112724847ba8dfff78c5508a0e4b090",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "cd1ae2863411e4c8d914f2207332f866b5523b7beacc3553c80ae65e9e51a000",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "e42dcd81d61b86dfc46e6a6f2c9fdea2a0599572ce738b4a41965adb7351f87e",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "d819cb1eb8ca59f9fd4ae9114ce876a248396ab8749cb3c76cb25dc48c076da9",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "c5c8f98090fa036b1c088468289f66aba112724847ba8dfff78c5508a0e4b090",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "cd1ae2863411e4c8d914f2207332f866b5523b7beacc3553c80ae65e9e51a000",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "e42dcd81d61b86dfc46e6a6f2c9fdea2a0599572ce738b4a41965adb7351f87e",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-not-found-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "d819cb1eb8ca59f9fd4ae9114ce876a248396ab8749cb3c76cb25dc48c076da9",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-1024.png",
+      "mime": "image/png",
+      "sha256": "687d0d05896096c2719ebf4512253ec41ecc496340eb448fa9809945d29b0a82",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-1440.png",
+      "mime": "image/png",
+      "sha256": "bebfaa94a183b2545dad72c5dd36bc89dcf8f9a30aa3f8dc5f46a1c5ba85251a",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-320.png",
+      "mime": "image/png",
+      "sha256": "de5ba3eb5673679379bbd2ce017f3b3e357b40944150a4ba2733b91a72def19d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-768.png",
+      "mime": "image/png",
+      "sha256": "664211d3c51947fa1a4c185d1c69f64df75137c89fbdbd1f5a04f5cb4b91fec8",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "f385f9a17aab1ca8b63fb6d3ee42eabdaccd5abf8d3c22b2ee0fb6a8cbc44505",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "7c26345a5194155827a3bc63ac285e98a04c2edd3e4d667f5583a143a936693c",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "ecc4eefbaa06de711a7425b1d218a36e2011d078c6d73ae55ac025fa2892da85",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "7ab12e3cbb947d22521a96fc506882005b9e4e740ace286953058a30fdf106be",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "1e300a7a4e975667264a0c28b075263e12846b8b4a80069a7905cf523ef71b6a",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "a438a2edf465e49921e896fa1aeccf441764e5a5737f7affc48314e347756f03",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "5be8ff18470e5ac35003555f9b9632baef446fa994b45377618f99f9f1b6efcf",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "544e7ee5737a87b1a2be56e14b73b5824e5b8496cd61b885604c64d09b63e7a9",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-en-1024.png",
+      "mime": "image/png",
+      "sha256": "ce60699d7950e085c0db81f95fa5dd3ac64d829c3d2cf86796214129a12cb4b5",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-en-1440.png",
+      "mime": "image/png",
+      "sha256": "fea1a4fca3d823195024d8b652ee9168d0f968b3b6023ebd5022e738ad4a4fe8",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-en-320.png",
+      "mime": "image/png",
+      "sha256": "074ff19a6a423cd269d9c8478fd5e82c374d48f718e8f5817ea075e4b2bcf11c",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-en-768.png",
+      "mime": "image/png",
+      "sha256": "726eb5b300757d6714b74495e9b253f53677096ce70e04ad25df8e29b7972381",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-en-1024.png",
+      "mime": "image/png",
+      "sha256": "eafd90cb59ce62ee37c1bb8bfb55bec80d576d0c4d43b6826af2c63a91bdf1a4",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-en-1440.png",
+      "mime": "image/png",
+      "sha256": "11bae633bcee4f2a3bf513b8722634ecabe5c26670ebe9ad188f254ef035c4b4",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-en-320.png",
+      "mime": "image/png",
+      "sha256": "453926a170e673ba593ddb12e4edc4eec0a5d8e9c2416296162f2d5cd8d5619d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-en-768.png",
+      "mime": "image/png",
+      "sha256": "017516e33f101b19ca0823874b15e776ee878a9673b20ec5141dd99df7e7e2f1",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "674a44da65e8a650afe64205934a252985db35542a30f2b45628fe4eeed6b727",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "ca50457cb134c0a9f87ecced9f184e5e3cfd75f5ca4c5caa1b9dd0dd76aae7a6",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "e71b3c2eb0a78d10563b02db12c0e727e71d2dd488c9ab43bae11475b50cd93c",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "6bd383a63e9e2372b2b7ea8366f9d0882a9ef4ead978cae1d818bcb910e8cbe4",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "2901a1ff4de94dd4d48cd63e3a1c02392b2a7410f8d7ebd3a556cc840262d313",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "88fe06d7e10c6826ff7f3829c9d180f3f6c24d2a50bba72d19840a522cc696d7",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "25c418c5999552526a31b5b79cdb5f5fe13e703e7d9a2496752b4c2d74ec0915",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-favorites-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "395fd9bb9c2c2f788f0ca77152ca3c814335d2b1b3ec6d0993f64d565a1bacb3",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-en-1024.png",
+      "mime": "image/png",
+      "sha256": "5b4faf45a234ff0abc009e1f8a21ea0cab464ab841b14ce4005a30bace76143c",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-en-1440.png",
+      "mime": "image/png",
+      "sha256": "ade4d8dc4abcc85c803f3e45281f23ff6d972e12478ce3bfb936859052201548",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-en-320.png",
+      "mime": "image/png",
+      "sha256": "d3bd4931b34b2eaab8560d929b996b4fd7082d3e78bb53dce62e83059f998386",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-en-768.png",
+      "mime": "image/png",
+      "sha256": "abc6082c98991d6fcfd294d2b5eccc3e86a8eb16a202279ff9e1ecb2451d6df9",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "308c43f760ec33276c362f3b60ad2c3837b9cb744f934f08076b9c65f4e41c37",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "9984758a37b9c5d8694566dda09897821dea86010d7cbb4f30bb2dbc7b49796e",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "7ec11ba6cf99a715b9ea855c50adcf34a2acddfc4736fcaaea3508f6c4455ee7",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "8f10092ff7e4ed12d55a8c7b3dec26879cab874dc7ebb92e0d8070fa142fb566",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "ace9f38a793275a8e89139a65f72bc47608885422439c8143dcfd693069d8d0d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "70e379b6819e9f30131634f390c9400a5afe07a8b949ec0db5596cce61149312",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "aa2a38bc06ac281cbcf98a1415f702d76aaef4ab9cc67f39063f02a7c72d0d16",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-settings-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "6216280774fa8691c23e85763f9e13958676470f0f46197bf6a76fb4a4a45617",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "245c49be657ffe6d04c02055006fa54cda074c2cdc2b517cad787fd4f0bcdaf0",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "0aa4a0a8af91db10cad9cbb7e9da096705a1e30891da9bda2a6cd2d75c877ae8",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "f8091b3bd33f0716b2557fad478625544521ae980db0f0623f5602e42ebfc81f",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "9d97ae1535bf4ce31d74704fe4e99a1660f4fc3e9b05d51111138b7b16b4c89d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "ba04d6f59c8c89d6bd09577da57a982c84107b1166cbfb6d44ec71c013c24eff",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "e5f226740a002d0c5d09f9938efdc9cac2e1ac838ab29498f6c62ad27f2c5d44",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "9af25f15b4a5b75dea96efc83338e6dd7a40b00071e7a2ca65ffb248b4865413",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-premium-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "a978efce86a291f57332c9f6e4b83144de4b9cf730d3c32968b8be470d932423",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-1024.png",
+      "mime": "image/png",
+      "sha256": "86eb7a6759afdf988fd0d3e2fe12f1d480a37806d1a9826b6d0e280878a9fcc2",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-1440.png",
+      "mime": "image/png",
+      "sha256": "24704eec301c5bdafc4e3eb0952b7fec7b8a7ee2162033e6401ca6fb88f70e1d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-320.png",
+      "mime": "image/png",
+      "sha256": "83f784f851a6efe762dd53e35eb6e3a24eb7c899e8f8f0399054741b576f87a9",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-768.png",
+      "mime": "image/png",
+      "sha256": "fac67e067d5b9b5e3c5bcaaa50aaf29587e94be17c192269a883e92d82e2000f",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "893cbab722bbdd1b47d9c018bd052d3f21fab6b1630e0eea42152bcd4e7cef49",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "852f7eabd36b59576a41248422e2be7752a14537003bf6ec69315e1cf19479b2",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "f0f11d907f6fcc707dcf1ce42978f0bb9c097a21a70aece5cbade8dbd2499632",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "f4d17b7436c5d90d6d103df180d6b123dc5d78fb6a79797385be5b3640fdd6f4",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "056ee5fe69adc4d2a0fa99167287bb06cfc45bbccf907bb2f132016bac124b40",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "e657241cd583971c9d251899ee50122c0c2df1a2623a2e389d91896fb5c185dc",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "41b45456cfb49355cc7de2e7a53644e2ae009408cfe0b3526fd465cfa90cc849",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "fc536daecc6d2213b4d8bc27e7e03812ac9ec84762b79891dc6ad3f95f26f95d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-en-1024.png",
+      "mime": "image/png",
+      "sha256": "5dd1b528d1e01291d4d88b52b45e3b3e7dc582b9797ea3d410b15ef8acefaf71",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-en-1440.png",
+      "mime": "image/png",
+      "sha256": "5dbd0efac7e81d17b3fd4e619ffc7e5e5cea8910e56cc02f277a4079a480de39",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-en-320.png",
+      "mime": "image/png",
+      "sha256": "9f38170b029344c895715ad3ba89efcdb0b51addb73228b69258235ab3dcc43d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-en-768.png",
+      "mime": "image/png",
+      "sha256": "b67c506d05a48da58c6ff8ae74fd9359d911a178f99dddc51d060af2b3eaae0f",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "8144baf45d9329b055829b21da84bb45de845e2a89c621bbf21e94c6acd2db83",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "b5ccfb2d4ac4254e2b1a45d4de3f5bdedf462a7e4d61ea69c0ab03906d1e6c70",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "e6cd5e1729360557756c4c5d34a04c594662f4fd9054fe0cf48cdc5d218ea22d",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-CN-768.png",
+      "mime": "image/png",
+      "sha256": "5faaade5b726818d14e7beb4ea9504f26659325e010c9a19d79311cfdc500f1f",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-TW-1024.png",
+      "mime": "image/png",
+      "sha256": "acbd6d3c1a41f2a687037460bc3eeb9558ab41ebe1d930b3e8191df4f25562bb",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-TW-1440.png",
+      "mime": "image/png",
+      "sha256": "4c5615475080ca4d1302d276dcb598d656fa15ee7f6738beac58d5dad6ed3297",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "8aad9212375a929d0f1177d232274b9a94ce89ba14b0e9c053fb3fe454e98027",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-TW-768.png",
+      "mime": "image/png",
+      "sha256": "6e05f9d2e445edfb5d5c8f3c8de3738594c7e869dd32d2a23dc8aa21c081b691",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-contrast-more-home-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "81f33a3a9ce24992073d0501a6e4566b44eb47f65ca54533fa79029b68f18f2b",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-forced-colors-home-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "60e8683ef00bf713e8d2a7eaa01014a738e3fd394b2c770d4ed1ae2b4473ed4a",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-reduced-transparency-home-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "c4a092f108eb93c12fddfa1116ff600411026cd91b7d638717df8ab98fa3216c",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-setup-error-home-en-320.png",
+      "mime": "image/png",
+      "sha256": "bcc3ae354292392babd44a1538f7ac1dbdfed6a6fccefe83e5b7e5c8dc17090a",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-setup-error-home-zh-CN-320.png",
+      "mime": "image/png",
+      "sha256": "0de874375eb66ba6ed145189a96ca53d228a813f387f17cb8cfbd711e8e97a10",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-setup-error-home-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "37a0be1aaa763f767ac58336e62d5b5759140c6017ceb67b1f199a12277ddaf5",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-sync-conflict-settings-zh-CN-1024.png",
+      "mime": "image/png",
+      "sha256": "bee8b13ac0e660db80c181fa28ebae22e1cd52c5ca1e03db09bb247e9f035d09",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-sync-error-text-200-settings-en-640.png",
+      "mime": "image/png",
+      "sha256": "d154aac71a3b6f7e5815f1e5497565fa30683b28a4b60cfb160e9b5b525e2c78",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-sync-offline-settings-zh-TW-320.png",
+      "mime": "image/png",
+      "sha256": "0c4f8bb375f0d615e270bf2268fa4c814c0e54fdd0752ccf430f77f99a32d7a0",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-sync-quota-settings-en-768.png",
+      "mime": "image/png",
+      "sha256": "c1717fb99e080ed10bdcaf665de586329c9988ba51c07507b1e7af015be42874",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-sync-synced-settings-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "2a5956ff26d2426e82177c517defa562684d6169ea4f2a54e4e9d207905554ba",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-text-200-settings-en-640.png",
+      "mime": "image/png",
+      "sha256": "dfeb421d45a2566ea6ad2442a2586129c5427cd260b61d05f495a540a3a97c24",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate/states-theme-light-home-zh-CN-1440.png",
+      "mime": "image/png",
+      "sha256": "f73502b0ef58cda4efc87ff88c23d7cb83f76e713c794da9ab0cd262a6de427b",
+      "reason": "Exact Section 21 attempt 13 visual candidate screenshot; byte identity only."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t08-e2e-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "29e6af876752b12f485fbb42331af15b34fb71a559bcb1faf4e458500a5ebd29",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t09-danmaku-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "dc18c3428441038099eb82729cade78beaa73432f7bd60c56338cb301978c9c7",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t10-premium-contract-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "9692335a7d1e8e872f5de27cde8cf87e90b79640de23bfe00b8a10bdaac973d1",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t11-media-player-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "91587f739bddd04c10dfe77a5573b03e0a7bf5950a17a14881c53b2e454fab44",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t13-formal-node-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "f3dbf57ab4a2c91df6362494c4cc7928279d77b129722eda242f0bff009d8b6b",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t14-formal-node-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "803ea02fe60534beab163814951922a3677d153bfe31e6f2aaeb136f55a079cb",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t14-release-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "9de0a0ce1f79f20249be80e94b83fe890870bffa452447f373c62064e2b43d36",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t15-full-e2e-evidence-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "79db236617bf3f3a143f2ebfe5f6b66b11aceb6fdbcfe92d50771cb032990e2c",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t15-player-200-percent-reflow-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "326191508c5ff698bc3b5ef837cbe1cf4bc744f7597525349de7a66b3cfa82a2",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-19-t15-player-navbar-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "49ce71d5e0e75e10f42d57700e3af5838899c42e1a6c1601b97bf6680eded1fd",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-candidate-floating-sidebar-content-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "ffc3383f72ee863415d3c931f90606a22785675491ac81dbcc7b633418f0d587",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-classic-scrollbar-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "4364684549da4f42c80bfc5f1907b378bd55f4cfe7981f6d1f9ad23251b595ae",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-player-floating-control-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "87ebf41d8ab04e914a70bad72e043a0641d0bb58dff68a31a06fbeca321ee4b2",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-tag-geometry-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "81e34528aa4985351d285315c29cd4730f7be6912b2f5946cd8dd0dac564699d",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-visual-candidate-boundary.zip",
+      "mime": "application/zip",
+      "sha256": "c8463def54e1d262c7192bd53ced8038d033cd8ad0346073f3f46e85275ee003",
+      "reason": "Exact Section 21 replan archive; recursively scanned text members and exact byte identity."
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/t15-performance-trace.zip",
+      "mime": "application/zip",
+      "sha256": "94e84a3e81562d4c9ef0be3a2fe7f121ae45a43579c4c7c7e3f80e64aa704122",
+      "reason": "Sanitized successful Playwright performance trace; recursively scanned text members and exact byte identity."
+    }
+  ]
+}

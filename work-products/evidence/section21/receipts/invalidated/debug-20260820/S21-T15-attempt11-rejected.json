@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 11,
+  "state": "failed",
+  "startedAt": "2026-08-20T09:41:37.054Z",
+  "decidedAt": "2026-08-20T10:58:27.959Z",
+  "objective": "Repair review findings and form a new locally validated visual candidate.",
+  "automation": {
+    "status": "passed_historical_only",
+    "worker": "166/166",
+    "pagesNode": "163/163 plus Section 21 9/9",
+    "pagesE2e": "125/125",
+    "performance": "three samples passed",
+    "rollback": "bootstrap-v2, reverse-v1, forward-restore-v2 passed"
+  },
+  "visualDecision": {
+    "decision": "REJECTED",
+    "candidateLabel": "S21-T15 视觉候选 11",
+    "reason": "未达到已批准的 iOS 27 Liquid Glass 材质与光感；人工视觉审批不应要求用户处理哈希。",
+    "receipt": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt11-rejected.json",
+    "candidateEvidence": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-candidate-evidence-attempt11-rejected.json"
+  },
+  "machineIdentity": {
+    "candidateCombinedSha256": "2d6a8b0d5759087cbea0e940608566bbda49a6a0c012a8af0e463aa09d46bc15",
+    "releaseScopeSha256": "4956f6aead919e090f73098dc42304a67ac51c71ff2f353b6839430d544e8c1a",
+    "candidateEvidenceSha256": "8b34d9d39feb0bdcf63b2f367ef1063486459d687a1c287b11b2f1e8c594f9db"
+  },
+  "gate": {
+    "local": "HISTORICAL_AUTOMATION_GREEN",
+    "release": "HOLD",
+    "visualApproval": "REJECTED"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

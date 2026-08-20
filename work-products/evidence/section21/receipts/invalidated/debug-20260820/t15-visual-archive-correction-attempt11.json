@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 11,
+  "receiptKind": "historical_visual_archive_correction",
+  "recordedAt": "2026-08-20T12:26:36.793Z",
+  "targets": {
+    "approval": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt11-rejected.json",
+      "sha256": "7c610f8caad1e6adb4874ee881a0f3cd4db5cf6692e22992985f287dd15e1973"
+    },
+    "candidateEvidence": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-candidate-evidence-attempt11-rejected.json",
+      "sha256": "8b34d9d39feb0bdcf63b2f367ef1063486459d687a1c287b11b2f1e8c594f9db"
+    },
+    "visualReview": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-review-attempt11-rejected.md",
+      "sha256": "1bcc953ba52ba6de717f3f356853a5919cd8c26f91c78d7e731c880faca911d2"
+    },
+    "taskReceipt": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/S21-T15-attempt11-rejected.json",
+      "sha256": "362e99da50cb275310a1fba4820b017359a28ddd29d57d98522b2fcc949086c6"
+    }
+  },
+  "authoritativeDecision": {
+    "status": "REJECTED",
+    "sourcePath": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt11-rejected.json",
+    "sourceSha256": "7c610f8caad1e6adb4874ee881a0f3cd4db5cf6692e22992985f287dd15e1973"
+  },
+  "originalCandidate": {
+    "fileCount": 121,
+    "totalBytes": 19789409,
+    "combinedSha256": "2d6a8b0d5759087cbea0e940608566bbda49a6a0c012a8af0e463aa09d46bc15"
+  },
+  "previewDisposition": {
+    "status": "UNAVAILABLE",
+    "reason": "The shared Pages candidate directory was regenerated before attempt-isolated PNG copies were retained. The archived review links are broken, and the archived approval preview paths now identify later mutable bytes.",
+    "legacyPathsMustNotResolve": true,
+    "currentCandidateMustNotBeUsed": true,
+    "recoverablePaths": []
+  },
+  "reviewDisposition": {
+    "status": "REJECTION_RECORD_WITH_UNAVAILABLE_PREVIEWS",
+    "explanation": "The review remains a rejection record, but its three preview links are non-resolvable and must not be repaired to the current candidate directory."
+  },
+  "taskReceiptDisposition": {
+    "status": "CONSISTENT_REJECTION",
+    "explanation": "The archived task receipt records the user rejection and remains authoritative for the historical task state."
+  },
+  "presentation": {
+    "userPresented": true,
+    "decisionSource": "explicit user rejection"
+  },
+  "preservation": {
+    "archivedTargetsRewritten": false,
+    "decisionChanged": false
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

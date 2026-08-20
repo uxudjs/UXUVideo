@@ -2,7 +2,7 @@ param(
   [string[]] $Uris = @(
     'https://my-blog.y96hz26c5k.workers.dev/',
     'https://my-blog.y96hz26c5k.workers.dev/api/config',
-    'https://uxudjs.github.io/UXUV-Pages/release-manifest.json'
+    'https://uxudjs.github.io/UXUV-Pages/app/release-manifest.json'
   )
 )
 

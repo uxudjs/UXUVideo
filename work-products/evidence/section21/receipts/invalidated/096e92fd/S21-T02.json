@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T02",
+  "attempt": 1,
+  "state": "blocked",
+  "startedAt": "2026-08-18T16:48:26.5847380+08:00",
+  "blockedAt": "2026-08-18T16:49:34.3920964+08:00",
+  "planSha256": "096e92fd1b7e084f118dd6939216003ace104ee9a7ad76155595ab38bbd8a77b",
+  "repositories": {
+    "worker": { "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3" },
+    "pages": { "head": "9e084f486953850f8de3d23bcd63cc2b71336b64" }
+  },
+  "writeSet": [
+    "worker:_worker.js",
+    "worker:work-products/tests/pages-integrity.test.mjs",
+    "worker:work-products/tests/worker-route-contract.test.mjs",
+    "worker:work-products/tests/baseline-contract.test.mjs",
+    "worker:work-products/evidence/section21/receipts/S21-T02.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:_worker.js": "174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "worker:work-products/tests/pages-integrity.test.mjs": "6f0989697802c85d63a64940713af8e6f4609d0018268e0fbf4eab73cd6113d0",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "aa37c4b2242ec1a59fac3dc1db697bfa8b9c7f471f2b303cd802b3794bb975d9",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf",
+    "worker:work-products/evidence/section21/receipts/invalidated/8df83634/S21-T02.json": "0fa89bba60a46eb60d7a4ec9d3ff6cf22c6a17508c223346d985f32bf925b114",
+    "worker:work-products/evidence/section21/receipts/S21-T02.json": null,
+    "worker:work-products/todo.md": "1fb2affd1c782361b63eb3831c1c7e481db61c996d9513fdfcc15a45db91873f"
+  },
+  "afterSha256": {
+    "worker:_worker.js": "174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "worker:work-products/tests/pages-integrity.test.mjs": "6f0989697802c85d63a64940713af8e6f4609d0018268e0fbf4eab73cd6113d0",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "aa37c4b2242ec1a59fac3dc1db697bfa8b9c7f471f2b303cd802b3794bb975d9",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf"
+  },
+  "validation": {
+    "focusedRootContract": "1/1 GREEN; retired prefix is a local 404 with no upstream request",
+    "relatedContracts": "12/19 GREEN; 7 pages-integrity failures are caused by API 1 manifest fixtures running against the existing API 2 Worker candidate",
+    "historicalIdentity": "archived T02 receipt SHA-256 matches; repository HEAD records Worker 1.1.4 and API Contract 1",
+    "currentIdentity": "package version 2.0.0; Worker SHA-256 174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "taskOwnedProductChanges": "none",
+    "blocker": "T02 only permits test or Worker edits when root routing regresses. Root routing is green, so adapting v1 manifest fixtures to the already-applied T03 v2 slice would cross the task boundary; build auto stops on the failed required validation."
+  },
+  "authorization": { "commit": false, "push": false, "deploy": false }
+}

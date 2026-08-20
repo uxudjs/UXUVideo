@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "receiptKind": "pending_evidence_sanitization_correction",
+  "attempt": 14,
+  "correctedAt": "2026-08-20T14:58:50.112Z",
+  "invariant": {
+    "candidateCombinedSha256": "ecd34b9d3b650caa864039ceb899409358f7229782464e9fb8855a63bde8c9b3",
+    "releaseScopeSha256": "6d7994163aaeb016f9893b3e16ba68ab646f052732ab5845b5c5eac3f08ba9df",
+    "visualReviewSha256": "ddbf0f7f01f819bfe9b475632d2ac578a446834e659b2718f30e8f598f98c9d0",
+    "decision": "PENDING"
+  },
+  "archives": {
+    "priorCandidateEvidence": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-candidate-evidence-attempt14-pre-sanitization-correction.json",
+      "bytes": 8989,
+      "sha256": "2bf580b8283b6eee1b247f9e8c33cde944256e91f97a3d06545696cd28bb3a48"
+    },
+    "priorApproval": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt14-pre-sanitization-correction.json",
+      "bytes": 2065,
+      "sha256": "f500d413a4c82bf905beb671dd1927f9189d7b32d830d069c68ff1c31add3be7"
+    }
+  },
+  "correctedCandidateEvidence": {
+    "path": "work-products/evidence/section21/t15-candidate-evidence.json",
+    "bytes": 8992,
+    "sha256": "3399a2242f888186061136c689978d464dbef7880bb8597f38fb0b16004b1d13"
+  },
+  "sanitizedPlaywrightReport": {
+    "path": "work-products/evidence/section21/t15-e2e-attempt14.json",
+    "bytes": 26616,
+    "sha256": "843b502a2af8a1463d9745b1954c5a270c086d3aedba808bbf4bf86f4e6be9dc",
+    "discardedRaw": {
+      "bytes": 1571594,
+      "sha256": "fb2db29397f9d101c3f2e5b99ab2137e77afea4b3036c1de00f44b91c53e7698",
+      "disposition": "discarded after validation because the native report contained machine-absolute paths"
+    }
+  },
+  "validationReceipt": {
+    "path": "work-products/evidence/section21/t15-validation-attempt14.json",
+    "bytes": 3121,
+    "sha256": "5abdd85d152f6ab3ec53c79020770d40c161be84f404abffdf9088c95c7167e2"
+  },
+  "disposition": "Machine-absolute paths were removed from the retained Playwright report; candidate images, visual review, release scope, and PENDING decision are unchanged.",
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

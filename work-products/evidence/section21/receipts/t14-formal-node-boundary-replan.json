@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T22:26:04.9985711+08:00",
+  "reason": "T14 attempt 2 completed the approved documentation, fresh-release, import-preview, and paired rollback work, then formal Worker Node discovery exposed two direct ownership omissions: four active app-update artifact fixtures still identify the remote Worker as 1.1.4, and candidate hygiene requires exact MIME/SHA receipts for generated plan archives and visual candidates.",
+  "planSha256": "d678e925b42f34651513e1c649d1f4b46d3d5cf211231de06b76b5f7f745ad7e",
+  "predecessorPlanSha256": "9d4ef7667fcf3952347e4eed8500ecbc7cc3b6bc91d29974266bf56aa6cc7dd8",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t14-formal-node-boundary.zip",
+  "archiveSha256": "803ea02fe60534beab163814951922a3677d153bfe31e6f2aaeb136f55a079cb",
+  "archiveBytes": 30355,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10",
+    "S21-T11",
+    "S21-T12",
+    "S21-T13"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T14",
+      "attempt": 2,
+      "path": "plan-revisions/2026-08-19-t14-formal-node-boundary.zip::S21-T14.json",
+      "sha256": "edadba39b9d188fce85e956fec3eb95e7b2bcf964b8d1f5297227fc54e51ee9c",
+      "bytes": 11196
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T14",
+    "attempt": 2,
+    "receiptSha256": "edadba39b9d188fce85e956fec3eb95e7b2bcf964b8d1f5297227fc54e51ee9c",
+    "rule": "attempt3 before must equal archived attempt2 after for adopted paths",
+    "currentTreeRetained": true
+  },
+  "requiredOwnershipAdditions": [
+    "worker:work-products/tests/app-update-artifact.test.mjs",
+    "worker:work-products/evidence/section21/binary-allowlist.json"
+  ],
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

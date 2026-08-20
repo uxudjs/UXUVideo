@@ -1,0 +1,799 @@
+{
+  "schemaVersion": 1,
+  "reportKind": "playwright_sanitized_summary",
+  "sourceRaw": {
+    "bytes": 1571594,
+    "sha256": "fb2db29397f9d101c3f2e5b99ab2137e77afea4b3036c1de00f44b91c53e7698",
+    "disposition": "discarded after validation because the native report contained machine-absolute paths"
+  },
+  "stats": {
+    "startTime": "2026-08-20T14:46:08.937Z",
+    "duration": 325496.75899999996,
+    "expected": 125,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "file": "accessibility.e2e.spec.ts",
+      "title": "all seven static entries keep the AA, viewport, console, and same-origin network gates",
+      "status": "passed",
+      "durationMs": 11746
+    },
+    {
+      "file": "accessibility.e2e.spec.ts",
+      "title": "service worker replaces old static caches and bypasses API and media",
+      "status": "passed",
+      "durationMs": 687
+    },
+    {
+      "file": "accessibility.e2e.spec.ts",
+      "title": "Liquid Glass keeps theme tokens, reduced motion, forced-color focus, and 44px controls",
+      "status": "passed",
+      "durationMs": 1129
+    },
+    {
+      "file": "accessibility.e2e.spec.ts",
+      "title": "writes isolated Section 21 route candidates without replacing approved baselines",
+      "status": "passed",
+      "durationMs": 37085
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "auth: direct GitHub Pages shows guidance and makes no authentication request",
+      "status": "passed",
+      "durationMs": 406
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "auth: Worker origin supports login, account CRUD, permission state, and logout",
+      "status": "passed",
+      "durationMs": 2301
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "auth: ordinary users cannot request or render account management",
+      "status": "passed",
+      "durationMs": 460
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "auth: an expired account-management request invalidates the local session",
+      "status": "passed",
+      "durationMs": 489
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "auth: loading and expired-session states return safely to login",
+      "status": "passed",
+      "durationMs": 387
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "auth: configuration failure renders a retry state",
+      "status": "passed",
+      "durationMs": 384
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: local changes remain queued while storage is unavailable and recover explicitly",
+      "status": "passed",
+      "durationMs": 1007
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: a disconnected write stays local and the online event retries it",
+      "status": "passed",
+      "durationMs": 844
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: settings exposes the pending phase while a write is in flight",
+      "status": "passed",
+      "durationMs": 898
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: quota errors preserve local data and explain UTC reset, cleanup, and upgrade",
+      "status": "passed",
+      "durationMs": 860
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: a non-retryable server error remains visible without discarding local data",
+      "status": "passed",
+      "durationMs": 845
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "settings: a standalone video source is synced and becomes available to search",
+      "status": "passed",
+      "durationMs": 1281
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: two browser contexts explain a CAS conflict and converge without reviving stale state",
+      "status": "passed",
+      "durationMs": 2337
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: standard sources survive offline and quota failures, then converge without crossing premium data",
+      "status": "passed",
+      "durationMs": 2758
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: subscriptions retain tombstones and mode isolation across offline, quota, and CAS recovery",
+      "status": "passed",
+      "durationMs": 4430
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: standard and Premium favorites stay isolated through offline, quota, and CAS recovery",
+      "status": "passed",
+      "durationMs": 2335
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "sync: a stale offline progress write cannot revive remotely deleted history",
+      "status": "passed",
+      "durationMs": 2388
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "content: search streams results, navigates to detail, and persists favorites",
+      "status": "passed",
+      "durationMs": 947
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "content: search renders deterministic empty and error states",
+      "status": "passed",
+      "durationMs": 629
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "premium: server authorization unlocks content, favorites, and synced source settings",
+      "status": "passed",
+      "durationMs": 1089
+    },
+    {
+      "file": "app-flows.e2e.spec.ts",
+      "title": "premium: search cancellation, resolution probing, and expired authorization stay visible",
+      "status": "passed",
+      "durationMs": 639
+    },
+    {
+      "file": "app-update-control.e2e.spec.ts",
+      "title": "checks once across client navigation and copies only a freshly verified Worker",
+      "status": "passed",
+      "durationMs": 1452
+    },
+    {
+      "file": "app-update-control.e2e.spec.ts",
+      "title": "restores focus after the textarea clipboard fallback",
+      "status": "passed",
+      "durationMs": 579
+    },
+    {
+      "file": "app-update-control.e2e.spec.ts",
+      "title": "renders one non-overlapping entry on all seven routes and four breakpoints",
+      "status": "passed",
+      "durationMs": 2208
+    },
+    {
+      "file": "app-update-control.e2e.spec.ts",
+      "title": "does not mount or check for updates before authentication",
+      "status": "passed",
+      "durationMs": 362
+    },
+    {
+      "file": "kvideo-auth-parity.e2e.spec.ts",
+      "title": "matches the approved 1024px visual and layout contract",
+      "status": "passed",
+      "durationMs": 779
+    },
+    {
+      "file": "kvideo-auth-parity.e2e.spec.ts",
+      "title": "keeps four breakpoints keyboard accessible and axe-clean",
+      "status": "passed",
+      "durationMs": 1053
+    },
+    {
+      "file": "kvideo-auth-parity.e2e.spec.ts",
+      "title": "submits credentials only to the same-origin POST body and enters the app",
+      "status": "passed",
+      "durationMs": 505
+    },
+    {
+      "file": "kvideo-auth-parity.e2e.spec.ts",
+      "title": "announces invalid credentials and restores focus to the password",
+      "status": "passed",
+      "durationMs": 553
+    },
+    {
+      "file": "kvideo-auth-parity.e2e.spec.ts",
+      "title": "renders localized labels",
+      "status": "passed",
+      "durationMs": 516
+    },
+    {
+      "file": "kvideo-auth-parity.e2e.spec.ts",
+      "title": "renders localized labels",
+      "status": "passed",
+      "durationMs": 492
+    },
+    {
+      "file": "kvideo-auth-parity.e2e.spec.ts",
+      "title": "renders localized labels",
+      "status": "passed",
+      "durationMs": 462
+    },
+    {
+      "file": "kvideo-data-settings.e2e.spec.ts",
+      "title": "exports safe bytes and imports only after a complete transactional preview",
+      "status": "passed",
+      "durationMs": 1787
+    },
+    {
+      "file": "kvideo-data-settings.e2e.spec.ts",
+      "title": "renders three update outcomes and keeps dialogs operable at TV and mobile widths",
+      "status": "passed",
+      "durationMs": 1258
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "drives controls, virtual time, shortcuts, deterministic hiding, and reduced motion",
+      "status": "passed",
+      "durationMs": 1141
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "drives touch, fullscreen, standard PiP, Cast, responsive captures, and TV arrow isolation",
+      "status": "passed",
+      "durationMs": 1363
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "keeps unavailable PiP and Cast controls visible with reasons",
+      "status": "passed",
+      "durationMs": 458
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "uses the Android bridge when standard PiP is unavailable",
+      "status": "passed",
+      "durationMs": 503
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "resumes and throttles history, reports stalls and resolution, then switches failed sources once by latency",
+      "status": "passed",
+      "durationMs": 1449
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "none mode uses its selected primary media route",
+      "status": "passed",
+      "durationMs": 420
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "always mode uses its selected primary media route",
+      "status": "passed",
+      "durationMs": 427
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "uses the selected user API and renders bounded scrolling, top, and bottom tracks across playback changes",
+      "status": "passed",
+      "durationMs": 1004
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "empty danmaku remains non-blocking",
+      "status": "passed",
+      "durationMs": 475
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "error danmaku remains non-blocking",
+      "status": "passed",
+      "durationMs": 501
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "skips bounded intro and advances once at outro or ended without crossing the final episode",
+      "status": "passed",
+      "durationMs": 714
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "finishes the current episode when automatic next is disabled",
+      "status": "passed",
+      "durationMs": 519
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "switches all four ad modes live and keeps bounded options on the same-origin media route",
+      "status": "passed",
+      "durationMs": 534
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "keeps the disabled entry explanatory, localized, and TV-keyboard operable without loading a script",
+      "status": "passed",
+      "durationMs": 1117
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "creates, joins, configures, rejects failures, and keeps room state out of storage and requests",
+      "status": "passed",
+      "durationMs": 637
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "reports a locally intercepted script-load failure without exposing room controls",
+      "status": "passed",
+      "durationMs": 416
+    },
+    {
+      "file": "kvideo-desktop-player.e2e.spec.ts",
+      "title": "adapts the official asynchronous videoTogetherExtension API",
+      "status": "passed",
+      "durationMs": 658
+    },
+    {
+      "file": "kvideo-entry-states.e2e.spec.ts",
+      "title": "direct Pages zh-CN remains public-only and responsive",
+      "status": "passed",
+      "durationMs": 428
+    },
+    {
+      "file": "kvideo-entry-states.e2e.spec.ts",
+      "title": "direct Pages zh-TW remains public-only and responsive",
+      "status": "passed",
+      "durationMs": 389
+    },
+    {
+      "file": "kvideo-entry-states.e2e.spec.ts",
+      "title": "direct Pages en-US remains public-only and responsive",
+      "status": "passed",
+      "durationMs": 497
+    },
+    {
+      "file": "kvideo-entry-states.e2e.spec.ts",
+      "title": "missing runtime setup retries into the focused login flow",
+      "status": "passed",
+      "durationMs": 1023
+    },
+    {
+      "file": "kvideo-entry-states.e2e.spec.ts",
+      "title": "an expired server session returns to login with an announced reason",
+      "status": "passed",
+      "durationMs": 396
+    },
+    {
+      "file": "kvideo-entry-states.e2e.spec.ts",
+      "title": "account permission fallback is localized and never requests account data",
+      "status": "passed",
+      "durationMs": 1294
+    },
+    {
+      "file": "kvideo-favorites.e2e.spec.ts",
+      "title": "switches grid/list, removes items, opens the keyboard sidebar, and stays responsive",
+      "status": "passed",
+      "durationMs": 1784
+    },
+    {
+      "file": "kvideo-favorites.e2e.spec.ts",
+      "title": "isolates the same video id across standard, premium, and another account",
+      "status": "passed",
+      "durationMs": 1022
+    },
+    {
+      "file": "kvideo-favorites.e2e.spec.ts",
+      "title": "shows the fixed 100-item capacity boundary",
+      "status": "passed",
+      "durationMs": 374
+    },
+    {
+      "file": "kvideo-global-shell.e2e.spec.ts",
+      "title": "keeps the reviewed nav geometry and operates theme, settings, locale, and session actions",
+      "status": "passed",
+      "durationMs": 1796
+    },
+    {
+      "file": "kvideo-global-shell.e2e.spec.ts",
+      "title": "restores scroll and exposes a keyboard-operable back-to-top action",
+      "status": "passed",
+      "durationMs": 2146
+    },
+    {
+      "file": "kvideo-global-shell.e2e.spec.ts",
+      "title": "uses arrow keys for spatial card focus without trapping text cursor keys",
+      "status": "passed",
+      "durationMs": 467
+    },
+    {
+      "file": "kvideo-history.e2e.spec.ts",
+      "title": "continues, confirms removal and clear, localizes, and stays responsive",
+      "status": "passed",
+      "durationMs": 1872
+    },
+    {
+      "file": "kvideo-history.e2e.spec.ts",
+      "title": "isolates the same video across standard, premium, and another account",
+      "status": "passed",
+      "durationMs": 1093
+    },
+    {
+      "file": "kvideo-history.e2e.spec.ts",
+      "title": "shows only the newest 50 records without deleting overflow",
+      "status": "passed",
+      "durationMs": 374
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "uses the same-origin feed and keeps the approved grid usable at four breakpoints",
+      "status": "passed",
+      "durationMs": 1083
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "keeps empty, failure, and retry states deterministic",
+      "status": "passed",
+      "durationMs": 806
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "keeps unrelated search results visible instead of opening the wrong home movie",
+      "status": "passed",
+      "durationMs": 486
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "shows a source error instead of an empty result when every search source fails",
+      "status": "passed",
+      "durationMs": 627
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "opens a decorated title returned for the selected home movie",
+      "status": "passed",
+      "durationMs": 553
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "switches movie, TV, and server-provided Douban categories inside the reviewed home shell",
+      "status": "passed",
+      "durationMs": 743
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "preserves original queries while history, conversion, keyboard, and account isolation stay deterministic",
+      "status": "passed",
+      "durationMs": 1501
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "renders localized controls",
+      "status": "passed",
+      "durationMs": 509
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "renders localized controls",
+      "status": "passed",
+      "durationMs": 524
+    },
+    {
+      "file": "kvideo-home-search-parity.e2e.spec.ts",
+      "title": "renders localized controls",
+      "status": "passed",
+      "durationMs": 475
+    },
+    {
+      "file": "kvideo-player-settings.e2e.spec.ts",
+      "title": "persists visible settings, rejects credential URLs, and updates the live player snapshot",
+      "status": "passed",
+      "durationMs": 4346
+    },
+    {
+      "file": "kvideo-player-settings.e2e.spec.ts",
+      "title": "migrates a legacy snapshot once and keeps defaults isolated for a restricted second account",
+      "status": "passed",
+      "durationMs": 1674
+    },
+    {
+      "file": "kvideo-player-settings.e2e.spec.ts",
+      "title": "edits an isolated per-video rule without resetting playback and restores focus",
+      "status": "passed",
+      "durationMs": 3059
+    },
+    {
+      "file": "kvideo-player-shell.e2e.spec.ts",
+      "title": "switches grouped sources and 51 episodes while keeping cinema navigation and content aligned",
+      "status": "passed",
+      "durationMs": 2702
+    },
+    {
+      "file": "kvideo-player-shell.e2e.spec.ts",
+      "title": "migrates legacy grouped URLs and preserves empty, missing, and history episode states",
+      "status": "passed",
+      "durationMs": 851
+    },
+    {
+      "file": "kvideo-player-shell.e2e.spec.ts",
+      "title": "captures the final API 2 ready-player candidates in all languages and breakpoints",
+      "status": "passed",
+      "durationMs": 9348
+    },
+    {
+      "file": "kvideo-premium-home.e2e.spec.ts",
+      "title": "isolates sources and history, pages interleaved content, searches, restores authorization, and keeps TV focus",
+      "status": "passed",
+      "durationMs": 1333
+    },
+    {
+      "file": "kvideo-premium-home.e2e.spec.ts",
+      "title": "localizes loading-safe Premium home controls in all three languages",
+      "status": "passed",
+      "durationMs": 1488
+    },
+    {
+      "file": "kvideo-premium-library.e2e.spec.ts",
+      "title": "isolates Premium records, preserves standard records, and traps keyboard and TV focus",
+      "status": "passed",
+      "durationMs": 2239
+    },
+    {
+      "file": "kvideo-premium-library.e2e.spec.ts",
+      "title": "clears the in-memory view on account switch and restores each account's own data",
+      "status": "passed",
+      "durationMs": 657
+    },
+    {
+      "file": "kvideo-premium-library.e2e.spec.ts",
+      "title": "localizes the Premium library and both sidebar controls in all three languages",
+      "status": "passed",
+      "durationMs": 1345
+    },
+    {
+      "file": "kvideo-premium-settings.e2e.spec.ts",
+      "title": "fails closed on server authorization and isolates Premium source and player changes",
+      "status": "passed",
+      "durationMs": 3313
+    },
+    {
+      "file": "kvideo-premium-settings.e2e.spec.ts",
+      "title": "round-trips both modes and preserves Premium data when importing a v1 standard backup",
+      "status": "passed",
+      "durationMs": 2147
+    },
+    {
+      "file": "kvideo-pwa.e2e.spec.ts",
+      "title": "is browser-installable and preserves the approved shell in standalone mode",
+      "status": "passed",
+      "durationMs": 2895
+    },
+    {
+      "file": "kvideo-pwa.e2e.spec.ts",
+      "title": "upgrades static caches, excludes protected requests, and refreshes from the offline shell",
+      "status": "passed",
+      "durationMs": 786
+    },
+    {
+      "file": "kvideo-search-results.e2e.spec.ts",
+      "title": "renders stable incremental cards and fixed source, type, and language metadata",
+      "status": "passed",
+      "durationMs": 944
+    },
+    {
+      "file": "kvideo-search-results.e2e.spec.ts",
+      "title": "groups trimmed case-insensitive titles and keeps the mode account-scoped",
+      "status": "passed",
+      "durationMs": 841
+    },
+    {
+      "file": "kvideo-search-results.e2e.spec.ts",
+      "title": "filters, stably sorts, pings, blocks categories, and probes without dropping failures",
+      "status": "passed",
+      "durationMs": 1856
+    },
+    {
+      "file": "kvideo-search-results.e2e.spec.ts",
+      "title": "keeps the collapsed toolbar and capability hint usable across locales and breakpoints",
+      "status": "passed",
+      "durationMs": 8980
+    },
+    {
+      "file": "kvideo-settings-preferences.e2e.spec.ts",
+      "title": "applies reviewed defaults, persists live settings, and isolates another account",
+      "status": "passed",
+      "durationMs": 2658
+    },
+    {
+      "file": "kvideo-settings-preferences.e2e.spec.ts",
+      "title": "migrates legacy global theme and locale once without leaking them to a second account",
+      "status": "passed",
+      "durationMs": 670
+    },
+    {
+      "file": "kvideo-settings-preferences.e2e.spec.ts",
+      "title": "keeps the S21-T10 settings structure stable in three languages and four viewports",
+      "status": "passed",
+      "durationMs": 1166
+    },
+    {
+      "file": "kvideo-settings-sources.e2e.spec.ts",
+      "title": "adds, edits, toggles, orders, confirms deletion, localizes, and stays responsive",
+      "status": "passed",
+      "durationMs": 2008
+    },
+    {
+      "file": "kvideo-settings-sources.e2e.spec.ts",
+      "title": "keeps another account's source document isolated",
+      "status": "passed",
+      "durationMs": 394
+    },
+    {
+      "file": "kvideo-source-import.e2e.spec.ts",
+      "title": "previews four import paths, rejects unsafe input, manages subscriptions, and restores TV focus",
+      "status": "passed",
+      "durationMs": 3586
+    },
+    {
+      "file": "kvideo-tag-management.e2e.spec.ts",
+      "title": "adds, deletes, restores, keyboard-sorts, and isolates persisted tags",
+      "status": "passed",
+      "durationMs": 2047
+    },
+    {
+      "file": "kvideo-tag-management.e2e.spec.ts",
+      "title": "appends unique popular titles and stops at a short page",
+      "status": "passed",
+      "durationMs": 653
+    },
+    {
+      "file": "kvideo-tag-management.e2e.spec.ts",
+      "title": "does not append a cancelled stale page after switching content type",
+      "status": "passed",
+      "durationMs": 656
+    },
+    {
+      "file": "media-flows.e2e.spec.ts",
+      "title": "player loads detail, falls back from the Worker media route, and switches episodes",
+      "status": "passed",
+      "durationMs": 648
+    },
+    {
+      "file": "media-flows.e2e.spec.ts",
+      "title": "smart retry rebuilds HLS on the direct URL after the Worker media route fails",
+      "status": "passed",
+      "durationMs": 669
+    },
+    {
+      "file": "section21-flows.e2e.spec.ts",
+      "title": "S21-T05 focus performs no document pull",
+      "status": "passed",
+      "durationMs": 524
+    },
+    {
+      "file": "section21-flows.e2e.spec.ts",
+      "title": "S21-T05 brand activation navigates to the logical root",
+      "status": "passed",
+      "durationMs": 1302
+    },
+    {
+      "file": "section21-flows.e2e.spec.ts",
+      "title": "S21-T05 brand activation clears transient search results",
+      "status": "passed",
+      "durationMs": 570
+    },
+    {
+      "file": "section21-flows.e2e.spec.ts",
+      "title": "S21-T07 keeps anime and TV results apart",
+      "status": "passed",
+      "durationMs": 510
+    },
+    {
+      "file": "section21-flows.e2e.spec.ts",
+      "title": "S21-T07 exposes a compact collapsed toolbar",
+      "status": "passed",
+      "durationMs": 570
+    },
+    {
+      "file": "section21-flows.e2e.spec.ts",
+      "title": "S21-T07 keeps probe and favorite actions 44px apart without overlap",
+      "status": "passed",
+      "durationMs": 557
+    },
+    {
+      "file": "section21-performance.e2e.spec.ts",
+      "title": "S21-T06 preserves the fixed 120-card scroll and 30-second muted-video budget",
+      "status": "passed",
+      "durationMs": 96618
+    },
+    {
+      "file": "section21-visual.e2e.spec.ts",
+      "title": "S21-T06 Liquid Glass tokens and accessibility fallbacks are active at all four widths",
+      "status": "passed",
+      "durationMs": 535
+    },
+    {
+      "file": "section21-visual.e2e.spec.ts",
+      "title": "S21-T15 captures visible settings sync states without covering navigation or titles",
+      "status": "passed",
+      "durationMs": 5283
+    },
+    {
+      "file": "section21-visual.e2e.spec.ts",
+      "title": "S21-T15 writes the eight final theme, contrast, zoom, and setup-error candidates",
+      "status": "passed",
+      "durationMs": 3810
+    },
+    {
+      "file": "usage-ui.e2e.spec.ts",
+      "title": "super_admin sees the ordered four-metric usage card and non-dismissible global warning",
+      "status": "passed",
+      "durationMs": 1760
+    },
+    {
+      "file": "usage-ui.e2e.spec.ts",
+      "title": "usage card exposes stale, unconfigured, and failure states without exposing credentials",
+      "status": "passed",
+      "durationMs": 538
+    },
+    {
+      "file": "usage-ui.e2e.spec.ts",
+      "title": "usage warning levels preserve the 70, 85, 95, and 100 percent boundaries",
+      "status": "passed",
+      "durationMs": 706
+    },
+    {
+      "file": "usage-ui.e2e.spec.ts",
+      "title": "ordinary users never request or render precise usage",
+      "status": "passed",
+      "durationMs": 417
+    },
+    {
+      "file": "usage-ui.e2e.spec.ts",
+      "title": "direct Pages entry never requests the usage API",
+      "status": "passed",
+      "durationMs": 202
+    }
+  ],
+  "performance": {
+    "output": "S21-T06 performance {\"samples\":[{\"p95RafIntervalMs\":8.5,\"longTaskTotalMs\":0,\"droppedFrames\":0,\"totalFrames\":900},{\"p95RafIntervalMs\":8.5,\"longTaskTotalMs\":0,\"droppedFrames\":0,\"totalFrames\":899},{\"p95RafIntervalMs\":8.5,\"longTaskTotalMs\":0,\"droppedFrames\":0,\"totalFrames\":899}],\"median\":{\"p95RafIntervalMs\":8.5,\"longTaskTotalMs\":0,\"droppedFrames\":0}}\n",
+    "metrics": {
+      "samples": [
+        {
+          "p95RafIntervalMs": 8.5,
+          "longTaskTotalMs": 0,
+          "droppedFrames": 0,
+          "totalFrames": 900
+        },
+        {
+          "p95RafIntervalMs": 8.5,
+          "longTaskTotalMs": 0,
+          "droppedFrames": 0,
+          "totalFrames": 899
+        },
+        {
+          "p95RafIntervalMs": 8.5,
+          "longTaskTotalMs": 0,
+          "droppedFrames": 0,
+          "totalFrames": 899
+        }
+      ],
+      "median": {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0
+      }
+    }
+  }
+}

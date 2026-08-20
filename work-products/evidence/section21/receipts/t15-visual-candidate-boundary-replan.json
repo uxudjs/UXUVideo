@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-20T00:58:00.0000000+08:00",
+  "reason": "T15 attempt 6 reached the formal automated gate, but final visual inspection rejected the candidate for a home floating-control/tag overlap, an English player internal containment defect, and a player screenshot scroll-restoration race; final product CSS also requires fresh performance and rollback identities.",
+  "planSha256": "01815674befb8c7836b4d04fdb3a00df6f20d102b54287f55703a7ff315e5074",
+  "predecessorPlanSha256": "8837b71153dc156ed5ba9260b6f7641ea00e54c1ff2537badd21482fffe4253d",
+  "standingApproval": {
+    "active": true,
+    "source": "user: 批准所有计划，不再设置sha",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-visual-candidate-boundary.zip",
+  "archiveSha256": "c8463def54e1d262c7192bd53ced8038d033cd8ad0346073f3f46e85275ee003",
+  "archiveBytes": 34968,
+  "preservesCompletedTasks": [
+    "S21-T01", "S21-T02", "S21-T03", "S21-T04", "S21-T05", "S21-T06", "S21-T07", "S21-T08", "S21-T09", "S21-T10", "S21-T11", "S21-T12", "S21-T13", "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 6,
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-visual-candidate-boundary.zip::S21-T15.json",
+      "sha256": "60f26bc2698842b69de759953588e6a5cd1c9e2675e9717d4d5f4d4a56ab6611",
+      "bytes": 11962
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 6,
+    "receiptSha256": "60f26bc2698842b69de759953588e6a5cd1c9e2675e9717d4d5f4d4a56ab6611",
+    "candidateCount": 116,
+    "candidateBytes": 15990531,
+    "candidateCombinedSha256": "416a30c5b06dd90593322345b6de34563b45ced261024f68669c8d68d458067d",
+    "candidateDisposition": "rejected by final visual inspection; identity retained only as failed evidence",
+    "performanceTraceSha256": "86c55fec6dc35034eb946b4f34d3eefd512d678347f275cf58d6406ae90c2ebf",
+    "performanceTraceDisposition": "pre-attempt7 product CSS; must be replaced by a fresh successful trace",
+    "currentTreeRetained": true,
+    "rule": "attempt7 before must equal archived attempt6 after for adopted non-control-plane paths"
+  },
+  "observedVisualBlockers": {
+    "homeHistoryTagLane": {
+      "viewport": { "width": 320, "height": 900 },
+      "historyToggle": { "left": 248, "right": 298, "top": 422, "bottom": 472 },
+      "tagListViewport": { "left": 18, "right": 304, "top": 385, "bottom": 440 },
+      "thirdVisibleTag": { "left": 256, "right": 304, "top": 388, "bottom": 428 },
+      "intersectionAreaPx2": 252,
+      "classification": "real product interaction overlap"
+    },
+    "englishPlayerPanel": {
+      "affectedWidths": [320, 1024],
+      "classification": "real product internal horizontal containment defect",
+      "rootCause": "implicit auto grid track plus non-wrapping heading controls exceeds the episode panel content width and is clipped by its internal scrollport"
+    },
+    "playerCandidateScroll": {
+      "affectedCandidate": "routes-player-ready-zh-TW-320.png",
+      "observedTopOffsetPx": 224,
+      "classification": "test producer race; not a product layout defect",
+      "rootCause": "full-page capture persists same-URL scroll state that ScrollPositionManager restores after the producer's two-frame settle"
+    }
+  },
+  "requiredOwnershipAdditions": [],
+  "scopeClarification": {
+    "existingOwnedPaths": [
+      "pages:app/globals.css",
+      "pages:work-products/tests/section21-visual.e2e.spec.ts",
+      "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts"
+    ],
+    "allowed": [
+      "sixth CSS remediation: 320px home tag lane ends 64px early with a 4px column gap so the history toggle has an 8px safe gap",
+      "seventh CSS remediation: episode panel uses minmax(0,1fr) and headings wrap/right-align controls without reducing 44px targets",
+      "test-only player candidate normalization: clear only scroll-pos session fixture keys for the candidate URL and assert scrollX=scrollY=0"
+    ],
+    "forbidden": [
+      "moving, hiding, clipping, or disabling either floating button",
+      "overflow hidden or clip as a substitute for containment",
+      "changing floating-position hooks, drag storage, component markup, or product scroll restoration",
+      "weakening the existing tag, player, accessibility, or full-E2E assertions"
+    ]
+  },
+  "evidenceRefresh": {
+    "freshPerformanceRequired": true,
+    "freshRollbackRequired": true,
+    "paths": [
+      "worker:work-products/evidence/section21/t15-performance-trace.zip",
+      "worker:work-products/evidence/section21/pair-rollback.json",
+      "worker:work-products/evidence/section21/worker-v1.reverse.patch",
+      "worker:work-products/evidence/section21/pages-v1.reverse.patch",
+      "worker:work-products/evidence/section21/worker-v2.forward.patch",
+      "worker:work-products/evidence/section21/pages-v2.forward.patch"
+    ]
+  },
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

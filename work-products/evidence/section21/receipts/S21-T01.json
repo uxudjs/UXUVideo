@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T01",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-19T12:45:32.3304311+08:00",
+  "completedAt": "2026-08-19T12:48:14.7920548+08:00",
+  "planSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "2807789829cc7452322a237b6048b2ab1dcb332fa0012db851c6acfa8c2eb067"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "c0244f8fd7b49f5ea432e3379a18c176644b09aae4211b3989d1ddded968b51c"
+    }
+  },
+  "writeSet": [
+    "worker:work-products/tests/section21-worker-contract.test.mjs",
+    "worker:work-products/tests/section21-plan-contract.test.mjs",
+    "worker:work-products/tests/candidate-hygiene.test.mjs",
+    "worker:work-products/tests/section21-inventory.mjs",
+    "worker:work-products/tests/section21-inventory-generator.mjs",
+    "worker:work-products/evidence/section21/red-matrix.md",
+    "worker:work-products/evidence/section21/receipts/",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "e1a37aa2f22e1e247014f95eda148d9642f57ec0fb42795ec3a0a9823b3aac6b",
+    "worker:work-products/tests/section21-plan-contract.test.mjs": "ba29a55b22c7cc7e315e6175b11479a0226a37d29b5e83183e1b3f9247976f6c",
+    "worker:work-products/tests/candidate-hygiene.test.mjs": "9d3fc1d70418ec290bfe58f5105798d4f7b5870c842a5867871ad6ed59dfd342",
+    "worker:work-products/tests/section21-inventory.mjs": "2a88b52120e0566441b08cf8f57f90cc9aded835b49e44aafd1e4a9baa94577e",
+    "worker:work-products/tests/section21-inventory-generator.mjs": "9f2337972f584982868ebe85b4bacea4043e63a5b9cdedde85a3426ea511bd07",
+    "worker:work-products/evidence/section21/red-matrix.md": "c13192ec0ef6f5589784ef2683a95a289ad83630aee6822b815f862c4902abcb",
+    "worker:work-products/evidence/section21/receipts/S21-T01.json": "982539e8e53ff77ee51d88d73296a641764a5c9f9ad09c5607a008faf0df7359",
+    "worker:work-products/evidence/section21/receipts/S21-T02.json": "a84433bdb2d9fe79d44eabc6b82209f985c97b1674b5b421769e654932567071",
+    "worker:work-products/evidence/section21/receipts/contract-revision-invalidation.json": null,
+    "worker:work-products/evidence/section21/receipts/invalidated/096e92fd/": null,
+    "worker:work-products/todo.md": "3fe717be30f29bd551faf7241f9278ba7c10e105c5d2ee960209d80f928d1ee8"
+  },
+  "readOnlySha256": {
+    "worker:work-products/evidence/section21/root-prefix-inventory.txt": "d0b69bd64534c23c1238de550cc4e355a3b7a5cc0bd889bdec817e8b02c127ca",
+    "worker:work-products/evidence/section21/iptv-default-source-inventory.txt": "addb7fe723a0b6f640cb1fd56692b15313c291c11e5873a079134fc854cdb433",
+    "worker:work-products/tests/section21-security-baseline.test.mjs": "999b0077c26c0bedd6c6616265fe6cfc4866be2247366c32e36bb95eaa00865d",
+    "worker:work-products/evidence/section21/performance-baseline.json": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+    "worker:work-products/evidence/section21/binary-allowlist.json": "b6429e7d08029a34589e9c8956ef86dffab2fb6dd9ee37c08d5e9204e14cdbe6"
+  },
+  "afterSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "e1a37aa2f22e1e247014f95eda148d9642f57ec0fb42795ec3a0a9823b3aac6b",
+    "worker:work-products/tests/section21-plan-contract.test.mjs": "6d28dac92a72ee40cf5f99c171fb9186420a2a67b07b717c5a20d8195be83001",
+    "worker:work-products/tests/candidate-hygiene.test.mjs": "9d3fc1d70418ec290bfe58f5105798d4f7b5870c842a5867871ad6ed59dfd342",
+    "worker:work-products/tests/section21-inventory.mjs": "2a88b52120e0566441b08cf8f57f90cc9aded835b49e44aafd1e4a9baa94577e",
+    "worker:work-products/tests/section21-inventory-generator.mjs": "9f2337972f584982868ebe85b4bacea4043e63a5b9cdedde85a3426ea511bd07",
+    "worker:work-products/evidence/section21/red-matrix.md": "a85dc0130bffd923743a042bd86450db52ef36a5c6938c1583f564af2a49e331",
+    "worker:work-products/evidence/section21/receipts/contract-revision-invalidation.json": "95205e1a7422fc32ff3cb73c4d54398ca7cffa9f9d1c4a5ad8d32770b5d8d7bb"
+  },
+  "validation": {
+    "red": "section21-plan-contract reproduced exactly one failure because the historical replacement invalidation was still treated as current-plan evidence",
+    "planContract": "10/10 GREEN after separating historical replacement and current contract-revision ownership",
+    "workerContract": "S21-T02 1/1 GREEN; S21-T03 5/5 GREEN with no mutually exclusive version guard",
+    "securityAndHygiene": "5/5 GREEN",
+    "pagesAggregate": "1/9 GREEN with 8 independently attributable planned RED tasks; no discovery or fixture failure",
+    "playwrightDiscovery": "8 tests discovered across section21 flows, visual, and performance files",
+    "archive": "2/2 prior active receipts match recorded SHA-256 and byte counts in invalidated/096e92fd",
+    "readOnlyEvidence": "both inventories, security baseline, performance baseline, and binary allowlist retained their frozen SHA-256",
+    "productBoundary": "Worker product hashes and Pages tracked patch SHA-256 remained unchanged",
+    "diffCheck": "task write set GREEN"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

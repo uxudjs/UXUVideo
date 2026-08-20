@@ -1,1295 +1,414 @@
-# 实施计划：KVideo 4.9.19 完整复刻与定向 UI/更新增补
+# 实施计划：SPEC 第 21 节根路由、来源所有权与 Liquid Glass 修订（四次规划）
 
-状态：**T54-T68、CP9-local 与 CP10-remote 均已完成；Worker 1.1.0、Pages 0.2.0 与生产 Edge 登录态复验已闭合；最终发布门 GO**
+状态：**APPROVED / STANDING APPROVAL ACTIVE**
+规划日期：2026-08-18
+规划模式：`fast = false`；本次请求未以精确小写首参数 `fast` 启用快速规划
+目标候选：Worker `2.0.0` / API Contract `2`；UXUV-Pages `0.3.0` / manifest `apiContract: 2`
+授权边界：用户于 2026-08-19 明确批准当前及后续计划修订，并取消逐次提交 SHA 的人工审批门。计划与 todo 仍可使用自动计算的 SHA-256 做内部漂移检测，但不得再要求用户提供或确认 SHA。该持续批准不授权 commit、push、GitHub Pages 发布、Cloudflare 部署、Secret/D1 变更或生产验证；本次仅延续既有 `@uxu-code:build auto` 的本地串行实现授权。
 
 ## 1. 计划依据与充分性
 
-- 规格：`work-products/SPEC.md`，用户在收到 2026-08-08 修订后直接调用 `@uxu-code:plan`，已授权进入规划。
-- 权威基准：UXUVideo Git commit `28334f41407082ae1028fa4a4180bcc46d31c52a`，其 `package.json` 版本为 KVideo `4.9.19`。
-- 当前 Worker：UXUVideo `main` HEAD `e7e397e520f90433f98eb1f929fc5d135bacfec0`，单文件 `_worker.js` 已实现 Worker/D1/登录安全架构；本轮不重做该架构。
-- 规划起点前端：UXUV-Pages `main` HEAD `4bc847affa76755a5c99ce249d793aa43e0b83bb`，版本 `0.1.2`，工作树在规划检查时干净；虽有 8 个静态入口，但只保留简化界面与部分流程。
-- 差距证据：固定 KVideo 提交包含完整设计样式、导航、主题、搜索、来源/订阅、收藏/历史、自定义播放器、弹幕、广告过滤、IPTV、Premium、设置、PWA、TV 和三语界面；当前 UXUV-Pages 只有少量通用体验组件和原生化播放器，不能据此声明完成复刻。
-- 2026-08-11 Pages 发布修订依据：用户明确要求删除 `_worker.js` 的 `PAGES_GIT_COMMIT`、manifest/资产 SHA 固定和 Pages 对接密钥，只使用 `pagesVersion`、`apiContract`、`workerRange` 判断兼容；兼容 Pages 小步更新不得要求用户重发 Worker。现有 `_worker.js` 仍精确固定 `0.2.0`/commit/manifest SHA，UXUV-Pages 发布脚本仍生成 `gitCommit`/`sha256`/`sri` 并写版本目录，均是本轮待迁移对象。
-- 参考边界：`../CfGfwAX/_worker.js` 只固定公共 Pages 根地址并直接读取页面，不含 Pages 版本、commit、manifest SHA、资源 SHA 或对接密钥。本计划保留 UXUVideo 已有 manifest 的路由/MIME/大小/兼容校验，但移除会强制 Worker 随 Pages 小改而更新的身份固定。
-- 2026-08-11 定向 UI/更新增补依据：用户直接调用 `@uxu-code:plan`，按 SPEC 20.11 批准第 20 节及 20.3 五项解释进入规划。规划快照为 UXUVideo `a20d9f2a521f1eb7e67ff4765d565bbe7c0eb18b`、UXUV-Pages `612825add6dd4e146e58a9ab5762f011ec48db08`，两仓工作树均干净；当前前端为 Next `16.3.0`。
-- 现状证据：`ContentNavigation` 仍渲染 GitHub、收藏、独立设置、语言和“首字符 + 全名”；`AppVersionSettings` 仍在普通/Premium 设置页挂载；`PasswordGate` 的认证后 `application-shell` 是八路由共享挂载点；`DisplaySettings` 的语言项仍含 hint/`small`；Worker `handleAppUpdate` 只返回元数据且 `handleLowFanoutRoute` 未传入 request。
-- 规划充分性：规格已固定功能矩阵、安全边界、兼容字段、失败关闭、一次性迁移顺序、定向 UI 范围、复制源码合同和回滚条件。当前增补不改变 API Contract、D1 schema、认证模型、媒体合同或当前权威测试列出的 23 个 API 路径；若实现发现必须新增 Secret、`.ico`、依赖、业务路由、认证/D1 变更或放宽路径/MIME/大小边界，立即停止并回到 `@uxu-code:spec`。
+- 权威规格为 `work-products/SPEC.md` 第 21 节，用户于 2026-08-17 明确批准；其中已固定 22 项需求、23 条验收项、API v2、8 秒单源 deadline、逐视频 key/200 项上限、零 D1 schema 迁移、根路径 404、IPTV 退役和双版本回滚合同。
+- Worker 当前为 `1.1.4` / API Contract `1`，运行时只保留根 `_worker.js`；Pages 当前为 `0.2.1`，Next `16.3.0`。API 合同存在有意破坏性删除，因此计划将 Worker 升为 `2.0.0`；Pages 仍处于 `0.x`，对应不兼容合同升为 `0.3.0`。版本/API 身份只在对应仓库的完整 v2 语义原子落地时切换：Worker 在 T03，Pages 在 T08；更早任务不得以未完成语义冒充 Contract 2。
+- 只读 CodeGraph 与源码证据确认：Worker 的根前缀兼容、默认来源、IPTV、搜索超时集中在 `_worker.js`；Pages 的视觉任务共享 `app/globals.css`，来源管理共享 config document，播放器任务共享 `PlayerExperience`/`PlayerNavbar`。这些共享写集决定并发上限。
+- 旧 `work-products/plan.md` / `todo.md` 已在提交 `0a4c697cdb37692b31d313a231b6f8eaae54dfa3` 完成并冻结；历史 blob 分别为 `d247f329406143df3f0f1acee5a02f85cfa046a3` 和 `02568da210a93039141b0a69c1d6659632ad12eb`。本文件是新的当前计划入口，旧计划由 Git 历史保持不可变。
+- 规格没有遗留需要在规划前裁决的接口、数据、安全或回滚歧义；若实施需要改变上述版本、deadline、key、上限、法律措辞或 D1 schema，立即停止并返回 `@uxu-code:spec`。
+- 本计划由 `work-products/tests/section21-plan-contract.test.mjs` 约束 HLS 迁出、写集清单、Next 本地文档、版本切换、性能/卫生门、串行策略与 plan/todo 内部完整性；该测试是规划回归证据，不扩大业务实现或远程授权。
+- 前一版计划 SHA `6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a` 在 T03 暴露阶段合同矛盾：T01 冻结的 T02 断言永久要求 Worker `1.1.4` / API `1`，而 T03 与 T15 又要求最终 `2.0.0` / API `2`。`work-products/debug/section21-review-remediation-2026-08-18.md`、旧 todo 与旧 SHA 收据保留故障链；本次二次规划仅修订测试生命周期和 T03 边界测试写集，不改变 22 项产品需求、版本目标、安全基线或远程授权边界。
+- 当前工作树包含已验证但尚未获替代计划接纳的 T02、T03、T06 本地切片。它们不是新计划的完成证据：todo 全部从 `pending` 初始化；T01 先失效旧计划活动收据并修复合同，后续任务再按新计划复验；不得回滚、覆盖或重复实现已有用户修改。
+- 前一批准计划 SHA `096e92fd1b7e084f118dd6939216003ace104ee9a7ad76155595ab38bbd8a77b` 执行到 T02 时，根路由专项 1/1 GREEN，但完整关联套件仅 12/19 GREEN：7 个失败均由 API 1 manifest fixtures 在已存在的 API 2 Worker 中间态执行导致。该失败不是根路由回归；本次三次规划按用户指示把 API 2 manifest fixture、兼容矩阵、MIME/大小与失败关闭同步明确归入 T03，并把 T02 收窄为版本无关的根路由/未知路径/CSP/历史身份门，解除任务所有权与依赖顺序的互锁。
+- 前一版计划执行到 T08 attempt 1 时，静态聚焦合同 1/1、关联 Node 28/28、Next 构建和退役负向合同 3/3 GREEN，但完整 E2E 为 95/119。六个冻结 Section 21 flow 失败的直接原因是其 runtime config fixture 仍声明 Pages `0.2.1`、Worker `1.1.4`、API `1` 及已退役默认字段；另有十八个活动 E2E 仍断言 T05/T07/T08 已批准删除或隐藏的旧表面。该结果是 fixture/验证所有权冲突，不是允许弱化产品行为的依据。
+- T09 attempt 1 在业务写入前以冻结合同确认四项 RED，并发现原写集遗漏了 `PlayerSettings` 的第二个弹幕 API 编辑入口、Premium 授权成功区的用户弹幕管理器及其活动测试。当前四次规划只把这些直接冲突路径、真正替换旧订阅物化源的重同步合同和对应聚焦验证纳入 T09；不改变产品需求、D1 schema、认证/同源边界、已完成 T01—T08 或远程授权。
+- T10 attempt 1 在业务写入前确认冻结聚合合同错误地读取 `app/premium/settings/page.tsx` 薄包装而不是授权成功后的真实组件，同时旧 Premium 合同与播放器 E2E 仍反向固定 Section 21 已批准替换的五域/全局跳过表面。当前五次规划只把聚合合同中 T10 的 Premium 读取目标、旧 Premium 合同和播放器设置 E2E 纳入 T10；不改变六域规格、Premium 服务端授权、T11 逐视频规则所有权、已完成 T01—T09 或远程授权。
+- T11 attempt 1 在业务写入前确认 `PlayerExperience` 持有 `mode:source:videoId` 身份，而唯一读取播放器设置并调用 `useAutoSkip` 的 `components/media/MediaPlayer.tsx` 未列入写集；在原写集内只能以会串视频/来源的全局状态绕行。当前六次规划只把该直接数据通路加入 T11；不改变逐视频 key、0—600 秒、200 项上限、同步/迁移语义、已完成 T01—T10 或远程授权。
+- T13 attempt 1 已在原写集内完成材质实现并通过聚焦静态/浏览器门，但把最终聚合合同加入正式 Node 清单后，完整 `npm test` 暴露两个旧合同边界：T05 的设置顺序仍固定六域前结构；T08 的 raw-token 退休扫描器把 T09/T11 按规格保留的 legacy 数据兼容、旧导入字段清理器及其负向测试/生成字节误判为 IPTV 功能残留。当前七次规划只把这两个直接冲突测试和 `npm test` 纳入 T13，保留 attempt 1 的产品字节与 RED/GREEN 证据；不删除清理器、负向 fixture、生成物或已完成 T01—T12。
+- T14 attempt 1 在业务写入前确认两项直接边界遗漏：Pages 工作流在生成最新 `release/current` 之前运行包含退休扫描器的正式 Node 门，无法证明刚发布字节；导入器虽按规格丢弃旧 IPTV/系统默认字段，却未在预览中报告有界的已跳过字段数。当前八次规划只把 Pages 工作流、导入预览数据/UI、直接 E2E/退休/parity 合同纳入 T14，并把 Pages 本地与工作流顺序固定为 build → release:build → test；不改变 Worker 2.0.0、Pages 0.3.0、API 2、D1 schema、已完成 T01—T13 或远程授权。
+- T14 attempt 2 已完成上述文档、导入提示、fresh release 与成对回滚证据，并通过 Pages 全量 Node/E2E 及 Worker 聚焦门；随后正式 Worker `npm test` 暴露两个直接所有权遗漏：app-update artifact 的四个活动 fixture 仍以 `1.1.4` 冒充当前远端版本，候选卫生门要求对已生成的计划归档和视觉候选做精确 MIME/SHA 二进制登记。当前九次规划保留 attempt 2 的全部产品与证据字节，只把 `app-update-artifact.test.mjs`、`binary-allowlist.json` 和对应正式门纳入 T14 attempt 3；二进制登记只证明字节身份，不构成 T15 视觉批准。
+- T15 attempt 2 已闭合 attempt 1 的五项 E2E 边界、生成 116 张 API 2 候选并保留成功性能 trace；Codex 内置浏览器随后在真实 ready player 同时测得 1440 px 的 sticky 顶栏 `84..172` 遮挡视窗控制 `120..206`、320 px 的顶栏 `84..228` 遮挡播放器 `176..338`，两处均重叠 52 px。根因是 sticky `top` 位移未在后继普通流中预留同一 inset。当前十次规划完整接纳 attempt 2 的测试、候选与性能字节，仅允许在原有 `app/globals.css` / `kvideo-player-shell.e2e.spec.ts` 写域中增加等量 bottom margin 与四断点/200% 点击盒和视觉间距回归；不改组件、播放器行为、版本、API、已完成 T01—T14 或远程授权。
+- T15 attempt 3 已以等量 bottom margin 闭合播放器 sticky 顶栏纵向遮挡，并让三语四断点及 200% 的顶栏/后继内容几何门转绿；同一 200% 验证随后在 640 px 视口测得文档 `scrollWidth=678`，其中 `.player-navbar-actions` / `.theme-switcher` / `.history-sidebar-toggle` 因 rem 命中 token 扩至 88 px 而横向越界 38 px。该 reflow 缺陷与 sticky inset 正交，超出三项 CSS 语义上限。当前十一次规划完整接纳 attempt 3 的纵向修复、116 张候选及既有性能 trace，只允许在相同 CSS/播放器测试写域中增加第四项局部 token 重绑定和显式 200% reflow 回归；不得改根 token、拖拽 hook/存储、组件、版本、API、已完成 T01—T14 或远程授权。
+- T15 attempt 4 已用局部 44/50 px token 闭合 200% 横向 reflow，并通过播放器 3/3 聚焦套件；Codex 内置浏览器随后在正常 320×900 ready player 测得历史浮动按钮 `[248,298]×[422,472]` 与跳过设置入口 `[206,304]×[416,460]` 相交 `1900 px²`，导致后者点击区被覆盖。该交互碰撞与 200% reflow 正交，超出四项 CSS 语义上限。当前十二次规划完整接纳 attempt 4 的 token 修复、116 张候选及既有性能 trace，只允许在同一 CSS/播放器测试写域中增加第五项移动端跳过入口右侧 64 px 预留与四断点交互几何回归；不得移动浮动按钮、改拖拽存储、隐藏控件、改组件、版本、API、已完成 T01—T14 或远程授权。
+- T15 attempt 5 已以 64 px 移动端预留闭合历史按钮/跳过入口碰撞，播放器 3/3、八套聚焦 46/46 与内置浏览器几何均 GREEN；正式全量随后以 `123/124` 暴露 `kvideo-tag-management` 仍把首页推荐标签锁在浮层避让前的绝对 x 坐标。`max-width:1360px` 的已批准标签 lane 预留把 1024/320 起点分别从 `36/20` 确定性右移 58 px 至 `94/78`，而独立 accessibility 几何门已证明浮动收藏按钮不再遮挡首个标签。当前十三次规划完整接纳 attempt 5 的五项 CSS、116 张 API 2 候选与性能 trace，只新增该标签 E2E 的 test-only 基线所有权；不得再改产品 CSS、组件、版本、API、已完成 T01—T14 或远程授权。
+- T15 attempt 6 已同步两个旧标签 x 坐标并达到标签 3/3、正式 E2E `124/124`、fresh release/Node/lint 门与 116 张 API 2 候选冻结；最终视觉抽检仍拒绝该候选：320 px 三标签主页的历史浮动按钮 `[248,298]×[422,472]` 与第三个可见标签相交 `252 px²`；英文 320/1024 播放器的单列 episode grid 被不换行标题/三个 44 px 控件撑宽后在内部 scrollport 裁切；繁中 320 播放器候选又因同 URL 的 scroll-position timer 在 full-page 捕获之间恢复约 224 px 而漏掉顶栏。当前十四次规划完整接纳 attempt 6 的测试、产品字节、失败截图与 `124/124` 证据，只在既有 `app/globals.css`、`section21-visual.e2e.spec.ts`、`kvideo-player-shell.e2e.spec.ts` 写域中加入两项精确布局修复和一项 test-only 截图归一化；最终产品 CSS 改变后必须重跑性能 trace，并重新生成最终 Pages rollback manifest/四补丁与三阶段演练，不能把 T14/pre-T15 字节冒充最终候选。
+- T15 attempt 7 已闭合上述三项视觉 blocker、达到正式 E2E `124/124`、冻结 116 张 API 2 候选并生成 fresh 性能 trace；最终 Codex 内置浏览器仍在 320×900 strict fixture 的经典 15 px 占宽滚动条下测得 `innerWidth=320`、`clientWidth=305`，标签 scrollport 右缘为 225 px、第二标签右缘为 236 px，导致第二标签自身被裁 11 px；历史按钮仍在 248 px，lane 与按钮间距 23 px，因此这不是新的按钮重叠，而是第六项移动端标签 safe-lane 使用 containing-block margin 与 viewport 浮钮坐标不一致。当前十五次规划完整接纳 attempt 7 的产品/测试字节与失败前自动证据，只把第六项从固定 64 px margin 精确细化为 viewport-derived inline size，并要求 overlay/classic 两种滚动条模型与真实内置浏览器均证明第二标签完整、第三标签可滚入；不新增第八项产品语义、不扩大文件所有权。
+- T15 attempt 8 已把移动标签 lane 锁定到 viewport 坐标，在真实 15 px 经典滚动条下取得 list right 240、第二/第三标签完整和 8 px 历史按钮间距，并再次达到正式 E2E `124/124`、冻结 116 张 API 2 候选（16099136 bytes，combined SHA-256 `00292fbe3967580217ab50a88a25f1443f86e40069a1399c15aaec4cd324b7d8`）；最终视觉抽检仍拒绝候选：英文/简中 320 px 搜索首排可点击卡片被左右 50 px 浮钮遮挡，英文 1024 px 播放器的来源选择卡被历史浮钮遮挡。繁中 320 px ready-player 当前候选已确认从原点完整捕获，不是滚动恢复缺陷。当前十六次规划保留 attempt 8 的产品、测试、`124/124`、内置浏览器和被拒候选字节，只在既有 CSS/search/player E2E 写域增加一个共享的浮动侧栏内容排除区语义，并分别投影为搜索结果双侧安全 lane 与非 cinema 桌面播放器右侧安全 lane；不移动/隐藏/缩小浮钮，不改组件、Hook、拖拽存储、滚动恢复、版本、API、已完成 T01—T14 或远程授权。
+- 2026-08-18 的只读审计已提供充分修复依据：产品 23 条验收映射未发现缺口，但旧计划把不可变 inventory 的来源 SHA 错当成当前计划 SHA、审批记录互相冲突、联网依赖审计被擅自升级为阻断门，且逐任务双向补丁造成低价值证据膨胀。这些问题只需修订规划/工作流合同，不需要返回规格阶段，也不改变第 21 节产品、接口、数据、安全、兼容或回滚决定。
 
-旧 `work-products/plan.md` / `todo.md` 的 Worker/Pages 架构迁移历史继续作为证据；T42-T45 的精确身份结果只描述 2026-08-10 已发生的候选/发布事实，不再是当前运行时发布规范。未执行的原 T46-T48 已被取代；T49-T53 保留为完成事实，原未执行 T54-T56 顺延为 T66-T68，为 T54-T65 的本地 UI/更新增补让出依赖顺序。
+## 2. 执行策略与不变量
 
-## 2. 成功定义与不变量
-
-1. `work-products/kvideo-parity-matrix.md` 的所有用户能力 ID 最终只能是 `pass` 或引用 SPEC 13.3 的 `approved-difference`；不得有 `unverified`、缺失或隐含合并项。架构差异登记不使用 ID，也不参与状态门。
-2. 每个用户能力 ID 都必须在任何产品代码改动前，对固定 UXUV-Pages `0.1.2` commit `4bc847affa76755a5c99ce249d793aa43e0b83bb` 产生可执行、可保存的 RED；随后才允许对应垂直切片转为 GREEN。禁止只查源码字符串。若后来发现遗漏 ID，立即退回 T01/T02，并在改该能力前补齐固定 0.1.2 RED；完整性闭环任务不得事后补造证据。
-3. 直接复用固定提交中的组件、样式、文案和纯浏览器逻辑；只在静态导出、Worker API、D1 同步和登录安全边界冲突处做局部适配。
-4. 每个实施任务聚焦一个用户流程，通常不超过 5 个产品文件；若迁移依赖闭包超过 5 个文件，按任务中声明的 A/B 小批次逐批验证，不能一次混改。
-5. 所有新增测试放在相应仓库 `work-products/tests/`；测试引用仓库文件时从其最终位置使用相对路径，禁止 `C:\\Code` 等机器路径。
-6. UXUVideo `_worker.js` 只有在 RED 合同证明现有 Worker 无法支持 KVideo 正常成功路径时才允许最小修改；不得放宽 SSRF、CSRF、认证、Free 上限或 D1 安全合同。
-7. 不 reset、checkout 或覆盖当前工作树；从固定提交取源码使用只读 `git show`/`git archive` 到临时目录或逐文件补丁。
-8. 未受第 20 节影响的视觉基线只能来自固定提交和无敏感 fixture；第 20 节区域的新局部基线、图标预览或阈值变更必须先经用户可见审阅，禁止自动接受。
-9. Worker 固定唯一 `PAGES_BASE_URL`，但不固定 Pages 版本、commit、manifest SHA、资产 SHA 或 SRI。运行时只接受合法 `pagesVersion`、相同 `apiContract`、覆盖当前 Worker 的 `workerRange` 以及安全路由/MIME/大小合同；兼容 Pages 更新与回滚均不修改 Worker。
-10. 本地、公开 Pages、测试 Cloudflare/D1、真实媒体/设备证据分别记录，互不替代。
-11. T04-T38 的每个用户流程切片必须在本任务内同步闭合其简中/繁中/英语文案、键盘/焦点、适用的 320/768/1024/1440 断点和错误/空/加载状态；不得把这些质量要求推迟到最终汇总任务。
-12. 第 20 节只允许改动顶栏、首字符设置入口、全局版本入口/弹窗、语言区和默认图标；不得借“降低 AI 感”清理全站 CSS、替换组件库或重写播放器/认证/同步边界。
-13. `GET /api/app-update` 默认 JSON 保持向后兼容；`artifact=worker` 复用同一路由与会话鉴权，元数据自动检查不得携带源码，源码只在用户点击后按需拉取并校验版本、3 MiB 上限和 SHA-256。
-14. 八个已认证路由共享一个 `application-shell` 版本入口；公开、加载、登录、初始化和错误界面既不显示入口，也不提前请求 `/api/app-update`。路由切换不重复自动检查。
-15. 默认图标只替换 `public/icon.png`；运行时 `site.iconUrl` 继续优先。六档缩放和两种 mask 预览未获用户批准前，T64 不得更新局部视觉基线，T65-T68 不得继续。
+- **策略：** 串行执行。先修复并重新冻结跨仓合同，再按兼容边界和用户流程纵向复验/实现；高风险 Worker API/路由先于依赖它的 Pages 行为。
+- **安全并发上限：1。** 本次没有请求 `fast`，不得形成并行波次或同时编辑两仓；每项只有在前一项集成、验证、状态原子更新后才可启动。
+- **串行理由：** 当前工作树已含跨旧计划的 T02/T03/T06 切片，且 `_worker.js`、`app/globals.css`、config document、release manifest、测试清单与候选证据均为共享可变资源。串行复验比重新证明临时并发独立性更安全，协调成本也更低。
+- **主代理唯一集成者：** 只有主代理可合并任务 diff、运行串行阶段屏障、写 `work-products/todo.md`、更新视觉候选或形成最终本地门结论。
+- **TDD 与阶段合同：** 新行为必须先有能在旧实现上失败的 RED，再做最小 GREEN；本次已存在切片可复用前一版收据、补丁和原始输出，但必须先校验其内部哈希、RED 原因与当前结果，不得伪造重跑前状态。Worker 测试位于 `work-products/tests/` 并从最终位置以 `../../_worker.js` 等相对路径引用源码；Pages 测试位于 `../UXUV-Pages/work-products/tests/` 并以 `../../app/...`、`../../components/...`、`../../lib/...` 引用源码。聚合合同中的测试名必须以稳定任务 ID 开头，只能表达最终候选仍应成立的不变量；诸如“T02 完成时仍为 v1”的瞬时阶段守卫必须放在任务本地测试/不可变收据中，且不得进入 T15 全量发现集。Section 21 Worker/UI/visual/performance 聚合断言继续只读冻结，唯一例外是 T10 只可把 `S21-T10` 断言的 Premium 读取目标从薄路由改为授权组件，断言名、六域、锚点、全局跳过负向与桌面布局要求均保持不变；`section21-flows.e2e.spec.ts` 仅由 T08 接管 runtime config fixture 包络，测试名、交互断言、请求计数和搜索期望保持只读。保持性安全基线和候选卫生扫描器继续冻结。
+- **无依赖扩张：** 不新增运行时或开发依赖，不新增构建层，不新增 D1 表，不扫描或批量改写真实账户数据。
+- **证据分层：** 静态/单测、构建/E2E、候选发布物、公开 Pages、Cloudflare/真实 D1、生产登录态互不替代。本计划最多到本地候选和用户视觉审批门。
 
 ## 3. 依赖图
 
 ```mermaid
 flowchart TD
-  T01["T01 基线与矩阵"] --> T02["T02 固定参考与 RED"]
-  T02 --> T03["T03 浏览器依赖"]
-  T03 --> T04["T04 Liquid Glass"]
-  T04 --> T05["T05 UI 原语"]
-  T05 --> T06["T06 全局壳层"]
-  T06 --> T07["T07 登录状态"]
-
-  T07 --> T08["T08 首页"]
-  T08 --> T09["T09 标签推荐"]
-  T07 --> T10["T10 搜索输入"]
-  T10 --> T11["T11 搜索结果"]
-  T11 --> T12["T12 搜索策略"]
-  T12 --> T13["T13 收藏"]
-  T13 --> T14["T14 历史"]
-
-  T07 --> T15["T15 设置壳层与来源"]
-  T15 --> T16["T16 导入订阅"]
-  T15 --> T17["T17 显示与排序"]
-  T17 --> T18["T18 播放与弹幕设置"]
-  T16 --> T19["T19 数据与版本"]
-  T15 --> T20["T20 Premium 设置"]
-  T19 --> T20
-
-  T12 --> T21["T21 播放页壳层"]
-  T14 --> T21
-  T21 --> T22["T22 桌面控件"]
-  T21 --> T23["T23 移动与设备控件"]
-  T22 --> T24["T24 播放策略"]
-  T23 --> T24
-  T18 --> T24
-  T24 --> T25["T25 弹幕"]
-  T25 --> T26["T26 广告与跳过"]
-
-  T16 --> T27["T27 IPTV 浏览"]
-  T24 --> T28["T28 IPTV 播放"]
-  T27 --> T28
-  T20 --> T29["T29 Premium 首页"]
-  T13 --> T30["T30 Premium 资料库"]
-  T29 --> T30
-
-  T30 --> T31["T31 PWA"]
-  T07 --> T32["T32 同步基础"]
-  T16 --> T33["T33 配置/来源/订阅同步"]
-  T20 --> T33
-  T32 --> T33
-  T14 --> T34["T34 收藏/历史同步"]
-  T24 --> T34
-  T30 --> T34
-  T32 --> T34
-  T15 --> T35["T35 账户/D1 状态"]
-  T33 --> T35
-  T34 --> T35
-  T15 --> T36["T36 用量卡"]
-  T35 --> T36
-  T28 --> T37["T37 TV/WebView/三语/AA 汇总"]
-  T31 --> T37
-  T33 --> T37
-  T34 --> T37
-  T36 --> T37
-
-  T07 --> T38["T38 VideoTogether"]
-  T18 --> T38
-  T23 --> T38
-  T23 --> T39["T39 真实第三方能力 HOLD"]
-  T38 --> T39
-  T19 --> T40["T40 功能矩阵闭环"]
-  T25 --> T40
-  T26 --> T40
-  T28 --> T40
-  T30 --> T40
-  T31 --> T40
-  T33 --> T40
-  T34 --> T40
-  T35 --> T40
-  T36 --> T40
-  T37 --> T40
-  T38 --> T40
-  T39 --> T40
-  T40 --> T41["T41 视觉矩阵闭环"]
-  T41 --> T42["T42 历史本地 Pages 候选"]
-  T42 --> T43["T43 历史 Pages commit"]
-  T43 --> T44["T44 历史 Pages 发布"]
-  T44 --> T45["T45 历史 Worker pin"]
-  T45 --> T49["T49 兼容发布 RED"]
-  T49 --> T50["T50 Worker 兼容加载"]
-  T49 --> T51["T51 Pages 根目录发布"]
-  T50 --> T52["T52 文档与边界"]
-  T51 --> T52
-  T52 --> T53["T53 两仓兼容本地门"]
-  T53 --> T54["T54 顶栏/用户入口 RED"]
-  T53 --> T55["T55 全局更新/语言/图标 RED"]
-  T53 --> T56["T56 Worker artifact RED"]
-  T54 --> T57["T57 顶栏与首字符设置入口"]
-  T55 --> T58["T58 三列语言"]
-  T56 --> T59["T59 Worker 按需源码"]
-  T59 --> T60["T60 全局更新控件"]
-  T60 --> T61["T61 application-shell 挂载"]
-  T57 --> T62["T62 响应式/无障碍 E2E"]
-  T58 --> T62
-  T61 --> T62
-  T55 --> T63["T63 U/V 图标候选"]
-  T62 --> T64["T64 局部视觉审批 HOLD"]
-  T63 --> T64
-  T64 --> T65["T65 两仓本地总门"]
-  T65 --> T66["T66 一次性 Worker 更新 HOLD"]
-  T66 --> T67["T67 Pages 发布与旧目录清理 HOLD"]
-  T67 --> T68["T68 最终发布门 HOLD"]
+  T01["S21-T01 跨仓 RED 合同"] --> T02["S21-T02 Worker 根路由前置合同"]
+  T01 --> T06["S21-T06 Liquid Glass 基础"]
+  T02 --> T03["S21-T03 Worker 来源所有权与 IPTV 退役"]
+  T02 --> T05["S21-T05 Pages 根入口与壳层生命周期"]
+  T06 --> T05
+  T03 --> T04["S21-T04 Worker 8 秒来源超时"]
+  T05 --> T07["S21-T07 搜索与主页结果体验"]
+  T06 --> T07
+  T03 --> T08["S21-T08 Pages 默认来源与 IPTV 表面退役"]
+  T05 --> T08
+  T06 --> T08
+  T08 --> T09["S21-T09 统一来源与弹幕管理"]
+  T09 --> T10["S21-T10 设置页信息架构"]
+  T10 --> T11["S21-T11 逐视频跳过规则"]
+  T05 --> T12["S21-T12 播放器布局与顶栏"]
+  T06 --> T12
+  T11 --> T12
+  T07 --> T13["S21-T13 其余页面材质收敛"]
+  T10 --> T13
+  T12 --> T13
+  T04 --> T14["S21-T14 文档、版本与发布合同"]
+  T08 --> T14
+  T13 --> T14
+  T14 --> T15["S21-T15 全量本地与视觉门"]
 ```
 
-## 4. 任务
+## 4. 读写边界、生成物与共享资源
 
-### T01：冻结三方基线并证明矩阵完整
+| 范围 | 权威读取 | 允许写入 | 生成物/共享资源 |
+| --- | --- | --- | --- |
+| Worker | `_worker.js`、`README.md`、`CHANGELOG.md`、package/lock、现有 `work-products/tests/*.test.mjs` | 同仓任务明确列出的 `_worker.js`、README/CHANGELOG、package/lock 与 `work-products/tests/` | `_worker.js`、路由表、API contract/version、Worker 测试进程 |
+| Pages | `app/`、`components/`、`lib/`、package/lock、Next/Playwright 配置、发布脚本、现有测试 | 同仓任务明确列出的产品、package/lock、配置、脚本与 `work-products/tests/` | `app/globals.css`、config document、Next `out/`、Playwright 服务/截图、release manifest |
+| 工作流 | 已批准 `SPEC.md`、本计划、T01 冻结清单 | `work-products/todo.md`、`work-products/kvideo-parity-matrix.md`、`work-products/evidence/section21/` | todo 是唯一活动状态账本；候选截图不得自动覆盖批准基线；证据、补丁与收据属于最终卫生扫描范围 |
 
-**范围：** 固定 KVideo、当前 UXUV-Pages、当前 Worker 三个身份；逐页审计固定提交的可达组件、hooks、stores、样式、测试和文案，将用户能力写入稳定 ID 矩阵；SPEC 13.3 架构差异另表登记且不分配 ID。不修改产品代码。
+生成的 `.next/`、`out/`、测试缓存和临时服务不属于业务源码；任务结束必须停止服务并确认未改写 `next-env.d.ts`。任何视觉候选先写入 `work-products/tests/fixtures/ui-review/section21-candidate/`，用户批准前不得替换既有基线。
 
-**验收标准：** 所有规格 13.2 分号项都有唯一稳定 ID、固定提交入口、目标入口和测试映射；源码审计新增行为也有 ID；矩阵状态值域严格受限。
+T01—T13 每项只维护一个 `work-products/evidence/section21/receipts/S21-Txx.json`：记录两仓 HEAD、计划 SHA、任务前后未提交 patch SHA、实际改动路径、验证结果与失败保留说明；不再为每项生成空的 forward/reverse patch，也不重复归档已有失效目录。回滚以任务允许写集、当前 diff 和未提交工作保护为准；路径已被后续任务接管时停止并人工重建。只有 T14/T15 为成对发布/回滚候选记录完整 v1/v2 文件 SHA、前向/反向补丁与本地验证命令；未发布中间态一律 HOLD。
 
-**验证：** `kvideo-feature-parity.test.mjs` 对提交身份、ID 唯一性、必填列、状态值域和测试映射先 RED 后 GREEN；保存三仓 `git status`/HEAD 证据。
+## 5. Definition of Done
+
+每个任务只有同时满足任务验收与以下固定门才可标记 `completed`：
+
+1. 新测试在旧行为上有 RED 证据、在本任务实现后 GREEN；相关旧测试无回归，运行时行为得到验证。
+2. 无无关重构、重复逻辑、死代码、调试输出或新增依赖；lint/格式/diff 检查通过。
+3. 用户可见三语、键盘/焦点、320/768/1024/1440 和适用错误/空/加载态与任务同步完成。
+4. 配置/API/数据兼容和回滚已覆盖；任务完成时公开的版本/API 身份必须与该任务后已经实现的完整语义一致；不把本地证据说成发布或生产证据。
+5. T01 冻结的认证、D1/账户隔离、同源/CSRF、SSRF、来源导入、CAS 与 Free 预算保持性基线始终 GREEN；实现任务只能修改退休功能专属断言。
+6. 任务 diff 由主代理复核并原子更新 todo；失败则保留最小可复验证据，不以删除失败测试伪造完成。
+
+## 6. 任务合同
+
+### S21-T01：修复基线身份并重新冻结跨仓合同
+
+**目标：** 不改业务代码地解除 inventory 来源 SHA 与当前计划 SHA 的错误耦合，消除瞬时 v1 守卫与最终 v2 门的互斥，失效旧计划活动收据，并重新冻结只表达最终不变量的跨仓合同。
+
+**验收标准：**
+- [ ] 保留 `invalidated/ac7a5714/`、`invalidated/6ef4a951/` 与 `invalidated/8df83634/` 原字节；将前一批准计划仍位于活动目录的 T01/T02 收据移动到单一 `invalidated/096e92fd/`，记录源 SHA、文件 SHA 和失效原因，不重复复制已有归档、不生成新的零字节补丁。
+- [ ] `section21-worker-contract.test.mjs` 保留 T02 根前缀真实 404和 T03 最终 `2.0.0` / API `2` 独立断言，但不再对最终树永久断言 T02 完成时的 `1.1.4` / API `1`；该阶段事实只由归档收据与任务本地版本测试证明。
+- [ ] Worker/Pages 聚合的每条第 21 节验收项仍映射到独立顶层测试或保存全部失败明细的 soft-failure 合同；未实施项保持可归因 RED，已存在切片可为 GREEN，发现/fixture/服务错误不得冒充 RED。
+- [ ] 两个 baseline inventory 原字节及其 `6ef4a951…` 来源标识保持不变；`candidate-hygiene.test.mjs` 将该标识解释为“生成此内容基线的计划”，不再要求它等于当前执行计划 SHA，同时继续逐行验证分类、文件 SHA、秘密/机器路径与二进制 allowlist。
+- [ ] 保持性安全、视觉与性能基线原字节不变；规划合同验证新 todo SHA、待审批 HOLD、合法状态、`fast = false`、串行上限 1、`replacement-invalidation.json` 只绑定历史 `096e92fd…` 计划、新的 `contract-revision-invalidation.json` 绑定当前计划，以及“阶段守卫不进入最终全量门”。`red-matrix.md` 必须改为与当前实跑一致，不能把 T02 的 12/19 误写为完整 GREEN。
 
 **依赖：** 无。
-
-**可能涉及：** `work-products/kvideo-parity-matrix.md`、UXUV-Pages `work-products/tests/kvideo-feature-parity.test.mjs`、`work-products/tests/fixtures/kvideo-4.9.19/source-inventory.json`。
-
-**回滚：** 仅反向移除本任务新增规划/测试产物；不改变三个 Git 工作树的既有业务文件。
-
-### T02：建立确定性 KVideo 参考与 0.1.2 RED 证据
-
-**范围：** 以固定提交、锁文件、Chromium、字体、`zh-CN`、`Asia/Taipei`、固定时钟和合成数据生成八路由/四断点参考截图、DOM/交互清单；为 T01 中每个用户能力 ID 建立对固定 0.1.2 commit 的可执行失败断言和失败报告。
-
-**验收标准：** 基线可从固定提交重建且哈希一致；fixture 无账号、Cookie、Secret、真实源或观看数据；每个用户能力 ID 都有独立或明确共享但可逐 ID 归因的 0.1.2 RED，缺任一 ID 即不得开始 T03。
-
-**验证：** 对临时物化的 0.1.2 commit 运行全部 KVideo 行为/视觉测试并保存逐 ID RED 清单；`kvideo-visual-parity.e2e.spec.ts --update-snapshots` 仅在首次审阅任务执行，随后无更新参数运行并验证全页 `0.01`、关键区 `0.005`、布局 2 CSS px 合同。
-
-**依赖：** T01。
-
-**可能涉及：** UXUV-Pages `work-products/tests/kvideo-visual-parity.e2e.spec.ts`、`work-products/tests/fixtures/kvideo-4.9.19/`、`work-products/kvideo-red-baseline.md`、`scripts/materialize-kvideo-reference.mjs`。
-
-**回滚：** 可删除未审阅的生成物；已审阅基线只能经用户批准更新，不能被当前实现截图覆盖。
-
-### T03：恢复 KVideo 浏览器依赖与兼容工具
-
-**范围：** 从固定提交恢复拖拽、图标、繁简转换、状态管理和纯浏览器辅助依赖；保持 Next 静态导出、无 server-only、无 Upstash/Vercel Analytics。
-
-**验收标准：** 依赖版本由锁文件固定；静态构建不引入 Node/Secret；旧 WebView 83 的转译边界仍可测。
-
-**验证：** `npm ci`、`npm test`、`npm run lint`、`npx tsc --noEmit`、`npm run build`；依赖与 bundle 秘密扫描。
-
-**依赖：** T02。
-
-**可能涉及：** UXUV-Pages `package.json`、`package-lock.json`、`next.config.ts`、`work-products/tests/static-export-contract.test.mjs`。
-
-**回滚：** 反向移除本任务新增依赖和配置；保留现有 `hls.js`、Next 与测试工具链。
-
-### T04：复刻安全登录纵向切片
-
-**范围：** 在一个可独立运行的登录流程内，同时迁移 PasswordGate 所需 Liquid Glass token、Button/Input/Icon、焦点管理、登录加载/错误和真实 session 请求；不创建可独立存在的样式或原语基础层。
-
-**验收标准：** Worker origin 可完成登录并进入确定性主页占位；密码不进入 URL/storage/log；登录的三语、键盘、焦点、四断点和视觉 token 与固定基准一致；未使用的通用组件/CSS 不迁移。
-
-**验证：** auth E2E、网络/存储秘密扫描、登录关键区 `0.005`、axe、三语、键盘与四断点。
-
-**依赖：** T03。
-
-**可能涉及：** UXUV-Pages `components/PasswordGate.tsx`、`lib/store/auth-store.ts`、`app/globals.css`、`components/ui/Button.tsx`、`work-products/tests/app-flows.e2e.spec.ts`；Input/Icon 作为同任务小批次。
-
-**回滚：** 整体回到现有安全 PasswordGate；绝不恢复客户端 Secret 或匿名认证。
-
-### T05：复刻登录后的基础首页纵向切片
-
-**范围：** 在已登录成功路径内，同时迁移主页基本布局、MovieCard/Grid、Card/Icon、同源内容请求以及加载/空/失败状态；高级豆瓣/标签/推荐留给 T08/T09。
-
-**验收标准：** 用户登录后可看到 KVideo 主页信息架构和合成内容/空/错误状态；海报占位和卡片交互可用；三语、键盘、焦点和四断点完整；无未使用横向原语。
-
-**验证：** 基础 HOM ID、同源网络、内容/空/错误 E2E、axe、三语和首页四断点截图。
-
-**依赖：** T04。
-
-**可能涉及：** UXUV-Pages `app/page.tsx`、`components/home/MovieCard.tsx`、`components/home/MovieGrid.tsx`、`lib/content/api-client.ts`、`work-products/tests/kvideo-home-search-parity.e2e.spec.ts`。
-
-**回滚：** 回到 T04 登录后确定性主页占位；登录流程保持可用。
-
-### T06：复刻全局导航、主题、语言与 TV 导航流程
-
-**范围：** 在 T05 可用主页上恢复 Navbar、普通/Premium 入口、三态主题、三语切换、滚动恢复、返回顶部，以及 TV 检测/10 英尺导航/空间焦点核心；页面专用 TV 行为随所属切片实现。
-
-**验收标准：** 用户可在主页完成导航、主题、语言、滚动和键盘/遥控焦点流程；八路由直接刷新保持静态入口；触摸/键盘/TV 焦点不冲突；后续切片扩展而不替换壳层。
-
-**验证：** GLB/DEV 全局 ID、`kvideo-visual-parity` 壳层、`kvideo-iptv-device-parity` 首页遥控导航、三语/四断点和静态 build。
-
-**依赖：** T05。
-
-**可能涉及：** UXUV-Pages `app/layout.tsx`、`components/layout/Navbar.tsx`、`components/ThemeProvider.tsx`、`components/LocaleProvider.tsx`、`components/TVNavigationInitializer.tsx`；空间导航 core 为同任务小批次。
-
-**回滚：** 恢复现有 RuntimeConfig/PasswordGate 包装顺序，不影响同源 API 安全边界。
-
-### T07：闭合公开直访、设置缺失与会话失效流程
-
-**范围：** 在 T04 登录成功流之外，复刻 `github.io` 公开说明、设置缺失、初始加载、会话失效、无权限和重试；保留 HttpOnly Cookie/session 权威和 Pages 直访零认证请求。
-
-**验收标准：** `github.io` 只显示公开说明且零 API；Worker origin 各失败状态可恢复到登录/主页；三语、键盘、焦点和四断点满足 KVideo 设计语言。
-
-**验证：** direct Pages/setup/session/permission/retry E2E、网络敏感信息扫描、错误状态截图与焦点顺序。
-
-**依赖：** T06。
-
-**可能涉及：** UXUV-Pages `components/PublicPage.tsx`、`components/AdminGate.tsx`、`components/PasswordGate.tsx`、`components/RuntimeConfigProvider.tsx`、`work-products/tests/app-flows.e2e.spec.ts`。
-
-**回滚：** 回到现有安全登录实现；绝不恢复客户端 Secret 或匿名代理。
-
-### T08：复刻首页与豆瓣发现流程
-
-**范围：** 恢复电影/电视剧切换、豆瓣标签/分类、内容卡片、海报占位和普通/Premium 分流。固定提交把演员/导演点击搜索实现于播放页 `VideoMetadata`，因此 `HOM-012` 随 T21 闭合，不在首页发明基准外字段或控件。
-
-**验收标准：** 首页信息架构、卡片密度、加载/空/错误状态和详情/搜索跳转与基准一致；所有请求保持同源 `/api/*`；TV 遥控焦点按卡片网格移动且不丢失当前位置。
-
-**验证：** `kvideo-home-search-parity` 的 HOM/Douban ID、首页三语/键盘/TV 遥控/四断点截图和取消/错误 fixture。
-
-**依赖：** T07。
-
-**可能涉及：** UXUV-Pages `app/page.tsx`、`components/home/MovieCard.tsx`、`components/home/MovieGrid.tsx`、`lib/hooks/useHomePage.ts`、`lib/content/api-client.ts`。
-
-**回滚：** 回滚首页切片，保留安全登录和同源 API client。
-
-### T09：复刻标签管理、推荐与无限滚动
-
-**范围：** 恢复标签添加/删除/默认恢复/拖拽排序、个性化推荐、热门内容和无限滚动。
-
-**验收标准：** 拖拽与键盘排序均持久化；普通/Premium 标签状态隔离；分页追加无重复且取消后不继续更新。
-
-**验证：** HOM/TAG ID 的行为 E2E、原 `tag-management-view` 语义回归、移动/桌面视觉对照。
-
-**依赖：** T08。
-
-**可能涉及：** UXUV-Pages `components/home/TagManager.tsx`、`components/home/TagList.tsx`、`components/home/hooks/useTagManager.ts`、`components/home/hooks/usePersonalizedRecommendations.ts`、`lib/hooks/useInfiniteScroll.ts`。
-
-**回滚：** 回滚标签/推荐存储键和组件，保留已迁移首页基本流。
-
-### T10：复刻搜索输入、历史与繁简转换
-
-**范围：** 恢复 SearchBox/Form、历史下拉、复用、单项删除、清空、键盘导航和繁简转换。
-
-**验收标准：** 历史容量/排序/持久化与账户隔离一致；输入法、键盘和 TV 遥控焦点行为稳定；转换不改写原始可回看查询。
-
-**验证：** SEA 输入/历史/转换 ID；无鼠标/遥控完整操作；三语与四断点；当前 0.1.2 RED 记录转 GREEN。
-
-**依赖：** T07。
-
-**可能涉及：** UXUV-Pages `components/search/SearchBox.tsx`、`components/search/SearchHistoryDropdown.tsx`、`lib/hooks/useSearchHistory.ts`、`lib/utils/chinese-convert.ts`、`work-products/tests/kvideo-home-search-parity.e2e.spec.ts`。
-
-**回滚：** 回滚搜索输入切片，不删除现有用户历史数据。
-
-### T11：复刻搜索结果分组、卡片与徽章
-
-**范围：** 恢复普通/同名合并视图、VideoGrid/GroupCard、来源/类型/语言/清晰度徽章及展开状态持久化。
-
-**验收标准：** SSE 增量到达时稳定插入、无跳序/重复；徽章与基准字段一致；展开状态按账户/模式持久化。
-
-**验证：** SEA 结果/分组/徽章 ID、增量流 fixture、四断点与关键区 `0.005`。
-
-**依赖：** T10。
-
-**可能涉及：** UXUV-Pages `components/search/VideoGrid.tsx`、`components/search/VideoGroupCard.tsx`、`components/search/SourceBadges.tsx`、`components/search/TypeBadges.tsx`、`components/search/LanguageBadges.tsx`。
-
-**回滚：** 回退分组视图，保留搜索请求与取消能力。
-
-### T12：复刻筛选、排序、延迟与清晰度探测
-
-**范围：** 恢复来源/类型筛选、类目屏蔽、相关性/延迟/发布时间/评分/名称排序、实时延迟和按需分辨率探测。
-
-**验收标准：** 所有原排序选项和稳定 tie-break 存在；延迟/探测失败不删除结果；Free/Paid 上限由 Worker 返回并被 UI 解释。
-
-**验证：** SEA filter/sort/latency/resolution ID、SSE 取消、Worker 既有预算合同和网络请求计数。
-
-**依赖：** T11。
-
-**可能涉及：** UXUV-Pages `lib/hooks/useSearchState.ts`、`lib/hooks/useLatencyPing.ts`、`lib/hooks/useResolutionProbe.ts`、`lib/utils/sort.ts`、`components/ResolutionProbeButton.tsx`。
-
-**回滚：** 回滚筛选/排序状态到上一个兼容 schema，不清除已有用户设置。
-
-### T13：复刻收藏资料库与搜索收藏流程
-
-**范围：** 恢复搜索页收藏、网格/列表、侧边栏、删除、容量提示和空状态；播放页收藏按钮留给 T21 在播放器壳层中接入，避免反向依赖。
-
-**验收标准：** 普通/Premium 与账户严格隔离；刷新后本地状态一致；搜索页收藏按钮的加载、已收藏和错误反馈与基准一致；矩阵 `FAV-002` 与全部跨设备同步 ID 保持 `unverified`，分别等待 T21/T34。
-
-**验证：** 除 `FAV-002` 和跨设备同步外的 FAV ID、双账户/双模式本地 E2E、三语/键盘/四断点视觉；本任务不运行同步冲突通过断言。
-
-**依赖：** T12。
-
-**可能涉及：** UXUV-Pages `app/favorites/page.tsx`、`components/favorites/FavoriteButton.tsx`、`components/favorites/FavoritesPageContent.tsx`、`lib/store/favorites-store.ts`、`work-products/tests/kvideo-home-search-parity.e2e.spec.ts`。
-
-**回滚：** 反向移除 UI 适配，保留用户同步文档和收藏记录。
-
-### T14：复刻历史资料库与管理流程
-
-**范围：** 以确定性历史 fixture 恢复 50 条上限、侧边栏、单删/清空和继续播放链接；自动记录、同标题去重、断点续播由 T24 在真实播放生命周期中接入。
-
-**验收标准：** 历史列表/侧边栏/删除/清空/50 条边界可独立运行；普通/Premium/账户隔离；矩阵 `HIS-001` 至 `HIS-005` 保持 `unverified` 直到 T24。
-
-**验证：** `HIS-006` 至 `HIS-011` 的本地行为、删除/清空确认框、继续播放路由、三语/键盘/四断点；双设备 CAS 留给 T34。
-
-**依赖：** T13。
-
-**可能涉及：** UXUV-Pages `components/history/WatchHistorySidebar.tsx`、`components/history/HistoryList.tsx`、`components/history/HistoryItem.tsx`、`lib/store/history-store.ts`、`work-products/tests/kvideo-player-parity.e2e.spec.ts`。
-
-**回滚：** 回滚历史 UI/节流逻辑，禁止删除现有历史文档。
-
-### T15：复刻设置壳层与普通来源管理
-
-**范围：** 恢复设置页分区/顺序、SettingsSection、系统/个人来源展示、添加/编辑/启停/删除/上下移动/折叠和校验。
-
-**验收标准：** 原字段、默认值、错误文案、确认流程和拖拽/按钮排序均存在；来源改动即时本地持久化；同步队列接入和跨设备状态明确留给 T33；设置页 TV/遥控焦点顺序可用。
-
-**验证：** SRC/SET 本地 shell/CRUD/排序、三语/键盘/TV 遥控 E2E、设置页四断点关键区截图；本任务不把同步 ID 标 pass。
-
-**依赖：** T07。
-
-**可能涉及：** UXUV-Pages `app/settings/page.tsx`、`components/settings/SettingsSection.tsx`、`components/settings/SourceManager.tsx`、`components/settings/AddSourceModal.tsx`、`lib/store/user-sources-store.ts`。
-
-**回滚：** 回滚 UI，不删除用户源或 tombstone；恢复前一兼容数据读取。
-
-### T16：复刻导入、订阅与批量来源流程
-
-**范围：** 恢复 JSON 粘贴、文件、链接、订阅四类导入，以及订阅添加、更新、管理、失败提示和重复处理。
-
-**验收标准：** 导入在写入前校验/预览；不接受 Secret/危险 scheme；重复和部分无效输入按 KVideo 行为报告且不破坏已有源；各导入模态具备 TV/遥控焦点高亮、陷阱和返回恢复。
-
-**验证：** SRC import/subscription ID、合成文件/链接 fixture、同源/SSRF 合同、撤销/失败路径及三语/键盘/TV 遥控模态 E2E。
-
-**依赖：** T15。
-
-**可能涉及：** UXUV-Pages `components/settings/ImportModal.tsx`、`components/settings/import/FileImportTab.tsx`、`components/settings/import/LinkImportTab.tsx`、`components/settings/import/SubscriptionImportTab.tsx`、`lib/utils/source-import-utils.ts`。
-
-**回滚：** 回滚导入 UI/解析器，不清空已存在来源与订阅。
-
-### T17：复刻显示、主题、语言与搜索排序设置
-
-**范围：** 恢复 DisplaySettings、SortSettings、主题、语言、布局/展示项和类目屏蔽设置。
-
-**验收标准：** 设置项、默认值、顺序和即时预览与基准一致；旧配置可兼容读取；三语和主题持久化不跨账户泄漏。
-
-**验证：** SET display/theme/language/sort ID、reload/账户切换 E2E、设置关键区视觉。
-
-**依赖：** T15。
-
-**可能涉及：** UXUV-Pages `components/settings/DisplaySettings.tsx`、`components/settings/SortSettings.tsx`、`components/ThemeSwitcher.tsx`、`lib/store/settings-store.ts`、`work-products/tests/kvideo-settings-parity.e2e.spec.ts`。
-
-**回滚：** 兼容保留旧字段；回滚 UI 时不删除用户偏好。
-
-### T18：复刻播放器、跳过、代理、弹幕与广告设置
-
-**范围：** 恢复 PlayerSettings、UserDanmakuSettings、代理模式、片头片尾、自动连播、广告模式/关键词和用户弹幕 API 优先级设置。
-
-**验收标准：** 所有原控件、范围、默认值、禁用依赖和错误提示存在；设置能被播放器实时读取；安全限制以说明呈现而非隐藏入口。
-
-**验证：** SET player/danmaku/ad ID、`player-settings-snapshot` 语义回归、保存/重载/账户隔离 E2E。
-
-**依赖：** T17。
-
-**可能涉及：** UXUV-Pages `components/settings/PlayerSettings.tsx`、`components/settings/UserDanmakuSettings.tsx`、`lib/store/settings-store.ts`、`lib/player/player-settings.ts`、`work-products/tests/kvideo-settings-parity.e2e.spec.ts`。
-
-**回滚：** 回滚新增设置读取，保留未知字段以允许前向恢复。
-
-### T19：复刻普通模式数据导入导出与版本检查
-
-**范围：** 恢复普通模式设置/来源/订阅/播放器/弹幕/广告 JSON 导入导出、预览/确认、容量提示、版本检查三态和数据隔离说明；Premium schema 在 T20 接入后才闭合“全设置”ID。
-
-**验收标准：** 普通模式导出不含密码/Cookie/Secret；导入事务性校验，失败不部分覆盖；更新成功/无需更新/失败状态与基准一致；数据模态可用遥控完成预览/确认/取消；DAT-001/002 保持 `unverified` 直到 T20。
-
-**验证：** 普通模式 DAT 子合同、往返字节 fixture、恶意/超限输入、版本 API 三态、三语/键盘/TV 遥控模态 E2E 和秘密扫描。
-
-**依赖：** T16、T17、T18。
-
-**可能涉及：** UXUV-Pages `components/settings/DataSettings.tsx`、`components/settings/ExportModal.tsx`、`components/settings/ImportModal.tsx`、`components/settings/AppVersionSettings.tsx`、`work-products/tests/kvideo-settings-parity.e2e.spec.ts`。
-
-**回滚：** 回滚 UI；不得删除或重写用户本地/D1 文档。
-
-### T20：复刻 Premium 来源与独立设置
-
-**范围：** 恢复 PremiumSourceSettings、独立设置页、服务端授权失效/重验和与普通模式分离的数据入口；把 Premium 设置/来源纳入 T19 的全设置导入导出 schema。
-
-**验收标准：** Premium 来源 CRUD/排序/导入能力与普通模式对应；无有效服务端 session 不显示伪成功；普通配置不被 Premium 操作覆盖；包含 Premium 的完整 JSON 往返后 DAT-001/002 才可转 GREEN；设置页和模态可用 TV/遥控完整操作。
-
-**验证：** PRE/SET Premium ID、包含普通/Premium 的全设置 JSON 往返、403/失效/重验、三语/键盘/TV 遥控 E2E、双模式存储和秘密扫描。
-
-**依赖：** T15、T16、T18、T19。
-
-**可能涉及：** UXUV-Pages `app/premium/settings/page.tsx`、`components/settings/PremiumSourceSettings.tsx`、`components/PremiumPasswordGate.tsx`、`lib/store/premium-mode-settings.ts`、`work-products/tests/kvideo-settings-parity.e2e.spec.ts`。
-
-**回滚：** 回滚 Premium UI 适配，服务端授权继续失败关闭。
-
-### T21：复刻播放页壳层、元数据、来源与选集
-
-**范围：** 恢复 PlayerNavbar、VideoMetadata（含演员/导演点击搜索）、SourceSelector、EpisodeList、空/错误状态、顶部对齐、列表/网格、每 50 集分页和来源折叠分组，并在此闭合 `HOM-012`。
-
-**验收标准：** 路由参数和短链接/sessionStorage 行为一致；演员/导演名称可直接触发对应搜索；切源/切集状态明确；页面不使用原生播放器控件作为主界面；播放页收藏按钮完成 `FAV-002`，历史继续播放链接可进入正确剧集；遥控方向键在选集/来源区工作且不会误控视频区域。
-
-**验证：** PLY shell/source/episode ID、`FAV-002`、历史继续播放链接、短链接/刷新/50 集边界 E2E，以及本切片三语/键盘/四断点视觉。
-
-**依赖：** T12、T14。
-
-**可能涉及：** UXUV-Pages `app/player/page.tsx`、`components/player/PlayerNavbar.tsx`、`components/player/VideoMetadata.tsx`、`components/player/SourceSelector.tsx`、`components/player/EpisodeList.tsx`。
-
-**回滚：** 回滚播放壳层到现有安全错误页，保留媒体 API 客户端。
-
-### T22：复刻桌面自定义播放器控制层
-
-**范围：** 恢复桌面 overlay、进度、播放/暂停、音量/静音、倍速、快进/退、控制栏隐藏、光标和快捷键。
-
-**验收标准：** 控件数量、位置、图标、可访问名称和快捷键与基准一致；隐藏/显示计时确定；原生 `controls` 不作为生产界面。
-
-**验证：** PLY desktop ID、虚拟媒体时钟 E2E、控制层关键区 `0.005`、键盘与 reduced-motion。
-
-**依赖：** T21。
-
-**可能涉及：** UXUV-Pages `components/player/DesktopVideoPlayer.tsx`、`components/player/desktop/DesktopControls.tsx`、`components/player/desktop/DesktopProgressBar.tsx`、`components/player/hooks/useDesktopPlayerLogic.ts`、`work-products/tests/kvideo-player-parity.e2e.spec.ts`。
-
-**回滚：** 回滚桌面控制层而不改变媒体 URL/会话安全。
-
-### T23：复刻移动手势、全屏、PiP 与 Cast
-
-**范围：** 恢复移动控件、双击、方向、系统/网页全屏、Android PiP、标准 PiP、Google Cast 和不可用状态。
-
-**验收标准：** 触摸、桌面和 TV 遥控输入互不冲突；播放器区域方向键隔离；能力缺失时入口保留可解释状态；mock/禁用态不绕过同源媒体安全；真实 Cast/PiP 证据未获授权时对应 ID 保持 `unverified`。
-
-**验证：** PLY mobile/fullscreen/PiP/Cast mock 与播放器方向键隔离；320/768/TV 截图；真实 Cast/PiP 设备步骤只在独立 HOLD 任务执行。
-
-**依赖：** T21。
-
-**可能涉及：** UXUV-Pages `lib/hooks/useMobilePlayer.ts`、`lib/hooks/mobile/useDoubleTap.ts`、`components/player/hooks/desktop/useFullscreenControls.ts`、`components/player/hooks/desktop/useCastControls.ts`、`work-products/tests/kvideo-player-parity.e2e.spec.ts`。
-
-**回滚：** 按能力子批次回滚，保留基础播放和错误状态。
-
-### T24：复刻 HLS、代理、卡顿与失败切源策略
-
-**范围：** 恢复 HLS.js 生命周期、直连/智能重试/总是代理、Range、取消、卡顿检测、切源、延迟排序、实际分辨率和切集状态；在真实媒体事件中接入历史自动记录、同标题去重、断点续播和写入节流。
-
-**验收标准：** 上一播放实例完全销毁；取消传播到 Worker；失败切源有上限且不循环；T18 持久化代理/播放器设置真实驱动 media client；`HIS-001` 至 `HIS-005` 转 GREEN 且节流不产生高频 D1 写。
-
-**验证：** PLY strategy ID、`HIS-001` 至 `HIS-005`、持久化设置→media client 行为、HLS/Range/超时/取消 fixture、Worker `media-stream`/安全/预算现有合同。
-
-**依赖：** T14、T18、T22、T23。
-
-**可能涉及：** UXUV-Pages `components/player/hooks/useHlsPlayer.ts`、`components/player/hooks/useStallDetection.ts`、`components/player/hooks/useVideoResolution.ts`、`lib/player/resolution-cache.ts`、`lib/media/media-client.ts`。
-
-**回滚：** 恢复现有受控媒体客户端；绝不退回匿名或不受限代理。
-
-### T25：复刻弹幕聚合、轨道与 Canvas
-
-**范围：** 恢复聚合/用户 API 优先级、Canvas 渲染、滚动/顶部/底部、开关、透明度、字号、区域及播放联动。
-
-**验收标准：** 暂停/跳转/全屏后时间轴收敛；无数据/失败不影响播放；渲染量有上限且不泄漏用户 API。
-
-**验证：** DAN ID、`danmaku-canvas-utils` 语义回归、虚拟时钟 Canvas E2E 和性能边界。
-
-**依赖：** T24、T18。
-
-**可能涉及：** UXUV-Pages `components/player/DanmakuCanvas.tsx`、`components/player/hooks/useDanmaku.ts`、`lib/player/danmaku-canvas-utils.ts`、`lib/utils/danmaku-utils.ts`、`work-products/tests/kvideo-player-parity.e2e.spec.ts`。
-
-**回滚：** 禁用弹幕层并恢复明确状态，不影响视频主流。
-
-### T26：复刻广告过滤、自动跳过与自动连播
-
-**范围：** 恢复关闭/关键词/智能/激进模式、播放器切换、自定义关键词、HLS 清单过滤、片头片尾和自动连播。
-
-**验收标准：** 过滤失败安全返回原可播放清单或明确错误，不生成损坏清单；跳过/连播边界和用户覆盖与基准一致。
-
-**验证：** ADS/PLY skip ID、旧 m3u8 detector/duration-grid/filter 语义回归、恶意/边界 playlist fixture。
-
-**依赖：** T24、T18。
-
-**可能涉及：** UXUV-Pages `lib/utils/m3u8-ad-detector.ts`、`lib/utils/m3u8-utils.ts`、`components/player/hooks/useAutoSkip.ts`、`components/player/hooks/usePlaybackPolling.ts`、`work-products/tests/kvideo-player-parity.e2e.spec.ts`。
-
-**回滚：** 回滚过滤/跳过子层，保留原始安全播放路径和用户设置。
-
-### T27：复刻 IPTV 来源、分组、搜索与三级浏览
-
-**范围：** 恢复 M3U/M3U8/JSON 导入、自定义源、缓存、最多三源并发、分组/搜索/分页和源→分类→频道导航。
-
-**验收标准：** UA/Referer 与源字段完整；缓存/更新/失败状态可见；权限不足显示解释而非空白页；TV 遥控可完成源→分类→频道三级移动和选择。
-
-**验证：** IPTV browse/source ID、合成 M3U/JSON fixture、三源并发计数、三语/键盘/TV 遥控和四断点视觉。
-
-**依赖：** T16。
-
-**可能涉及：** UXUV-Pages `app/iptv/page.tsx`、`components/iptv/IPTVSourceManager.tsx`、`components/iptv/IPTVChannelGrid.tsx`、`lib/store/iptv-store.ts`、`lib/utils/m3u-parser.ts`。
-
-**回滚：** 回滚 IPTV 浏览 UI，不删除用户自定义源。
-
-### T28：复刻 IPTV 多线路播放与兼容策略
-
-**范围：** 恢复前三线路折叠、自动切源/延迟、HLS 重写、重定向/超时/重试、HEVC/H.264 选择和快捷键。
-
-**验收标准：** 切台/切线取消旧流；签名 token/权限失败有明确状态；浏览器不支持 HEVC 时选择兼容线路或解释失败；TV 快捷键和焦点不会逃出播放器。
-
-**验证：** IPTV play/line/codec ID、HLS 与重定向 fixture、Worker IPTV 安全/流合同、键盘/TV 遥控 E2E。
-
-**依赖：** T24、T27。
-
-**可能涉及：** UXUV-Pages `components/iptv/IPTVPlayer.tsx`、`lib/media/media-client.ts`、`lib/hooks/useKeyboardNavigation.ts`、`work-products/tests/kvideo-iptv-device-parity.e2e.spec.ts`；仅在 RED 证明缺口时最小改 UXUVideo `_worker.js`。
-
-**回滚：** 回滚播放器适配；Worker 路由保持认证和失败关闭。
-
-### T29：复刻 Premium 首页、推荐、分类与搜索
-
-**范围：** 恢复独立入口、分类模糊合并、多源交错、推荐、搜索和服务端授权失效处理。
-
-**验收标准：** Premium 内容不混入普通模式；聚合顺序、分类命名和加载/空/错误与基准一致；403 触发重新验证；TV/遥控可在分类、搜索和内容网格间稳定移动焦点。
-
-**验证：** PRE home/search/recommend ID、聚合 fixture、授权失效、三语/键盘/TV 遥控 E2E和四断点视觉。
-
-**依赖：** T09、T12、T20。
-
-**可能涉及：** UXUV-Pages `app/premium/page.tsx`、`components/premium/PremiumContent.tsx`、`components/premium/PremiumContentGrid.tsx`、`lib/hooks/usePremiumHomePage.ts`、`work-products/tests/kvideo-home-search-parity.e2e.spec.ts`。
-
-**回滚：** 回到 Premium 安全门和错误状态，不泄漏 Premium 源。
-
-### T30：复刻 Premium 收藏、历史与物理隔离
-
-**范围：** 恢复 Premium 收藏页、历史侧边栏、继续播放和独立本地容量/命名空间；跨设备同步接入留给 T34。
-
-**验收标准：** 普通与 Premium 数据不能互读/覆盖；账户切换清除内存视图但保留各自数据；所有入口保持原视觉；收藏/历史网格、侧边栏和确认框可用 TV/遥控完整操作。
-
-**验证：** PRE library 本地 ID、双模式双账户本地 E2E、三语/键盘/TV 遥控/四断点视觉；同步 payload 检查留给 T34。
-
-**依赖：** T13、T14、T29。
-
-**可能涉及：** UXUV-Pages `app/premium/favorites/page.tsx`、`components/favorites/FavoritesPageContent.tsx`、`components/history/WatchHistorySidebar.tsx`、`lib/store/premium-mode-settings.ts`、`work-products/tests/kvideo-home-search-parity.e2e.spec.ts`。
-
-**回滚：** 回滚 Premium 视图，不合并或删除任一模式数据。
-
-### T31：复刻 PWA 安装与静态缓存生命周期
-
-**范围：** 单独恢复 manifest、图标、安装态、Service Worker 注册、版本化静态缓存和升级清理；不在本任务改同步或设置面板。
-
-**验收标准：** SW 只缓存当前不可变首方静态资源，不缓存 API、认证或媒体；旧 cache 可安全清理；浏览器/PWA/直接刷新行为与基准一致。
-
-**验证：** `PWA-001` 至 `PWA-006`、缓存升级/离线 E2E、安装能力 mock + 人工步骤、三语/键盘/四断点。
-
-**依赖：** T06、T30。
-
-**可能涉及：** UXUV-Pages `public/sw.js`、`public/manifest.json`、`components/ServiceWorkerRegister.tsx`、`app/layout.tsx`、`work-products/tests/pwa-contract.test.mjs`。
-
-**回滚：** 发布前用新 cache 名称撤销候选；不碰 `release/0.1.2` 或用户数据。
-
-### T32：建立可独立回滚的本地优先同步基础
-
-**范围：** 只建立 ETag/CAS client、离线队列、冲突合并、重试、账户命名空间和统一同步状态；不接具体配置/来源/资料库文档 UI。
-
-**验收标准：** 网络/D1/配额失败保留本地 dirty 数据；并发 409 可重现并收敛；账户切换不串数据；基础层不假定某种文档 payload。
-
-**验证：** 双 browser context、断网/恢复、409/配额 fixture、纯合并函数和账户隔离测试。
-
-**依赖：** T07。
-
-**可能涉及：** UXUV-Pages `lib/sync/document-client.ts`、`lib/sync/document-merge.ts`、`lib/sync/document-store.ts`、`components/SyncProvider.tsx`、`work-products/tests/sync-client.test.mjs`。
-
-**回滚：** 停用远端队列并保留现有 localStorage/D1 文档；不删除 tombstone。
-
-### T33：接入配置、来源与订阅同步
-
-**范围：** 将设置、普通/Premium 来源和订阅逐类接入 T32；每类为独立 ≤5 文件子批次，先本地即时再远端 CAS。
-
-**验收标准：** 配置/来源/订阅各自有离线、冲突、配额和恢复证据；未知字段兼容保留；普通/Premium/账户命名空间不串写。
-
-**验证：** `PWA-007` 至 `PWA-009`、SET/SRC 对应 ID、逐文档双 context E2E 和 payload schema 检查。
-
-**依赖：** T16、T20、T32。
-
-**可能涉及：** UXUV-Pages `lib/hooks/useConfigSync.ts`、`lib/hooks/useCloudSync.ts`、`lib/hooks/useSubscriptionSync.ts`、`lib/store/user-sources-store.ts`、`work-products/tests/kvideo-settings-parity.e2e.spec.ts`。
-
-**回滚：** 逐文档类型关闭远端接入，保留本地数据和可前向恢复字段。
-
-### T34：接入收藏与历史同步
-
-**范围：** 将普通/Premium 收藏和历史接入 T32，保持本地即时、30 天 tombstone、播放进度节流和模式/账户隔离。
-
-**验收标准：** 双设备删除不会被旧设备复活；离线收藏/进度恢复后收敛；Premium 与普通 payload 物理隔离。
-
-**验证：** `PWA-010` 至 `PWA-014`、FAV/HIS/PRE 相关 ID、双 context 冲突/恢复与写频率测试。
-
-**依赖：** T14、T24、T30、T32。
-
-**可能涉及：** UXUV-Pages `lib/store/favorites-store.ts`、`lib/store/history-store.ts`、`lib/utils/sync-records.ts`、`components/AutoSync.tsx`、`work-products/tests/app-flows.e2e.spec.ts`。
-
-**回滚：** 关闭该两类远端同步并保留本地/D1 记录；不删除 tombstone。
-
-### T35：按 KVideo 视觉接入账户与 D1 同步状态
-
-**范围：** 将账户管理、离线/等待/冲突/配额/错误状态作为独立 SettingsSection 增量插入，不改变原设置顺序或重做同步基础。
-
-**验收标准：** super_admin/普通用户权限正确；配置、来源、订阅、收藏、历史所有文档类型的离线/等待/冲突/配额/恢复状态均可操作；不含账户级 Cloudflare 数值；新增区块的三语、键盘和四断点符合 KVideo token。
-
-**验证：** SET-004、SET-021、PWA 状态 ID、所有文档类型的权限/会话失效/离线/冲突/配额/恢复 E2E 和关键区 `0.005`。
-
-**依赖：** T15、T32、T33、T34。
-
-**可能涉及：** UXUV-Pages `components/settings/AccountSettings.tsx`、`components/SyncStatus.tsx`、`components/settings/SyncSettings.tsx`、`app/settings/page.tsx`、`work-products/tests/kvideo-settings-parity.e2e.spec.ts`。
-
-**回滚：** 移除新增区块但保留安全账户 API、同步队列和全部数据。
-
-### T36：按 KVideo 视觉接入 Cloudflare 用量卡
-
-**范围：** 只在账户管理之后、播放设置之前插入 super_admin 用量卡和根级分级提醒；普通用户/Pages 直访不请求用量 API。
-
-**验收标准：** 四项指标、账户/项目边界、警戒线、UTC 倒计时、observedAt/stale/未配置/失败状态完整；Token 不进入浏览器、D1、Cache、URL 或日志。
-
-**验证：** SET-020、现有 `usage-ui.e2e.spec.ts`、70/85/95/100 边界、权限/零请求/秘密扫描和三语/键盘/四断点视觉。
-
-**依赖：** T15、T35。
-
-**可能涉及：** UXUV-Pages `components/settings/CloudflareUsageSettings.tsx`、`components/UsageAlertProvider.tsx`、`lib/hooks/useCloudflareUsage.ts`、`app/settings/page.tsx`、`work-products/tests/usage-ui.e2e.spec.ts`。
-
-**回滚：** 移除用量卡/提醒调用，不影响账户、同步或其他设置区块。
-
-### T37：汇总 TV、WebView、三语与 WCAG 合同
-
-**范围：** 只汇总各垂直切片已实现的三语、键盘、断点、TV/遥控、错误状态和 WebView 83 可解析证据；不得在此首次实现 TV 检测、10 英尺 UI、空间导航、焦点高亮或播放器方向键隔离。发现遗漏必须退回所属任务。
-
-**验收标准：** 八路由可仅键盘/遥控操作；三语无硬编码遗漏；axe serious/critical 为 0；触摸/TV/桌面焦点不互相污染；每项能回溯所属切片证据。
-
-**验证：** `kvideo-iptv-device-parity`、`accessibility.e2e.spec.ts`、WebView 83 静态资产检查、三语截图与字符串清单。
-
-**依赖：** T28、T30、T31、T33、T34、T35、T36。
-
-**可能涉及：** UXUV-Pages `work-products/tests/kvideo-iptv-device-parity.e2e.spec.ts`、`work-products/tests/accessibility.e2e.spec.ts`、`work-products/device-evidence.md`；产品缺陷回所属任务。
-
-**回滚：** 任一证据失败即退回所属任务并恢复对应 ID 为 `unverified`；本任务没有可回滚的产品实现。
-
-### T38：复刻 VideoTogether 创建、加入与配置状态
-
-**范围：** 恢复 VideoTogetherController 的创建房间、加入房间、配置状态和禁用说明；第三方脚本仅由 Worker RuntimeConfig/CSP 允许时加载，默认关闭，禁止把凭据或房间状态写入公共 Pages 构建物。
-
-**验收标准：** mock 环境下 `EXT-001` 至 `EXT-003` 的入口、成功/失败/禁用态完整；未获第三方授权时不加载真实脚本且 ID 保持 `unverified`；播放器菜单可用 TV/遥控操作。
-
-**验证：** VideoTogether capability mock、CSP/禁用/加载失败/创建/加入、三语/键盘/TV 遥控 E2E、网络与秘密扫描；真实脚本/房间证据只在下一独立 HOLD 任务执行。
-
-**依赖：** T07、T18、T23。
-
-**可能涉及：** UXUV-Pages `components/VideoTogetherController.tsx`、`components/player/desktop/DesktopMoreMenu.tsx`、`components/RuntimeConfigProvider.tsx`、`work-products/tests/kvideo-player-parity.e2e.spec.ts`、`work-products/tests/kvideo-settings-parity.e2e.spec.ts`。
-
-**回滚：** 禁用并移除第三方脚本加载，保留明确的 KVideo 视觉禁用态；不影响播放器或 Cast。
-
-### T39：验证真实 Cast 与 VideoTogether 能力（HOLD）
-
-**执行结论（2026-08-10）：** 用户将交付边界明确为 CfGfwAX 式单文件 Worker：用户复制 `_worker.js` 到 Cloudflare 后自行完成真实设备验收。固定 VideoTogether 顶层脚本和 Codex 内置浏览器临时房间流程已验证；Cast 首方 SDK/同源代理合同通过，因无指定设备不声明真实 Cast 已验证，也不再阻断 T40-T42 本地候选。
-
-**范围：** 只有用户明确授权启用第三方脚本和使用指定设备/测试房间后，才加载真实 VideoTogether 脚本并执行创建/加入房间，同时在指定 Cast 设备上验证连接、控制和断开；未授权时只保留 T23/T38 的 mock/禁用态。
-
-**验收标准：** 真实脚本来源与 RuntimeConfig/CSP 完全一致且无额外遥测/凭据泄漏；创建/加入/失败/断开可复验；Cast 不绕过 Worker 同源媒体路径；`EXT-001` 至 `EXT-004` 只有取得真实证据后才转 `pass`。
-
-**验证：** 记录授权范围、脚本 URL 哈希/CSP、测试房间步骤、Cast 设备/浏览器版本、网络日志和秘密扫描；结果与 mock 证据分栏。
-
-**依赖：** T23、T38、显式第三方脚本/设备授权。
-
-**可能涉及：** UXUV-Pages `work-products/third-party-capability-evidence.md`；经批准的测试 RuntimeConfig/CSP 和用户指定设备，不修改公共构建物。
-
-**回滚：** 立即关闭测试 RuntimeConfig 中的第三方脚本并结束房间/投屏；保留禁用态，不删除证据。
-
-### T40：闭合全部功能对照 ID
-
-**范围：** 只聚合 T01/T02 与各切片已经生成的证据，把 `unverified` 转为 `pass` 或引用 SPEC 13.3 的 `approved-difference`；不得在此新增 ID、补做 0.1.2 RED 或首次实现产品能力。
-
-**验收标准：** 零 `unverified`、零缺测试映射、零未审批差异；每个 ID 能回溯 T02 的 0.1.2 RED、固定提交入口、目标实现和 GREEN 证据。
-
-**验证：** `npm test`、全部 KVideo 行为 E2E、矩阵一致性测试和失败注入；发现缺口立即回退 T01/T02/所属实现任务。
-
-**依赖：** T19、T25、T26、T28、T30、T31、T33、T34、T35、T36、T37、T38、T39。
-
-**可能涉及：** UXUV-Pages `work-products/kvideo-parity-evidence.md`、`work-products/tests/kvideo-feature-parity.test.mjs`、五个 KVideo E2E 文件。
-
-**回滚：** 某项回归立即恢复为 `unverified` 并阻断后续；不删除 RED/审阅证据。
-
-### T41：闭合八路由四断点视觉矩阵
-
-**范围：** 对内容/空/错误/弹窗/菜单/播放器状态执行全页、关键区、DOM、边界、token 和动效验收，并由用户审阅任何所需基线更新。
-
-**验收标准：** 全页差异 ≤0.01、关键区 ≤0.005、主布局 ≤2 CSS px；无通用仪表板/原生播放器替代；所有基线更新都有明确审批。
-
-**验证：** 固定 Chromium/字体/时区全量截图、重复两次确定性检查、视觉报告和人工对照清单。
-
-**依赖：** T40。
-
-**可能涉及：** UXUV-Pages `work-products/tests/kvideo-visual-parity.e2e.spec.ts`、`work-products/tests/fixtures/kvideo-4.9.19/`、`work-products/kvideo-visual-report.md`。
-
-**回滚：** 产品回归回所属任务；禁止用更新基线掩盖差异。
-
-### T42（历史，已完成）：形成内容冻结的本地 Pages 候选
-
-**执行结论（2026-08-10）：** `0.2.0` 的 Pages/Worker 本地门全绿；128 个 Node 合同、105 个浏览器场景、连续两轮 32/32 视觉矩阵及两次确定性构建通过。80-asset 验证清单两次 SHA-256 均为 `c0931c5b05df3579ef2cf10d5348a6e4a1b4dedc4e694ddce6b61d07dc4e3a80`。workflow 的 `expectedCommit == GITHUB_SHA`、commit-bound manifest 与固定 upload-artifact commit 均有失败关闭测试。该身份基于未提交 base HEAD，只证明本地内容可复现；未 commit、push、发布或部署。
-
-**范围：** 选择高于 `0.1.2` 的新版本，修改并验证现有 `.github/workflows/pages.yml`：发布输入/触发 commit 必须满足 `expectedCommit == GITHUB_SHA`，Actions artifact 必须携带由该 commit 构建的路径/SHA/MIME manifest。执行两仓全门和确定性构建；不 commit/push/publish。
-
-**验收标准：** Pages/Worker 本地门全绿；workflow 拒绝 expectedCommit/GITHUB_SHA 不一致并把 artifact 绑定到精确 commit；候选内容清单覆盖全部预期文件，`0.1.2` 未改变。
-
-**验证：** UXUVideo `node --check _worker.js; npm test; npm run check:size; git diff --check`；UXUV-Pages 全门；Actions workflow 静态/fixture 测试覆盖 SHA 不匹配失败、artifact manifest 生成和两次构建一致。
-
-**依赖：** T41。
-
-**可能涉及：** UXUV-Pages `package.json`、`package-lock.json`、`CHANGELOG.md`、`.github/workflows/pages.yml`、`work-products/local-gate.md`。
-
-**回滚：** 删除未提交候选输出并恢复候选版本元数据；不碰 `release/0.1.2`。
-
-### T43（历史，已完成）：冻结精确 Pages commit 与 Git tree
-
-**执行结论（2026-08-10）：** 已完成。UXUV-Pages 的最终公开发布身份为 main commit `75b3dfbc20fbcfbd8d298056e57f3c34ab65539b`、Git tree `f8b40f4cbcd4d1d0fa01de42d6871fa9e68ff79e`，发布后本地工作树保持干净。
-
-**范围：** 仅在用户明确授权 UXUV-Pages commit 后，提交 T42 已验证的精确文件集合；提交过程中禁止修改代码、测试、workflow 或 Pages 配置。
-
-**验收标准：** commit 的 Git tree 与 T42 候选内容清单逐文件一致；创建后工作树干净；commit SHA、tree SHA、版本、artifact manifest SHA、release manifest SHA 和回滚点记录齐全。
-
-**验证：** 对该 commit 在干净临时工作区重跑 release build/核心合同，比较 tree/artifact manifest/release manifest/资产哈希；差异即废弃候选并回 T42。
-
-**依赖：** T42、显式 commit 授权。
-
-**可能涉及：** UXUV-Pages Git commit、`work-products/pages-candidate-identity.md`；不再改产品文件。
-
-**回滚：** 未 push 时保留或按用户指示撤销 commit；禁止 reset/checkout 覆盖工作树。
-
-### T44（历史，已完成）：发布精确 Pages commit
-
-**执行结论（2026-08-10）：** 已完成。push 触发的验证运行 `31403111681` 与 Pages 发布运行 `31403199106` 均成功；`gh-pages` 固定为 `ebee3e674cbed5d7f577509162456823bd9a1da7`，公网根路径指向 `0.2.0`，release manifest 为 80 assets / SHA-256 `ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175`。
-
-**范围：** 仅在用户明确授权 push/gh-pages/Pages 设置后，推送 T43 精确 commit，并以该 SHA 作为 `expectedCommit` 运行已验证的 `pages.yml`；禁止在发布步骤修改候选文件或 workflow。
-
-**验收标准：** Actions `GITHUB_SHA` 等于 T43 commit；Actions artifact manifest、`gh-pages` tree manifest 和公网路径/SHA/MIME manifest 逐级一致；`0.1.2` 字节不变；失败时不更新 Worker。
-
-**验证：** 核对 Actions run head SHA/artifact digest、`gh-pages` tree、公开 release manifest、全部路径/SHA/MIME、8 路由和缓存头；公网字节与 Actions artifact manifest 比较，而不是直接假定等同源码树。
-
-**依赖：** T43、显式 push/Pages 授权。
-
-**可能涉及：** 远端 `main`/`gh-pages`、GitHub Pages 设置、UXUV-Pages `work-products/pages-publication.md`；不修改本地业务代码。
-
-**回滚：** Pages 服务继续指向最后已验证版本或恢复设置；禁止覆盖/删除历史版本。
-
-### T45（历史，已完成）：验证公开字节并更新本地 Worker 固定版本
-
-**执行结论（2026-08-10）：** 已完成。`gh-pages` 与公网 release manifest 字节一致，80/80 公开资产 SHA-256 匹配；本地 Worker 已固定到 Pages `0.2.0`、commit `75b3dfbc20fbcfbd8d298056e57f3c34ab65539b` 和 manifest SHA-256 `ddd6377eed91b3073019d5065c2dddc141bf28070d3127f0ddda797fd7c88175`。Worker 不信任 GitHub Pages 的上游 MIME 表达，而在资产哈希通过后使用已固定 manifest 的 MIME；定向合同 16/16 通过。未 commit、未部署 Worker。
-
-**当前解释（2026-08-11）：** 上述 pin 是历史事实，不再是目标状态。T49-T53 将以新的版本兼容合同替代它；不得把历史 SHA 复制到新的 Worker、manifest、文档或发布门。
-
-**范围：** 先只读验证 T44 的 Actions artifact→`gh-pages` tree→公网字节链，再最小更新 `_worker.js` 的固定 Pages 版本、Pages commit/tree 和 manifest SHA；尚不 commit 或部署 Worker。
-
-**验收标准：** Worker 只接受新不可变版本；任一公开字节/哈希/Contract 或 Worker 按 manifest 返回的 MIME 不符即 503 且停止；旧 Worker/Pages 固定身份被保留为回滚基线。
-
-**验证：** `pages-integrity.test.mjs`、Worker 全量/语法/大小/秘密扫描、公开只读探测和 `git diff --check`。
-
-**依赖：** T44。
-
-**可能涉及：** UXUVideo `_worker.js`、`work-products/tests/pages-integrity.test.mjs`、`CHANGELOG.md`、`work-products/release-gate.md`。
-
-**回滚：** 逐行恢复旧 pin 常量和版本说明；不修改 Pages 公共字节或 D1。
-
-### 原 T46-T48：旧精确身份/部署流程（已取代，不执行）
-
-原任务依赖 Worker 固定 Pages commit、manifest SHA 和版本，因此与 2026-08-11 的兼容发布合同冲突。它们从未获得执行授权，也不得继续作为当前待办；历史文本由 Git 保留，当前执行从 T49 开始。
-
-### T49：先建立 Pages 兼容发布 RED 合同
-
-**执行结论（2026-08-11）：** 已完成。UXUVideo 聚焦门 18 项中 13 项按预期失败，根因覆盖 manifest SHA、硬编码 Pages 版本、三项 pin 常量和整资产旧校验；UXUV-Pages 聚焦门 15 项中 7 项按预期失败，根因覆盖 commit 必填、SHA/SRI manifest、版本目录、`expectedCommit` 和旧 identity helper。其余既有子合同通过，未发现测试语法或环境损坏。
-
-**范围：** 只改两仓 `work-products/tests/`。UXUVideo 用内存构造的 manifest/stream 替代对固定 `origin/gh-pages` 字节和 SHA 的单元测试依赖；UXUV-Pages 先把发布清单、根目录产物和 workflow 的新合同写成可执行失败断言。不改业务代码、脚本或 workflow。
-
-**验收标准：** RED 至少证明当前实现仍依赖 `PAGES_VERSION`、`PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256`、`gitCommit`、资产 `sha256`/`sri`、版本输出目录和 `expectedCommit`；并覆盖兼容 `pagesVersion` 可变、非法 semver、API Contract 不匹配、Worker range 不兼容、危险路径、错误 MIME、缺失 404、超限/无长度资产、无 Pages 密钥以及动态版本头/运行时配置。
-
-**验证：** 分别运行 UXUVideo `node --test work-products/tests/pages-integrity.test.mjs work-products/tests/worker-route-contract.test.mjs work-products/tests/worker-only-boundary.test.mjs` 与 UXUV-Pages `node --test work-products/tests/release-manifest.test.mjs work-products/tests/pages-deployment.test.mjs work-products/tests/pwa-contract.test.mjs`；保存预期失败测试名和失败原因，确认失败来自旧合同而非 fixture/环境损坏。
-
-**依赖：** T45 历史基线、已修订 SPEC 第 7/14/15/16 节。
-
-**可能涉及：** UXUVideo `work-products/tests/pages-integrity.test.mjs`、`work-products/tests/worker-route-contract.test.mjs`、`work-products/tests/worker-only-boundary.test.mjs`；UXUV-Pages `work-products/tests/release-manifest.test.mjs`、`work-products/tests/pages-deployment.test.mjs`、`work-products/tests/pwa-contract.test.mjs`。测试从最终位置用 `../../...` 或 `../../../UXUV-Pages/...` 相对引用仓库文件。
-
-**回滚：** 只撤销本任务新增的失败断言；不恢复或改写现有产品文件。
-
-### T50：让 Worker 按版本兼容加载 Pages
-
-**执行结论（2026-08-11）：** 已完成。聚焦门 18/18 GREEN；`node --check _worker.js` 通过。Worker 只固定公开 Pages 根地址，动态读取兼容 manifest 版本，拒绝非 200、错误 MIME、无效/超限长度与实际超限流，并且不向 Pages 转发认证信息。定向源码扫描未发现旧版本、commit、manifest SHA 或资产 SHA/SRI pin。
-
-**范围：** 最小修改 UXUVideo `_worker.js`：删除 `PAGES_VERSION`、`PAGES_GIT_COMMIT`、`PAGES_MANIFEST_SHA256` 和 `PAGES_RELEASE`；保留固定公共 `PAGES_BASE_URL`。manifest 只校验 `schemaVersion`、合法 `pagesVersion`、相同 `apiContract`、覆盖当前 Worker 的 `workerRange`、安全 route/asset 映射、允许 MIME 和 404；忽略旧 manifest 中多余的 commit/SHA/SRI 字段，以便一次性迁移期间继续服务当前 Pages。
-
-**验收标准：** 同一 Worker 可接受两个不同且兼容的 Pages 版本以及“同版本、不同内容”的合法清单；拒绝非法版本/API/range/路径/MIME/缺失资源。资产上游必须为 200、拒绝重定向、`Content-Type` 与 manifest 一致，并提供不超过上限的有效 `Content-Length`；响应体通过计数流返回，实际字节超限时取消上游，不为 SHA 缓冲整份资产。静态响应和 `/api/config` 使用该次已验证 manifest 的 `pagesVersion`；其他未读取 manifest 的 API 响应不得回报伪造或过期 Pages 版本。Pages 请求不发送 Cookie、Authorization、Secret、Token 或任何对接密钥。
-
-**验证：** T49 UXUVideo RED 全部转 GREEN；源码定向扫描确认不存在三项 pin 常量及 Pages 资产 SHA/SRI 比较；测试验证 `/api/config`、静态响应头和结构化日志中的版本来自 manifest，不来自 Worker 字面量。
-
-**依赖：** T49。
-
-**可能涉及：** UXUVideo `_worker.js` 及 T49 已列 UXUVideo 测试；不改 D1 schema、认证、媒体代理或其他 API。
-
-**回滚：** 恢复本任务前的 Worker 文件即可；尚未远端更新时不触碰 Pages 或 D1。
-
-### T51：把 UXUV-Pages 简化为单一根目录发布
-
-**执行结论（2026-08-11）：** 已完成。UXUV-Pages 聚焦门 15/15 GREEN。构建器生成并原子替换 `release/current`，同版本同内容返回 unchanged、同版本内容修订会更新当前产物；manifest 不再包含 commit/SHA/SRI。workflow 不再接收 `expectedCommit`，Actions artifact 以 run ID 区分，并把 `release/current` 同步到 `gh-pages` 根目录；专用 commit 身份脚本已删除。
-
-**范围：** 修改 UXUV-Pages 发布脚本与 workflow：manifest 仅保留 `schemaVersion`、`pagesVersion`、`apiContract`、`workerRange`、`routes`、资产 `path/contentType`；生成单一当前产物目录，允许同一语义版本在内容修订后重建；workflow 直接发布该目录到 `gh-pages` 根，不再生成/保护版本目录，不要求 `expectedCommit`，并删除只服务 SHA 身份固定的脚本与测试。Git 历史和 Actions artifact 仍可作为审计/回滚记录，但不进入运行时 manifest 或 Worker 判断。
-
-**验收标准：** release manifest 不含 `gitCommit`、`sha256`、`sri` 或密钥；同版本内容变更能替换当前本地产物；workflow 无 `release/${PAGES_VERSION}`、`protect /0.2.0`、`EXPECTED_COMMIT` 或自定义 commit-SHA 校验；构建仍拒绝缺文件、危险路径、未知 MIME、Secret 文本和不合法版本/API/range。
-
-**验证：** T49 UXUV-Pages RED 全部转 GREEN；连续两次相同输入产物一致，同版本内容修改后当前产物更新；静态扫描确认 workflow/发布脚本不再支持公开版本目录或 SHA 身份字段，且测试仍覆盖根目录 `.nojekyll`、`rsync --delete` 和 Actions 最小权限。
-
-**依赖：** T49。可与 T50 分仓实施，但在 T53 前合并验证。
-
-**可能涉及：** UXUV-Pages `scripts/build-release.mjs`、`scripts/verify-release-identity.mjs`（删除）、`.github/workflows/pages.yml`、`package.json` 及 T49 已列 UXUV-Pages 测试。
-
-**回滚：** 恢复旧脚本/workflow；本任务不运行 Actions、不改 `gh-pages`、不删除公开目录。
-
-### T52：同步文档、版本诊断与仓库边界
-
-**执行结论（2026-08-11）：** 已完成。README 与 Unreleased 变更记录现明确：Pages 公开根无对接密钥，兼容 Pages 可独立发布，只有 API Contract 或 `workerRange` 不兼容时才要求更新 Worker；回滚为重新发布上一份兼容 artifact。Worker 私有 `DB`、`ADMIN_PASSWORD`、`AUTH_SECRET` 等边界保持不变。文档边界门 5/5 GREEN，Pages 聚焦门仍为 15/15 GREEN。
-
-**范围：** 只更新两仓与本轮合同直接相关的 README/CHANGELOG/边界测试：说明这是一次性 Worker 迁移，之后兼容 Pages 可独立发布；公开 Pages 无对接密钥；API Contract 或 `workerRange` 变化才要求 Worker 更新；回滚为重新发布上一兼容 Pages artifact。清除把 Pages commit/SHA/固定版本描述成运行时必要条件的文字。
-
-**验收标准：** 文档不再要求用户复制 Pages SHA/commit 或为 Pages 配密钥；明确 `DB`、`ADMIN_PASSWORD`、`AUTH_SECRET` 仍是 Worker 私有配置，未被本轮放宽；版本目录、`main/latest` 拼接和生产状态声明均无回归。
-
-**验证：** 文档/边界合同 GREEN；扫描 `PAGES_GIT_COMMIT|PAGES_MANIFEST_SHA256|release/0.2.0|UXUV-Pages/0.2.0` 仅允许出现在历史证据或明确的反向测试中；秘密扫描零新增命中，`git diff --check` 通过。
-
-**依赖：** T50、T51。
-
-**可能涉及：** UXUVideo `README.md`、`CHANGELOG.md`、`work-products/tests/worker-only-boundary.test.mjs`；UXUV-Pages 现有变更日志/发布合同文档和相应测试。
-
-**回滚：** 只恢复本任务文档和边界断言；不改变已验证代码。
-
-### T53：闭合两仓本地兼容与迁移顺序
-
-**执行结论（2026-08-11）：** 已完成。五组合矩阵 GREEN：新 Worker 可服务带旧 commit/SHA/SRI 多余字段的 manifest、新精简 manifest、同版本修订内容和新兼容版本，并对不兼容 range 失败关闭。UXUVideo 语法通过、89/89 测试通过、gzip 38,554/3,145,728 bytes；UXUV-Pages lint、静态 build、130/130 单测通过。Playwright 首轮 105/107 暴露两个仍查找旧“搜索 …”链接的过期断言，页面实际已正确显示“播放 …”按钮；按现有直达影片合同修正测试后，失败文件 3/3、全量 107/107 通过。两仓秘密扫描与 `git diff --check` 均通过。证据仅为本地候选，不代表已 commit、push、发布或生产可用。
-
-**范围：** 不新增功能。按矩阵验证“新 Worker + 当前旧字段 manifest”“新 Worker + 新精简 manifest”“新 Worker + 同版本修订内容”“新 Worker + 新兼容版本”“不兼容 API/range”五种组合；把一次性远端顺序固定为先 Worker、后 Pages。不得用“旧 Worker + 新 manifest”作为可发布组合。
-
-**验收标准：** 前四种合法组合按合同成功，不兼容组合失败关闭；当前旧 manifest 的多余 SHA/commit 字段不会阻止新 Worker，精简 manifest 不再依赖这些字段；本地候选不含 Secret，Worker gzip 小于 3 MiB，两仓工作树差异均可审阅。
-
-**验证：** UXUVideo `node --check _worker.js`、`npm test`、`npm run check:size`、秘密扫描、`git diff --check`；UXUV-Pages `npm test`、`npm run lint`、`npm run build`、`npm run test:e2e`、秘密扫描、`git diff --check`。任何因环境而未运行的门必须单列，不得以其他绿色结果替代。
-
-**依赖：** T52。
-
-**可能涉及：** 两仓既有 `work-products/tests/` 和本计划/清单状态；不修改生产业务逻辑。
-
-**回滚：** 若矩阵失败，退回对应 T50/T51/T52；不执行远端动作。
-
-### T54：先建立顶部导航与首字符设置入口 RED
-
-**范围：** 只修改 UXUV-Pages 的既有合同测试，先证明当前 `ContentNavigation` 仍含 GitHub、收藏、独立设置和语言控件，用户区仍显示全名并有多余 wrapper；不改组件或样式。
-
-**验收标准：** RED 同时锁定四个删除项只从 `ContentNavigation` 消失、品牌/IPTV/主题/退出继续存在、普通与 Premium 首字符入口分别指向 `/settings` 和 `/premium/settings`；并覆盖空名回退、代理对不被拆开、直接文本根和无完整用户名泄露。
-
-**验证：** `node --test work-products/tests/home-ui-contract.test.mjs work-products/tests/global-shell-contract.test.mjs` 必须出现与上述旧 DOM 精确对应的预期失败，现有无关断言仍通过；保存失败测试名，不以源码字符串扫描代替可执行合同。
-
-**依赖：** T53、已批准 SPEC 第 20 节。
-
-**可能涉及：** UXUV-Pages `work-products/tests/home-ui-contract.test.mjs`、`work-products/tests/global-shell-contract.test.mjs`。
-
-**回滚：** 只撤销本任务新增 RED；无产品行为变化。
-
-### T55：建立全局更新、三列语言与默认图标 RED
-
-**范围：** 只在 UXUV-Pages `work-products/tests/` 增补失败合同；不改组件、CSS、图标或构建配置。新增测试须从最终位置以相对路径引用产品文件，并纳入仓库 `npm test`。
-
-**验收标准：** RED 证明当前版本区块仍在普通/Premium 设置页、认证 shell 未单挂全局入口、语言仍含 hint/`small` 且不能保证三等列、默认图标仍是旧设计；同时保护三种 locale、运行时 `site.iconUrl` 优先和未受影响设置说明。
-
-**验证：** 定向运行 `app-update-control-contract.test.mjs`、`settings-preferences-contract.test.mjs`、`premium-settings-contract.test.mjs`、`pwa-contract.test.mjs`，确认失败来自当前实现而非 fixture、导入或环境损坏。
-
-**依赖：** T53、T54 可并列准备但不得修改其测试所有权。
-
-**可能涉及：** UXUV-Pages `work-products/tests/app-update-control-contract.test.mjs`（新增）、`settings-preferences-contract.test.mjs`、`premium-settings-contract.test.mjs`、`pwa-contract.test.mjs`、`package.json`。
-
-**回滚：** 只撤销本任务新增 RED 与测试脚本登记；不恢复或改写产品文件。
-
-### T56：建立 Worker 按需复制源码 RED
-
-**范围：** 只在 UXUVideo `work-products/tests/` 新增/扩展 `app-update` 合同；默认元数据 GET、现有鉴权与 23 路径权威列表先作为不可退化基线，不改 `_worker.js`。
-
-**验收标准：** RED 覆盖 `artifact=worker` 的 401、固定配置上游、点击路径按需请求、200 原字节/版本/SHA-256/安全头，以及 409 版本不一致、413 超限、502 上游/解析失败、陈旧候选零复用和秘密零回显；默认 JSON 字段与状态仍兼容。
-
-**验证：** `node --test work-products/tests/app-update-artifact.test.mjs work-products/tests/worker-route-contract.test.mjs work-products/tests/low-fanout-routes.test.mjs`；预期失败必须集中在缺失 artifact 分支，既有元数据与路由合同保持 GREEN。
-
-**依赖：** T53、已批准 SPEC 20.5。
-
-**可能涉及：** UXUVideo `work-products/tests/app-update-artifact.test.mjs`（新增）、`work-products/tests/worker-route-contract.test.mjs`、`work-products/tests/low-fanout-routes.test.mjs`。
-
-**回滚：** 只撤销本任务新增 RED；不修改 Worker、D1 或配置。
-
-### T57：简化顶栏并把首字符变为设置入口
-
-**范围：** 最小修改 `ContentNavigation` 与其直接样式：删除四个指定控件及孤儿 import/文案，保留品牌、条件 IPTV、主题和退出；把用户可见首字符本身改为唯一设置链接，不新增认证字段或包装组件。
-
-**验收标准：** 普通/Premium 目标正确；去除空白后取首个 Unicode code point，不拆代理对，回退现有 session 用户名后仍为空则显示 `?`；直接文本节点、仅本地化“打开设置”可访问名称，DOM/tooltip 均无全名。
-
-**验证：** T54 全部转 GREEN；补跑 ContentNavigation 的四个调用方合同，键盘/焦点/44 px 命中区与主题、退出、IPTV、收藏路由可达性无退化。
-
-**依赖：** T54。
-
-**可能涉及：** UXUV-Pages `components/ContentNavigation.tsx`、`app/globals.css`、T54 两个测试文件。
-
-**回滚：** 仅恢复顶栏组件和本任务 CSS；路由、收藏数据、locale 持久化和认证 API 从未改变。
-
-### T58：把语言设置收敛为三列直接按钮
-
-**范围：** 只调整 `DisplaySettings` 的语言子区和对应 CSS；保留搜索显示等其他 `Choice` 说明，不为语言选项创建一次性包装组件。
-
-**验收标准：** `zh-CN`、`zh-TW`、`en` 在四断点始终一行三等列，只显示三个语言名称；无语言区 hint/选项 `small`，按钮保留 `aria-pressed`、Tab/Enter/Space、可见焦点和至少 44 px 高度，选中不只靠颜色。
-
-**验证：** T55 的语言 RED 转 GREEN；普通/Premium 持久化与即时切换合同、其他设置 helper text、320 px 无溢出和 200% 文本缩放均通过。
-
-**依赖：** T55。
-
-**可能涉及：** UXUV-Pages `components/settings/DisplaySettings.tsx`、`app/globals.css`、`work-products/tests/settings-preferences-contract.test.mjs`、`premium-settings-contract.test.mjs`、`data-settings-contract.test.mjs`。
-
-**回滚：** 恢复语言子区与专属 CSS；locale 值和存储 schema 不变。
-
-### T59：让 Worker 安全返回按需 `_worker.js`
-
-**范围：** 最小扩展现有 `app-update` 分支：默认 GET 继续返回原 JSON并可追加同源 `copy` 描述；仅 `artifact=worker` 时从 Worker 配置固定且经现有仓库/分支校验的 raw URL 获取源码。复用 `controlledFetch`、命名上限、结构化错误和会话鉴权，不新增路由。
-
-**验收标准：** 源码仅点击后请求，原字节不超过 3 MiB，解析的 `WORKER_VERSION` 与本次远端 latest 完全一致后才以 `text/javascript; charset=utf-8`、`private, no-store`、`nosniff`、版本及原字节 SHA-256 头返回；401/409/413/502 稳定且不回显上游正文或秘密。
-
-**验证：** T56 全部转 GREEN；`node --check _worker.js`、`npm test`、`npm run check:size`、23 路径合同、受控重定向/HTTPS/长度/超限流合同和 `git diff --check` 通过。
-
-**依赖：** T56。
-
-**可能涉及：** UXUVideo `_worker.js` 与 T56 三个测试文件；不改 D1 schema、认证模型、Pages 加载或媒体 API。
-
-**回滚：** 删除 `artifact` 分支和新增 `copy` 字段即可恢复旧元数据行为；无数据迁移或远端状态。
-
-### T60：把版本设置组件改造成单一全局更新控件
-
-**范围：** 原地迁移/重命名 `AppVersionSettings`，不保留大设置卡与新控件两份实现。复用既有状态解析和 `useDialogFocusTrap`，实现紧凑入口、单 overlay 弹窗、按需复制与受控 textarea fallback；不新建只转发 props 的 wrapper。
-
-**验收标准：** 五种状态、当前/最新版本、可信时间、变更/仓库链接、重试/关闭和复制反馈三语齐全；`update-available`/`up-to-date` 可复制，`loading`/`ahead-of-remote`/`check-failed` 禁用；只接受版本与弹窗 latest 一致的 200 正文，失败即清空候选。
-
-**验证：** `app-update-control-contract.test.mjs` 的组件/状态/复制合同转 GREEN；焦点进入/陷阱/Escape/归还、背景不可交互、`aria-live`、无自动剪贴板/部署跳转、无卡片套卡片均有测试。
-
-**依赖：** T55、T59。
-
-**可能涉及：** UXUV-Pages `components/settings/AppVersionSettings.tsx`（重命名或替换为单一 `AppUpdateControl`）、`app/globals.css`、`work-products/tests/app-update-control-contract.test.mjs`。
-
-**回滚：** 恢复旧组件文件和版本 CSS；Worker artifact 分支可独立保留且不会被自动调用。
-
-### T61：在认证 application-shell 单挂入口并移出设置页
-
-**范围：** 在 `PasswordGate` 的认证后 `application-shell` 挂载一次 T60 控件；从普通和 Premium 设置页移除旧版本区块/import，保持后续设置顺序。公开、加载、错误和登录分支不挂载控件。
-
-**验收标准：** 八个认证路由共享同一实例，路由切换每会话只自动检查一次；非认证分支无入口且不请求 `/api/app-update`；普通/Premium 设置页不再出现大型版本首块，其他区块顺序和功能不变。
-
-**验证：** `global-shell-contract.test.mjs`、`app-update-control-contract.test.mjs`、`premium-settings-contract.test.mjs` 转 GREEN；路由切换/卸载 abort、显式重试和会话账户变更行为可复验。
-
-**依赖：** T60。
-
-**可能涉及：** UXUV-Pages `components/PasswordGate.tsx`、`app/settings/page.tsx`、`components/premium/PremiumSettingsExperience.tsx`、`work-products/tests/global-shell-contract.test.mjs`、`premium-settings-contract.test.mjs`。
-
-**回滚：** 恢复两设置页挂载并从 shell 移除控件；不改变 API 或存储数据。
-
-### T62：闭合顶栏与全局更新入口的响应式、无障碍和视觉减层
-
-**范围：** 用既有 spacing/color/z-index token 调整本节涉及 CSS，并补 Playwright；只为应用 chrome 统一预留空间，不做逐页 transform/margin 补丁，不触碰播放器业务逻辑。
-
-**验收标准：** 320/768/1024/1440 px、安全区和 200% 文本缩放下，44 px 入口不覆盖用户入口、播放器控制、用量提醒、标题或弹窗关闭；更新提示非纯颜色、无持续脉冲，reduced-motion 下无运动；overlay 外不新增明显 elevation。
-
-**验证：** 八路由各恰有一个入口；非认证分支零入口/零更新请求；五状态、复制成功/失败、陈旧候选清除、ahead 禁用、焦点/Escape/归还、键盘与 axe 在 `app-update-control.e2e.spec.ts` 和 `accessibility.e2e.spec.ts` 通过。
-
-**依赖：** T57、T58、T61。
-
-**可能涉及：** UXUV-Pages `app/globals.css`、`work-products/tests/app-update-control.e2e.spec.ts`（新增）、`app-flows.e2e.spec.ts`、`accessibility.e2e.spec.ts`。
-
-**回滚：** 恢复本任务 CSS 和 E2E；T57-T61 的独立功能合同仍可单独回滚/验证。
-
-### T63：生成并验证蓝灰 U/V 默认图标候选
-
-**范围：** 使用位图资产流程生成单一 1024×1024 PNG 候选，替换项目默认 `public/icon.png`；固定 `#0F172A`、`#60A5FA`、`#94A3B8`，仅允许小面积 `#E2E8F0`。不得新增 `.ico`、网络字体、依赖、渐变、发光、3D、颗粒或重阴影。
-
-**验收标准：** U 为外轮廓、V 居中且两者可辨，关键笔画在 40% mask 安全圆内；16/32/48 px 不依赖小于 2 输出像素的关键间隙，192/512/1024 无脏边/透明杂点；metadata/manifest/Worker 默认引用不变，运行时自定义图标仍优先。
-
-**验证：** `pwa-contract.test.mjs` 与新增 `icon-visual-contract.test.mjs` 检查 PNG 尺寸、模式、固定色、引用和安全区；在 `work-products/tests/fixtures/icon-review/` 生成六档缩放及圆形/圆角矩形 mask 组合预览，交给 T64 审阅。
-
-**依赖：** T55。图标资产的视觉验收依赖 T64，不因自动合同 GREEN 而自动批准。
-
-**可能涉及：** UXUV-Pages `public/icon.png`、`work-products/tests/pwa-contract.test.mjs`、`work-products/tests/icon-visual-contract.test.mjs`（新增）及其 `fixtures/icon-review/` 预览。
-
-**回滚：** 恢复旧 `public/icon.png` 并删除本任务预览/合同；运行时自定义品牌不受影响。
-
-**T54-T63 执行证据（2026-08-11）：** T54 顶栏 RED 为 2 个预期失败，T56 Worker artifact RED 为 5 个预期失败，T55 的全局更新/三列语言/旧图标合同均按当前缺口失败；实施后顶栏/语言合同 17/17、全局更新相关静态合同 24/24、Worker 定向合同 19/19、图标/PWA/runtime 合同 10/10、全局更新 E2E 3/3 均 GREEN。UXUV-Pages lint 与构建通过；八路由与 320/768/1024/1440 px 的单入口、非认证零请求和页头不重叠已验证。T63 生成 1024 PNG、六档缩放、圆形/圆角 mask 及三语/四断点局部审阅图；这些自动证据不替代 T64 的用户视觉批准。
-
-### T64：审阅并冻结第 20 节局部视觉基线（已完成）
-
-**范围：** 向用户展示 T63 六档/mask 预览，以及 T57-T62 在四断点和三语的“旧实现 / 新候选 / 规格依据”对照；只在用户明确批准后更新受影响区域的视觉快照。未受影响区域继续使用原阈值和基线。
-
-**验收标准：** 用户明确批准图标候选、顶栏、版本入口/弹窗和语言区；局部快照只覆盖批准区域，全页 `0.01`、关键区 `0.005` 阈值不放宽；任何未批准差异返回所属任务修订。
-
-**验证：** 人工审批记录、快照 diff 和基线文件一一对应；连续两轮视觉测试稳定，mask/小尺寸预览可见，不以自动接受或更新全页快照消除差异。
-
-**依赖：** T62、T63、用户对可见候选的明确批准。
-
-**可能涉及：** UXUV-Pages 既有 `work-products/tests/kvideo-visual-parity.e2e.spec.ts`、其局部 snapshot/fixture、`work-products/kvideo-parity-matrix.md` 的批准差异证据；不改产品逻辑。
-
-**回滚：** 删除未批准或错误更新的局部基线，恢复上一批准快照；产品候选退回 T57-T63 对应任务。
-
-**T64 执行证据（2026-08-11）：** 用户回复“批准四项候选”，明确批准图标、顶栏、版本入口/弹窗和语言区。视觉套件仅把这些差异从固定 KVideo DOM 结构比较中隔离，页面主体、token 与其余交互仍继续比较；完整候选写入八路由 × 四断点共 32 个快照，`maxDiffPixelRatio: 0.01` 未放宽。基线写入后以 `--repeat-each=2` 连续运行 64/64 GREEN，六档图标与两种 mask 预览保留。
-
-### T65：闭合第 20 节两仓本地总门
-
-**范围：** 不新增功能。聚合 T54-T64 的合同、视觉和审批证据，更新第 20 节对应矩阵状态；发现失败必须退回拥有该文件的任务，不在总门顺手修补。
-
-**验收标准：** 第 20 节 20.10 全部满足，T64 有明确批准；两仓差异只落在 20.7 允许文件/测试/证据，未新增路由、依赖、Secret、`.ico`、D1/auth/media 变更；工作树候选可独立审阅和回滚。
-
-**验证：** UXUVideo 运行 `node --check _worker.js`、`npm test`、`npm run check:size`、既有秘密/边界扫描、`git diff --check`；UXUV-Pages 运行 `npm test`、`npm run lint`、`npm run build`、`npm run test:e2e`、既有秘密/发布扫描、`git diff --check`。结果只证明本地工作树，不证明 commit、push、Pages 或 Worker 部署。
-
-**依赖：** T64。
-
-**可能涉及：** 两仓既有测试/证据，以及 UXUVideo `work-products/plan.md`、`todo.md` 和 UXUV-Pages `work-products/kvideo-parity-matrix.md`；不修改业务逻辑。
-
-**回滚：** 若总门失败，退回首个失败任务；不执行 T66-T68 或任何远端动作。
-
-**T65 执行证据（2026-08-11）：** 首轮完整 E2E 为 101/110，8 项来自已删除顶栏语言/全名/旧版本卡片的过期测试路径，1 项暴露更新入口层级高于历史侧栏的真实遮挡；分别退回受影响测试与 T62，将入口保持在全局右上区域但置于所有 overlay 下方。聚焦遮挡/更新控件回归 4/4、完整 E2E 110/110、视觉基线复验 32/32 GREEN；此前 `--repeat-each=2` 稳定性门 64/64 GREEN，阈值仍为 `0.01`。最终 UXUVideo `node --check`、95/95 单测、gzip 39,409/3,145,728 B；UXUV-Pages 139/139 单测、lint、Next 生产构建（8 个应用路由与 `_not-found`、27 个 chrome83 client assets）全部通过。两仓秘密/边界合同和 `git diff --check` 通过；仅形成未提交、未推送、未部署的本地工作树候选。
-
-### T66：一次性更新 Worker（已完成）
-
-**范围：** 仅在用户另行授权复制或部署后，把 T65 已验证、含安全 artifact 分支且保留 T53 Pages 兼容合同的 Worker 先更新到目标 Cloudflare；此时公开 Pages 保持当前版本，禁止同时切 Pages。
-
-**验收标准：** 目标 Worker 继续通过当前公开根 manifest 服务首页/静态资产，默认 `/api/app-update` 向后兼容，登录后点击 artifact 能返回版本一致源码；既有认证/D1/API 冒烟无退化，未发送 Pages 密钥。
-
-**验证：** 记录用户复制或经授权部署的 Worker 版本/deployment ID、artifact 安全头/哈希和当前 Pages 根目录只读探测。不得用本地测试冒充远端完成。
-
-**依赖：** T65、显式 Worker 复制/部署授权。
-
-**可能涉及：** 用户 Cloudflare Worker；不改 Pages、D1 schema 或 Secret 值。
-
-**回滚：** 恢复上一 Worker；Pages 尚未改变，因此无需同步回滚 Pages。
-
-**远端证据（2026-08-13）：** 用户已明确授权 Cloudflare 发布。`my-blog` 控制台显示活动且最新部署 `a9872e9d`，编辑器无待部署改动；控制台实时日志连续记录根请求 `200`、Worker `1.1.0`、Pages `0.2.0`、API Contract `1`。公开根、`/api/config` 与匿名 session 冒烟通过，未登录 artifact 按合同返回 `401 AUTH_REQUIRED`。权威 `_worker.js` commit `9ba3f19d9743dd8c1aa5370686ffde93b3c1e595` 的本地与 GitHub 原字节相等，SHA-256 为 `d0640a7fc6655c70c7c3dab962ec0c7bbef1d1eb73b13307ece43e292074b09b`。随后使用用户指定的 Edge 登录态打开版本弹窗，当前/最新版本均为 `1.1.0`；点击“复制最新 _worker.js”后 UI 显示复制成功。系统剪贴板原始 CRLF 文本为 169,879 bytes，换行标准化后为 165,661 bytes，SHA-256 与权威源码完全相同，源码内 `WORKER_VERSION` 为 `1.1.0`。
-
-### T67：发布第 20 节 Pages 并清理旧版本目录（已完成）
-
-**范围：** 仅在 T66 远端证据通过且用户另行授权 UXUV-Pages commit/push/Pages 发布后，发布 T65 的根目录产物。先只读确认生产 HTML/JS/manifest 已无旧版本路径引用，再让既有 `rsync --delete` 删除 `gh-pages` 遗留版本目录；不配置对接密钥。
-
-**验收标准：** 公开根 manifest/八路由/关键资产正确，已批准 U/V 图标和全局版本入口经 Worker 可见；旧版本目录不存在或 404，生产无旧路径请求；兼容 Pages 再次小改无需修改 Worker。
-
-**验证：** Actions、`gh-pages` tree、公开根 manifest、浏览器网络/交互、Worker/Pages 版本头分层记录；旧目录删除前后路径清单可审阅，删除仅限已确认 `gh-pages` 遗留目录。
-
-**依赖：** T66、显式 UXUV-Pages commit/push/Pages 发布与远端目录清理授权。
-
-**可能涉及：** UXUV-Pages `main`/`gh-pages` 和 GitHub Pages；不修改 Worker、D1 或 Cloudflare Secret。
-
-**回滚：** 把上一兼容 Pages artifact 重新发布到根目录；Worker 保持不变。若 UI 回归，优先 Pages-only 回滚。
-
-**远端证据（2026-08-13）：** UXUV-Pages `main` 为 `269cc6bceddfb081d73665e1dc035920fb238bbc`；发布 workflow `31620747975` 成功，系统 Pages workflow `31620826087` attempt 2 成功，`gh-pages` 为 `37e7b3ce8092102df8af161ba472aa2535b21a0f`。公开发布 80 个资产加 manifest 与发布候选逐字节一致，零 mismatch；远端 tree 无 `0.1.2/` 或 `0.2.0/` 旧版本目录。生产和 GitHub Pages 的 `icon.png` 均与已批准本地图标完全相等，SHA-256 为 `853e99eb22093ee759d30a05e18a33de86cb4deb5cbe8c094afa391a3251b91d`。
-
-### T68：给出最终 GO/NO-GO（已完成：GO）
-
-**范围：** 用户调用 `@uxu-code:ship` 后，对 T65 本地门、T66 Worker 顺序、T67 Pages 发布/旧目录清理和兼容 Pages 独立更新证据给出 GO/NO-GO；GO 不自动授权新的部署。
-
-**验收标准：** 第 20 节生产表面与复制合同可复验；无运行时 commit/SHA/Pages 密钥，兼容更新无需 Worker，API/range 不兼容失败关闭，Pages-only 回滚成立；任一证据缺失即 NO-GO。
-
-**验证：** 重跑只读配置/路径/版本/交互探测并核对证据层级、时间与回滚点。
-
-**依赖：** T67、用户调用 `@uxu-code:ship`。
-
-**可能涉及：** `work-products/release-gate.md`、`work-products/todo.md`；不修改业务代码。
-
-**回滚：** 按 T67 回滚 Pages；只有 Worker artifact/兼容合同发生独立回归时才按 T66 回滚 Worker，D1 schema 不变。
-
-**最终门证据（2026-08-13）：** 部署身份、公开字节、生产 Edge 登录态 artifact 与设置界面证据均已闭合。精确候选未漂移：UXUVideo `9ba3f19d9743dd8c1aa5370686ffde93b3c1e595` 与 UXUV-Pages `269cc6bceddfb081d73665e1dc035920fb238bbc` 均和各自 `origin/main` 一致。复跑 UXUVideo 98/98、Worker 语法与 39,474/3,145,728 bytes gzip 体积门；UXUV-Pages 139/139、lint、TypeScript、生产构建、release 构建与 Playwright 111/111；两仓 `git diff --check`、高置信秘密与机器路径扫描通过。npm 官方审计无 high/critical，仅保留 Pages 开发依赖 `esbuild@0.27.7` 的 low 告警。最终结论为 **GO**，不触发新的部署。
-
-## 5. 检查点
-
-### CP0：参考可复验（T01-T02）
-
-- 固定提交身份、完整矩阵、视觉/DOM 基准与 0.1.2 RED 已保存。
-- 未审阅基线不得进入 UI 迁移。
-
-### CP1：全局壳层（T03-T07）
-
-- KVideo 设计系统、原语、导航、主题、语言和安全登录状态已闭环。
-- 八路由仍静态导出，Pages 直访仍零认证请求。
-
-### CP2：首页与搜索（T08-T14）
-
-- 发现、标签、推荐、搜索、筛选、收藏和历史均完成逐项 RED/GREEN。
-- 普通/Premium/账户隔离和同源 API 门未退化。
-
-### CP3：全部设置（T15-T20）
-
-- 来源、订阅、导入、显示、排序、播放器、弹幕、广告、数据、版本和 Premium 设置入口全部恢复。
-- 设置数据前向兼容且不会在回滚时丢失。
-
-### CP4：自定义播放器（T21-T26）
-
-- 自定义桌面/移动控件、播放策略、弹幕、广告过滤、跳过和连播全部达到固定基准。
-- 原生控件替代、无限重试、匿名代理或完整媒体缓冲均不存在。
-
-### CP5：IPTV 与 Premium（T27-T30）
-
-- IPTV 三级导航、多线路和兼容策略完整；Premium 首页/设置/收藏/历史物理隔离。
-
-### CP6：PWA、同步、设备与可选第三方能力（T31-T39）
-
-- PWA、逐文档同步、账户/D1 状态、用量卡、TV/WebView/三语/WCAG 与 VideoTogether/Cast 本地及经授权真实证据分任务全绿且可独立回滚。
-
-### CP7：本地候选（T40-T42）
-
-- 功能矩阵零 `unverified`，视觉阈值全绿，历史 `0.2.0` 候选可复现。
-- 这里只能称为本地发布候选，不能称为已发布或生产可用。
-- **执行结论（2026-08-10）：** CP7 GREEN；随后 T43-T45 完成了当时的精确身份发布与本地 Worker pin。该 pin 已被 2026-08-11 新合同取代，不能继续进入旧 T46-T48。
-
-### CP8：Pages 兼容发布本地迁移（T49-T53，已完成）
-
-- T49-T53 必须证明无 runtime commit/SHA/Pages 密钥、动态版本正确、五组合兼容矩阵和两仓本地门；这只形成本地候选。
-- **执行结论（2026-08-11）：** CP8-local 已闭合；未 commit、push、发布或部署。
-
-### CP9：第 20 节本地 UI/更新增补（T54-T65，已完成）
-
-- **CP9A（T54-T56）：** 三组 RED 可复验，失败均来自当前缺口，既有无关合同仍 GREEN；未写产品代码。
-- **CP9B（T57-T59）：** 顶栏/首字符、三列语言和 Worker artifact 各自转 GREEN，文件所有权与回滚独立。
-- **CP9C（T60-T62）：** 单一全局控件、shell 挂载、八路由/非认证边界、四断点和无障碍闭合。
-- **CP9D（T63-T64）：** 六档/两 mask 图标与局部 UI 对照可见；用户明确批准后才冻结局部基线。
-- **CP9E（T65）：** 两仓全门只能形成新的本地候选，不代表已 commit、push、Pages 发布或 Worker 部署。
-- **执行结论（2026-08-11）：** CP9-local 已闭合；本地门与用户视觉审批均完成，T66-T68 未执行。
-
-### CP10：一次性远端迁移与发布门（已完成：GO）
-
-- 实际运行时顺序为先部署 Worker `1.1.0`、后发布 Pages `0.2.0` 并清理旧目录；公开根和控制台日志均正常。
-- 生产登录态 artifact 复制/版本/SHA-256 与设置界面证据已经闭合；兼容 Pages-only 与 Worker deployment 回滚保持可用，最终 `@uxu-code:ship` 结论 GO。
-
-## 6. 计划测试文件
-
-全部位于 UXUV-Pages `work-products/tests/`：
-
-- `kvideo-feature-parity.test.mjs`
-- `kvideo-visual-parity.e2e.spec.ts`
-- `kvideo-home-search-parity.e2e.spec.ts`
-- `kvideo-player-parity.e2e.spec.ts`
-- `kvideo-settings-parity.e2e.spec.ts`
-- `kvideo-iptv-device-parity.e2e.spec.ts`
-
-复用并扩展现有 `app-flows.e2e.spec.ts`、`media-flows.e2e.spec.ts`、`usage-ui.e2e.spec.ts`、`accessibility.e2e.spec.ts` 以及静态导出、同源、PWA、发布清单合同。fixture 只放 `work-products/tests/fixtures/`，跨仓引用从最终测试位置相对解析。
-
-UXUVideo 只在 RED 证明 Worker 合同缺口时扩展既有 `work-products/tests/`；不得为了前端复刻复制第二套 Worker 或恢复 Next API。
-
-T49-T53 的定向合同固定复用：
-
-- UXUVideo `work-products/tests/pages-integrity.test.mjs`、`worker-route-contract.test.mjs`、`worker-only-boundary.test.mjs`。
-- UXUV-Pages `work-products/tests/release-manifest.test.mjs`、`pages-deployment.test.mjs`、`pwa-contract.test.mjs`。
-- 不新增固定公网 commit/SHA fixture；manifest/stream 单元测试使用内存 fixture，公开根目录只读探测仅属于 T67 远端证据。
-
-第 20 节计划新增/扩展的测试固定为：
-
-- UXUVideo `work-products/tests/app-update-artifact.test.mjs`（新增）、`worker-route-contract.test.mjs`、`low-fanout-routes.test.mjs`。
-- UXUV-Pages `work-products/tests/app-update-control-contract.test.mjs`（新增）、`app-update-control.e2e.spec.ts`（新增）、`icon-visual-contract.test.mjs`（新增），以及既有 `home-ui-contract.test.mjs`、`global-shell-contract.test.mjs`、`settings-preferences-contract.test.mjs`、`data-settings-contract.test.mjs`、`premium-settings-contract.test.mjs`、`pwa-contract.test.mjs`、`app-flows.e2e.spec.ts`、`accessibility.e2e.spec.ts`。
-- 图标审阅 fixture 只放 UXUV-Pages `work-products/tests/fixtures/icon-review/`；测试与 fixture 中的仓库引用一律从最终位置相对解析，禁止机器绝对路径。
-
-## 7. 风险与门
-
-| 风险 | 影响 | 缓解 / 门 |
+**读取范围：** 两仓现有聚合/安全/E2E 合同、release manifest、`SPEC.md` 第 21 节、前一版 todo、调试报告、活动和已失效收据/补丁。继续沿用已冻结的 `section21-security-baseline.test.mjs`、`root-prefix-inventory.txt`、`iptv-default-source-inventory.txt`、`section21-visual.e2e.spec.ts`、`section21-performance.e2e.spec.ts`、`performance-baseline.json` 与 `binary-allowlist.json`；inventory 仍只可由显式 `--write-baseline` 在目标不存在时生成，常规测试缺失即失败且永不写入，并继续区分 `worker-origin`/`github-pages-physical`/`runtime`/`active-test`/`active-negative-test`/`historical-evidence`。
+**写入范围：** 仅修改 `work-products/tests/section21-worker-contract.test.mjs`、`section21-plan-contract.test.mjs`、`candidate-hygiene.test.mjs`、`section21-inventory.mjs`、`section21-inventory-generator.mjs`、`work-products/evidence/section21/red-matrix.md`、活动收据目录与 `work-products/todo.md`；可创建 `receipts/contract-revision-invalidation.json` 和 `receipts/invalidated/096e92fd/`。不得修改 Worker/Pages 产品代码、两个 inventory、保持性安全基线、视觉/性能合同或基线。
+**共享可变资源：** 两仓测试运行器与 E2E fixture 命名；不写产品代码。
+**聚焦验证：** 在 Worker 仓先运行 `node --test work-products/tests/section21-plan-contract.test.mjs`，再分别运行 `node --test --test-name-pattern="S21-T02" work-products/tests/section21-worker-contract.test.mjs`、`node --test --test-name-pattern="S21-T03" work-products/tests/section21-worker-contract.test.mjs` 和 `node --test work-products/tests/section21-security-baseline.test.mjs work-products/tests/candidate-hygiene.test.mjs`；规划合同和安全/卫生合同必须全部 GREEN，T02/T03 不得含互斥版本断言。然后只读核对 Pages 聚合/E2E 的测试发现与前一版 RED 明细，不重录视觉或性能基线。不得并行。
+**失败保留/回滚：** 保留冲突复现、失效清单和可归因结果；若解耦来源 SHA 时弱化 inventory 行分类/文件 SHA、根 404、秘密扫描或最终 v2 语义，立即失败。回滚仅恢复本任务工作流测试/证据改动，绝不触碰产品切片、两个 inventory 或旧归档字节。
+**阶段/启动条件：** Serial 0；持续计划批准与显式实现流程授权均存在后才可启动。
+**主代理集成责任：** 核对旧目录不重复归档、确认 inventory 仍绑定其真实来源、只有瞬时 v1 断言退出最终发现集，重新冻结聚合文件并签发当前计划 T01 收据。
+
+### S21-T02：Worker 根路由前置合同
+
+**目标：** 复验 Worker 浏览器地址空间只接受逻辑根路由，并确认历史 T02 阶段收据曾在 v2 删除完整落地前保持既有版本/API 身份；不在 T03 前验证 API 2 manifest fixtures。
+
+**验收标准：**
+- [ ] `/` 和根相对静态路由正常；`/UXUV-Pages` 全家族返回真实 404，无重定向或主页回退。
+- [ ] 归档的 T02 阶段证据证明该任务完成时 Worker 仍为 `1.1.4` / API Contract `1`、未提前宣告 v2；当前最终候选若已进入 T03 的 `2.0.0` / API `2`，不得为重跑 T02 而降级，也不得用最终聚合永久要求 v1。
+- [ ] 未知 API 路径、非 API 非法方法、静态 CSP 与旧前缀零上游请求保持绿色；manifest API 版本、兼容矩阵、MIME、大小和前端不可用失败关闭由 T03 原子同步并验证，不作为 T02 前置门。
+
+**依赖：** S21-T01。
+**读取范围：** `_worker.js`、版本/API 常量、`work-products/tests/pages-integrity.test.mjs`、`worker-route-contract.test.mjs`、`baseline-contract.test.mjs`、历史 T02 收据与只读 T01 Worker/安全合同。
+**写入范围：** 原则上只签发新 SHA 收据；仅在根路由行为回归时修改 `_worker.js`、`work-products/tests/section21-worker-contract.test.mjs`、`pages-integrity.test.mjs` 或 `worker-route-contract.test.mjs` 中与根路由直接对应的断言。package/lock、README、CHANGELOG、`baseline-contract.test.mjs`、`worker-only-boundary.test.mjs`、API 2 manifest fixtures 和 T01 重新冻结合同保持只读；不得把当前 v2 候选降回 v1。
+**共享可变资源：** `_worker.js` 的浏览器路由分派；API/version 与 Pages manifest 兼容语义在本任务只读。
+**聚焦验证：** 在 Worker 仓依次运行 `node --test --test-name-pattern="S21-T02" work-products/tests/section21-worker-contract.test.mjs`、`node --test --test-name-pattern="static CSP|true 404" work-products/tests/pages-integrity.test.mjs`、`node --test --test-name-pattern="unknown API paths|non-API methods" work-products/tests/worker-route-contract.test.mjs` 和 `node --test work-products/tests/baseline-contract.test.mjs`，并校验归档 T02 收据 SHA 与原始 v1 身份记录；不得运行完整 `pages-integrity.test.mjs` 冒充 T02 门，也不得并行。
+**失败保留/回滚：** 保留根路由失败 fixture；当前未发布 v2 中间态始终 HOLD，本地撤销只移除本任务新增的根路由修复，不制作旧前缀兼容层、版本降级或 manifest fixture 临时兼容。
+**阶段/启动条件：** Serial 1；T01 合同修复、失效记录与重新冻结 GREEN 后。
+**主代理集成责任：** 复核未知路径、安全头和零上游请求，确认历史 v1 阶段证据与当前 v2 候选的证据层级没有混用，并确认 T02 没有改写任何 API 2 manifest fixture。
+
+### S21-T03：Worker 来源所有权与 IPTV 后端退役
+
+**目标：** 删除系统默认来源/弹幕 API 与 IPTV 后端能力，同时保留账户数据和普通媒体。
+
+**验收标准：**
+- [ ] `/api/config` 不再输出默认来源字段或 `capabilities.iptv`；`capabilities.danmaku` 仅表示代理能力。
+- [ ] 两个 IPTV 路由、env/config、权限、token/cache 和专属分支消失；路由精确为 21，旧权限容错读并在后续权限写入时省略。
+- [ ] 普通 HLS/DASH、代理、媒体 token、广告过滤、来源切换、Cast/PiP 与登录/D1 安全回归绿色。
+- [ ] Worker 原子切换为 `WORKER_VERSION = 2.0.0` / API Contract `2`，package/lock、README、CHANGELOG 与边界合同身份同步；`pages-integrity.test.mjs` 的 manifest fixtures、五态兼容矩阵、MIME/大小/失败关闭断言同步到 API 2 并完整 GREEN，不存在已标 v2 但测试或运行时仍要求 v1 的中间完成态。
+
+**依赖：** S21-T02。
+**读取范围：** `_worker.js` config/route/auth/media/permission 分支，IPTV 与普通媒体测试。
+**写入范围：** 修改 `_worker.js`、`package.json`、`package-lock.json`、`README.md`、`CHANGELOG.md`、`work-products/tests/pages-integrity.test.mjs`、`worker-route-contract.test.mjs`、`worker-only-boundary.test.mjs`、`low-fanout-routes.test.mjs`、`media-routes.test.mjs`、`auth-d1.test.mjs`、`security-boundary.test.mjs`、`sync-cas.test.mjs`、`d1-free-budget.test.mjs`、`free-budget.test.mjs`、`source-import-route.test.mjs`；删除 `iptv-stream-resilience.test.mjs`，把仍适用于普通上游的 redirect/timeout/cancel 断言迁入新建 `upstream-stream-resilience.test.mjs`。允许把 `worker-only-boundary.test.mjs` 与 `pages-integrity.test.mjs` 的当前发布身份/fixture 从 T02 阶段 v1 同步为最终 v2，但 T01 重新冻结的 Worker 聚合、安全基线与卫生扫描器保持只读；上述既有安全测试只允许删除 IPTV 专属 fixture/断言，不得弱化冻结不变量。
+**共享可变资源：** `_worker.js`、权限规范化、媒体 token/cache；与任何 Worker 任务互斥。
+**聚焦验证：** 先校验前一版 T03 收据、5 条独立 RED 与旧实现 patch SHA，并单独复现完整 `pages-integrity.test.mjs` 在 API 1 fixtures / API 2 Worker 组合下的 7 个归因 RED；再在 Worker 仓运行 `node --test --test-name-pattern="S21-T03" work-products/tests/section21-worker-contract.test.mjs`，随后运行 `node --test work-products/tests/pages-integrity.test.mjs work-products/tests/section21-security-baseline.test.mjs work-products/tests/worker-route-contract.test.mjs work-products/tests/worker-only-boundary.test.mjs work-products/tests/low-fanout-routes.test.mjs work-products/tests/media-routes.test.mjs work-products/tests/auth-d1.test.mjs work-products/tests/security-boundary.test.mjs work-products/tests/sync-cas.test.mjs work-products/tests/d1-free-budget.test.mjs work-products/tests/free-budget.test.mjs work-products/tests/source-import-route.test.mjs work-products/tests/upstream-stream-resilience.test.mjs`；manifest 五态兼容矩阵、MIME/大小/失败关闭、认证、D1、CSRF/SSRF、安全、同步、Free 预算和版本边界任一不绿不得解锁；不得并行。
+**失败保留/回滚：** 普通媒体或安全合同一旦回归即停止；共享函数无专属证据不得删除。未发布中间态保持 HOLD，本地撤销只移除本任务 diff。
+**阶段/启动条件：** Serial 3；T06 完成、T02 根路由复验 GREEN，且历史 v1 阶段证据与当前候选身份已分层。
+**主代理集成责任：** 审计所有 `IPTV`/默认来源残留和发布身份断言，区分历史证据、瞬时阶段守卫与最终运行时代码。
+
+### S21-T04：Worker 单来源 8 秒放弃与局部成功
+
+**目标：** 使慢来源不阻塞并发搜索，且取消、超时与全失败语义可区分。
+
+**验收标准：**
+- [ ] 单一 `SEARCH_SOURCE_TIMEOUT_MS = 8_000` 控制每源每页；超时终止该源剩余页、释放槽位且不重试。
+- [ ] 快源 SSE 结果先显示；至少一源成功时无全局错误，全部失败/超时时仍为 `SEARCH_SOURCES_UNAVAILABLE`。
+- [ ] 客户端取消优先于 timeout，结构化日志不泄露源凭据或响应正文。
+
+**依赖：** S21-T03。
+**读取范围：** `_worker.js` 高扇出搜索/SSE/abort 路径、`high-fanout-routes.test.mjs`。
+**写入范围：** 修改 `_worker.js`、`work-products/tests/high-fanout-routes.test.mjs`、`work-products/tests/structured-logging.test.mjs`；T01 聚合合同保持只读。
+**共享可变资源：** `_worker.js`、并发槽、假时钟/AbortController；与 Worker 任务互斥。
+**聚焦验证：** 在 Worker 仓运行 `node --test --test-name-pattern="S21-T04" work-products/tests/section21-worker-contract.test.mjs`，再运行 `node --test work-products/tests/high-fanout-routes.test.mjs work-products/tests/structured-logging.test.mjs`；不得并行。
+**失败保留/回滚：** 保留能区分慢源/取消/全失败的 fixture；失败时恢复既有 20 秒行为，仅作为未完成工作树，不发布。
+**阶段/启动条件：** Serial 5；T05 完成、T03 完成且 Worker 写集释放。
+**主代理集成责任：** 审核计时器清理、Abort 原因和 SSE completed 计数。
+
+### S21-T05：Pages 根入口、角落状态与窗口生命周期
+
+**目标：** 让根地址成为唯一客户端入口，并修复品牌归零、同步提示与焦点切换行为。
+
+**验收标准：**
+- [ ] 构建无客户端 `basePath=/UXUV-Pages`，品牌归零不 reload/清持久数据；Pages 在 T08 完成前仍保持 `0.2.1` / API `1` 身份，不提前冒充 v2。
+- [ ] 版本右上与同步左上共用边距 token；成功同步 3 秒隐藏，错误保持；首页继续观看横栏移除但历史/恢复/推荐保留。
+- [ ] 内容顶栏无语言切换；窗口 focus/visible 不触发 pull、刷新或 UI 重置，online/手动同步和隐藏时进度保存仍工作。
+
+**依赖：** S21-T02、S21-T06。
+**读取范围：** `../UXUV-Pages/next.config.ts`、`scripts/build-release.mjs`、`playwright.config.ts`、`work-products/tests/kvideo-playwright.config.ts`、`section21-playwright.config.ts`、`static-server.mjs`、`components/ContentNavigation.tsx`、`HomeExperience.tsx`、`SyncProvider.tsx`、`RuntimeSourceSync.tsx`、`AppUpdateControl.tsx`、`SyncStatus.tsx`、`app/globals.css`、T01 `root-prefix-inventory.txt` 与只读 Pages 合同/E2E。启动前必须完整读取本地 Next 16.3.0 App Router 文档 `node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/{basePath,assetPrefix}.md`、`01-app/02-guides/static-exports.md`、`01-app/03-api-reference/02-components/link.md`，并在收据记录“basePath 构建期内联、assetPrefix 不替代 sub-path、静态导出生成 out、Link 使用根相对 href”四项结论。
+**写入范围：** 修改 `next.config.ts`、`scripts/build-release.mjs`（只切换逻辑根路由，暂保 API `1`/Worker v1 range）、`playwright.config.ts`、`work-products/tests/kvideo-playwright.config.ts`、`section21-playwright.config.ts`、`static-server.mjs`、`components/ContentNavigation.tsx`、`HomeExperience.tsx`、`SyncProvider.tsx`、`RuntimeSourceSync.tsx`、`AppUpdateControl.tsx`、`SyncStatus.tsx`、`app/globals.css`、`work-products/tests/global-shell-contract.test.mjs`、`home-ui-contract.test.mjs`、`sync-client.test.mjs`、`pages-deployment.test.mjs`、`static-export-contract.test.mjs`、`release-manifest.test.mjs`、`same-origin-boundary.test.mjs`、`app-update-control-contract.test.mjs`、`pwa-contract.test.mjs`、`kvideo-entry-states.e2e.spec.ts`、`kvideo-premium-home.e2e.spec.ts`、`kvideo-premium-library.e2e.spec.ts`、`media-flows.e2e.spec.ts`、`kvideo-visual-parity.e2e.spec.ts`、`render-ui-review.mjs`；创建 `lib/utils/display-initial.ts`。只修改 T01 清单中 `worker-origin` 条目；`github-pages-physical` 的 `/UXUV-Pages/` 保持不变。package/lock 及 T01 聚合合同/E2E 保持只读。
+**共享可变资源：** `app/globals.css`、根路由、应用壳状态；与其他 Pages UI 任务互斥。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T05" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/global-shell-contract.test.mjs work-products/tests/home-ui-contract.test.mjs work-products/tests/sync-client.test.mjs work-products/tests/pages-deployment.test.mjs work-products/tests/static-export-contract.test.mjs work-products/tests/release-manifest.test.mjs work-products/tests/same-origin-boundary.test.mjs work-products/tests/app-update-control-contract.test.mjs work-products/tests/pwa-contract.test.mjs`、`npx playwright test work-products/tests/section21-flows.e2e.spec.ts --grep "S21-T05" --config work-products/tests/section21-playwright.config.ts`；再用冻结 inventory 断言所有 `worker-origin` URL 已改为根路径且所有 `github-pages-physical` URL 未变。命令必须发现至少一个测试；不得并行。
+**失败保留/回滚：** 保留焦点事件和品牌归零回归；未发布中间态始终 HOLD，本地撤销只移除本任务 diff。成对发布回滚由 T14/T15 负责。
+**阶段/启动条件：** Serial 4；T03 完成，且 T02 根路由合同和 T06 token 已集成。
+**主代理集成责任：** 检查 DOM/href/chunk 无旧前缀，并确认开发服务未污染生成文件。
+
+### S21-T06：Liquid Glass 基础材质与可访问性降级
+
+**目标：** 建立无新依赖、可复用且有边界的全站材质 token 与功能层基础。
+
+**验收标准：**
+- [ ] `--shell-edge-inset`、regular/clear、边框、圆角、命中区、三主题和对比 token 集中定义，无散落的一次性玻璃修补。
+- [ ] 不支持 blur、reduced motion/transparency、forced colors 与 increased contrast 时退化为不透明 surface，焦点与 44 px 命中区保持。
+- [ ] 玻璃仅用于导航/控制/dialog/popover；内容卡与长文本不形成 glass-on-glass，固定功能层外无每卡 blur。
+- [ ] 固定 120 卡搜索滚动和 30 秒静音视频 fixture 的三次热身后中位数不越过 T01 性能基线：p95 RAF 间隔不得同时恶化超过 10% 且超过 2 ms、long-task 总时长不得同时增加超过 10% 且超过 50 ms、视频新增 dropped frames 不超过 1；滚动内容的 computed `backdrop-filter` 必须为 `none`。任一指标受环境噪声无法稳定复现时停止，不以放宽阈值通过。
+
+**依赖：** S21-T01。
+**读取范围：** `app/globals.css`、现有 UI 原语、主题/图标/弹窗与可访问性测试。
+**写入范围：** 修改 `../UXUV-Pages/app/globals.css`、`work-products/tests/global-shell-contract.test.mjs`、`work-products/tests/accessibility.e2e.spec.ts`；T01 聚合合同保持只读。若这三个路径不足，任务停止并修订计划，不在实施时临场扩权。
+**共享可变资源：** `app/globals.css` 与全局 token；所有后续 Pages 视觉任务依赖其稳定命名。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T06" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/global-shell-contract.test.mjs`、`npx playwright test work-products/tests/accessibility.e2e.spec.ts --config playwright.config.ts`，再运行冻结的 `npx playwright test work-products/tests/section21-performance.e2e.spec.ts --config work-products/tests/section21-playwright.config.ts` 并保存指标/trace SHA；不得并行。
+**失败保留/回滚：** 不通过高对比/无 blur 时停止；仅回退 token/原语 diff，不重写相邻组件。
+**阶段/启动条件：** Serial 2；T02 根路由复验完成后。
+**主代理集成责任：** 冻结 token 名与材质边界，拒绝新增依赖或内容层 blur。
+
+### S21-T07：搜索合并、卡片动作与折叠工具栏
+
+**目标：** 完成从查询到结果操作的整条搜索体验，避免误合并、重叠和控制拥挤。
+
+**验收标准：**
+- [ ] 标题+类别族+年份指纹保守合并；动漫/电视剧、不同年份和 unknown 桶按规格隔离。
+- [ ] 探测/星标至少 8 px 间距、44 px 命中区；工具栏默认收起，只保留同排排序/类别屏蔽及 `aria-expanded` 控制。
+- [ ] Paid/Free 提示桌面单行、320 px 最多两行；四断点、200% 缩放、三语与 SSE 局部结果保持可用。
+
+**依赖：** S21-T05、S21-T06。
+**读取范围：** `../UXUV-Pages/components/search/VideoGrid.tsx`、`SearchResults.tsx`、`SearchResultControls.tsx`、`SearchResultCard.tsx`、`VideoGroupCard.tsx`、`lib/utils/search-result-policy.ts`、`app/globals.css` 与搜索合同/E2E。
+**写入范围：** 修改这七个产品路径、`work-products/tests/search-results-contract.test.mjs`、`search-strategy-contract.test.mjs`、`kvideo-search-results.e2e.spec.ts`；T01 聚合合同/E2E 保持只读。
+**共享可变资源：** `app/globals.css`、搜索状态与测试 fixture；与 Pages UI 任务互斥。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T07" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/search-results-contract.test.mjs work-products/tests/search-strategy-contract.test.mjs`、`npx playwright test work-products/tests/section21-flows.e2e.spec.ts --grep "S21-T07" --config work-products/tests/section21-playwright.config.ts`；命令必须发现至少一个测试；不得并行。
+**失败保留/回滚：** 保留五类指纹 fixture 和断点截图；不以放宽 unknown 合并规则修测试。
+**阶段/启动条件：** Serial 6；T04 完成，且 T05 壳层和 T06 token GREEN。
+**主代理集成责任：** 核对合并算法为纯可单测逻辑，确认 CSS 无动作覆盖补丁。
+
+### S21-T08：Pages 系统默认与 IPTV 运行表面退役
+
+**目标：** 依据 T01 冻结清单原子删除 Pages 的环境默认注入和 IPTV 可达面，迁出普通 HLS 共用逻辑，并在完整 v2 语义成立后才切换 Pages 身份。
+
+**验收标准：**
+- [ ] 删除 `RuntimeSourceSync` 及所有挂载/状态消费，移除 runtime config 的 `subscriptionSources`、`iptvSources`、`danmakuApiUrl`、`capabilities.iptv` 和 `useDanmaku` 系统 API fallback；新账户来源、订阅、弹幕 API 为空，已有账户记录不自动删除。
+- [ ] `/iptv`、导航、组件、lib、样式、fixture 和全部 IPTV 正向 Node/E2E/视觉场景退役；唯一活动 IPTV 测试是负向退休合同，parity 历史仅保留 `approved-retired-by-SPEC-21` 条目。
+- [ ] 删除 `lib/iptv/playback-policy.ts` 前，先把 `selectCompatibleHlsLevel`、`supportsHevcPlayback` 迁入纯模块 `lib/player/hls-compatibility.ts`，更新 `useHlsPlayer` 与普通媒体测试；普通/Premium HLS/DASH、代理、广告、切源、Cast/PiP/VideoTogether 全绿。
+- [ ] Pages 最后原子切换为 `0.3.0` / manifest API `2` / Worker `>=2.0.0 <3.0.0`，package/lock/build ID/release manifest 同步；不存在已标 v2 却仍接受 v1 默认字段或 IPTV 的完成态。`section21-flows.e2e.spec.ts` 的 runtime config fixture 同步切换为该身份且删除 v1 默认字段，测试行为断言保持不变。
+
+**依赖：** S21-T03、S21-T05、S21-T06。
+**读取范围：** T01 冻结的两个 baseline inventory、T07 完成后且 T08 启动前由主代理显式生成且不可覆盖的 `inventory-snapshots/S21-PRE-T08-*`、T08 attempt 1 的 95/119 E2E 输出与 Playwright artifacts、本任务写入范围、只读 Section 21 UI/visual/performance、安全/卫生合同、`components/VideoTogetherController.tsx` 与 `../UXUVideo/work-products/kvideo-parity-matrix.md`。T01 baseline 只用于来源与历史角色审计，不要求已批准的 T03/T05/T07 修改后仍逐字相等；attempt 2 启动时先核对既有 `S21-PRE-T08` 快照为 attempt 1 的已验证起点，不得因 attempt 1 的授权修改而重新生成或要求当前树逐字匹配旧快照。
+**写入范围：** 只允许修改/删除冻结 inventory 中分类为 `runtime` 或 `active-test` 的路径，且至少包括 `app/globals.css`、`app/iptv/page.tsx`、`components/{ContentNavigation,IptvExperience,PasswordGate,RuntimeConfigProvider,RuntimeSourceSync}.tsx`、`components/iptv/`、`components/media/MediaPlayer.tsx`、`components/player/hooks/{useDanmaku,useHlsPlayer}.ts`、`components/settings/{PlayerSettings,UserDanmakuSettings}.tsx`、`lib/iptv/`、`lib/media/{media-client,playback-routing}.ts`、`scripts/build-release.mjs`、`package.json`、`package-lock.json`，以及 inventory 列出的活动 `work-products/tests/*.test.mjs`、`*.e2e.spec.ts`、生成/渲染 helper 和非历史 config fixture。删除五个 IPTV Node 正向测试、`kvideo-iptv-browse.e2e.spec.ts` 和八个 IPTV DOM/PNG fixture；创建 `lib/player/hls-compatibility.ts`、`work-products/tests/hls-compatibility.test.mjs`、`iptv-retirement-contract.test.mjs`；正式 Node 清单在 T08 只加入退休负向与 HLS 合同，`section21-ui-contract.test.mjs` 继续由任务聚焦命令单独运行，待 T13 全部未来静态合同实现后再纳入 `npm test`；更新 `kvideo-visual-parity.e2e.spec.ts` 移除退休 route 但不接受新视觉基线；更新 `../UXUVideo/work-products/kvideo-parity-matrix.md`。本次规划额外允许只修改 `section21-flows.e2e.spec.ts` 的 `runtimeConfig` fixture，使其使用 Worker `2.0.0`、Pages `0.3.0`、API `2` 并删除 v1 默认字段；不得修改该文件的测试名、交互断言、请求计数或搜索结果。活动 E2E 只有在失败断言与 T05/T07/T08 已批准行为直接冲突时才可更新旧期望，产品回归必须修产品，不能删测或放宽可访问性、安全、同步隔离和媒体行为。分类为 `historical-evidence` 的 `uxuv-pages-0.1.2`/KVideo 清单只读保留并由 parity 标记解释；T01 UI/visual/performance、安全、卫生合同和 inventory 保持只读。
+**共享可变资源：** Pages 路由树、runtime config、parity matrix、测试清单；单独串行。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T08" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/iptv-retirement-contract.test.mjs work-products/tests/hls-compatibility.test.mjs work-products/tests/media-ui-contract.test.mjs work-products/tests/mobile-device-player-contract.test.mjs work-products/tests/playback-routing.test.mjs work-products/tests/playback-lifecycle-contract.test.mjs work-products/tests/playback-automation-contract.test.mjs work-products/tests/kvideo-feature-parity.test.mjs`、`npm test`、`npm run build`、`npm run test:e2e`、`npm run release:build`。T08 完成时上述命令必须全部退出 0；未来 T09—T13 聚合合同仍由各任务聚焦命令维持 RED，不得提前进入当前正式 Node 清单。负向退休合同必须分别证明：运行时/`out`/`release/current` 零退休表面与 v1 默认字段；包括 Section 21 flows 在内的活动测试只允许本负向合同中的拒绝断言；历史证据只允许冻结 inventory 中带 parity 标记的文件。缺失路径、读取错误或未分类命中均失败；不得用 raw `rg` 的退出码 1 作为失败；不得并行。
+**失败保留/回滚：** attempt 1 的 95/119 输出和 trace 保留；attempt 2 必须逐项关闭原 24 个失败，任何新增普通媒体、同步隔离、安全、完整 E2E 或 release 回归立即停止。不得删除/放宽普通 HLS 共用断言。未发布中间态 HOLD，本地撤销受内部文件哈希和任务写集收据约束。
+**阶段/启动条件：** Serial 7 attempt 2；T03、T05、T07 已完成，attempt 1 已归档，持续计划批准有效；不得重跑或覆盖已完成任务。
+**主代理集成责任：** 逐项关闭冻结 inventory，确认普通 HLS 共用函数已先迁出、v2 身份最后切换，并区分历史证据、负向合同与运行时残留。
+
+### S21-T09：统一视频源与用户弹幕 API 管理
+
+**目标：** 用一个账户级管理区承载订阅、单源和弹幕 API，不再区分系统/个人。
+
+**验收标准：**
+- [ ] 单一区块支持订阅导入、单源新增/编辑/启停/排序/搜索/重同步/删除；无重复“个人视频源”入口。已有订阅重同步只在用户确认有效预览后，以新 `sourceIds` 替换同模式旧物化源；读取失败、取消或空预览保留旧源与 `lastUpdated`。
+- [ ] 来源只标示“订阅导入/单独添加”，普通/Premium 隔离与权限不变；既有 `system`、`personal` 或缺少 `kind` 的 D1 记录不自动迁移、不清空且可继续编辑，新增独立源不再写入“个人”语义。
+- [ ] 弹幕 API 无系统默认或播放器内第二个 URL 编辑入口；普通与 Premium 都在各自授权范围内显示明确空状态。只有有效账户 API 被明确选择后弹幕开关才可用；删除当前选择立即恢复禁用且运行时保持零请求。
+
+**依赖：** S21-T08。
+**读取范围：** `UserSourceSettings`、`SourceSettings`、`SourceManager`、导入 modal、`UserDanmakuSettings`、`PlayerSettings`、`PremiumSettingsExperience`、来源 policy/types/sync config、弹幕运行时选择链与对应设置测试。
+**写入范围：** 删除 `../UXUV-Pages/components/settings/UserSourceSettings.tsx` 及其 `app/globals.css` 孤儿规则；修改 `components/settings/SourceSettings.tsx`、`SourceManager.tsx`、`ImportModal.tsx`、`AddSourceModal.tsx`、`UserDanmakuSettings.tsx`、`PlayerSettings.tsx`、`components/premium/PremiumSettingsExperience.tsx`、`lib/content/source-settings-policy.ts`、`lib/content/types.ts`、`app/settings/page.tsx`、`app/premium/settings/page.tsx`、`app/globals.css`、`work-products/tests/settings-sources-contract.test.mjs`、`source-import-contract.test.mjs`、`danmaku-player-contract.test.mjs`、`player-settings-contract.test.mjs`、`kvideo-settings-sources.e2e.spec.ts`、`kvideo-source-import.e2e.spec.ts`、`kvideo-player-settings.e2e.spec.ts`、`kvideo-premium-settings.e2e.spec.ts`；T01 聚合合同保持只读。
+**共享可变资源：** config `sources/subscriptions/danmaku`、`app/globals.css`、设置测试；串行。
+**聚焦验证：** 在 Pages 仓串行运行 `node --test --test-name-pattern="S21-T09" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/settings-sources-contract.test.mjs work-products/tests/source-import-contract.test.mjs work-products/tests/danmaku-player-contract.test.mjs work-products/tests/player-settings-contract.test.mjs`、`npx playwright test work-products/tests/kvideo-settings-sources.e2e.spec.ts work-products/tests/kvideo-source-import.e2e.spec.ts work-products/tests/kvideo-player-settings.e2e.spec.ts work-products/tests/kvideo-premium-settings.e2e.spec.ts --config playwright.config.ts`；不得并行。E2E 必须覆盖旧订阅读取失败保留、不同 ID 成功替换并 tombstone 同模式旧源、standard/Premium 不串线、无选择禁用、选择后可启用及删除当前选择后禁用。
+**失败保留/回滚：** 使用脱敏 fixture 证明已有记录保留；不得用清空 config 或全量 kind 迁移修复。失败重同步只更新该订阅的 `lastError/updatedAt`，不得删除旧物化源；成功写入新源和订阅后才 tombstone 同模式已退出的旧 ID。回退只撤销统一 UI/规范化与重同步逻辑。
+**阶段/启动条件：** Serial 8；T08 运行表面退役 GREEN。
+**主代理集成责任：** 审核写入 ownership/kind 兼容、确认后替换顺序、Premium 授权内挂载和弹幕无选择零请求，防止数据丢失或旧开关静默复活。
+
+### S21-T10：设置页六域信息架构与响应式控件
+
+**目标：** 重排普通/Premium 设置，使真实三语内容在窄屏和缩放下不拥挤、不变形。
+
+**验收标准：**
+- [ ] 六域顺序、桌面锚点+单内容列和移动单列落实；来源/弹幕入口唯一，逐视频跳过不在全局设置。
+- [ ] 设置行采用左文右控件，长文案不用拉伸分段按钮；账户/危险操作、label、44 px 命中区符合规格。
+- [ ] 320/768/1024/1440、200% 缩放及简中/繁中/英文无截断、水平滚动、按钮变形或焦点丢失。
+
+**依赖：** S21-T09。
+**读取范围：** `../UXUV-Pages/app/{settings,premium/settings}/page.tsx`、`components/settings/*.tsx`、`components/premium/PremiumSettingsExperience.tsx`、`app/globals.css` 与设置合同/E2E fixture。
+**写入范围：** 修改 `../UXUV-Pages/app/settings/page.tsx`、`app/premium/settings/page.tsx`、`components/premium/PremiumSettingsExperience.tsx`、`components/settings/AccountSettings.tsx`、`CloudflareUsageSettings.tsx`、`DataSettings.tsx`、`DisplaySettings.tsx`、`ExportModal.tsx`、`ImportModal.tsx`、`PlayerSettings.tsx`、`SettingsImportModal.tsx`、`SettingsPageHeading.tsx`、`SettingsSection.tsx`、`SortSettings.tsx`、`SourceSettings.tsx`、`SyncSettings.tsx`、`UserDanmakuSettings.tsx`、`app/globals.css`、`work-products/tests/settings-preferences-contract.test.mjs`、`settings-sources-contract.test.mjs`、`player-settings-contract.test.mjs`、`premium-settings-contract.test.mjs`、`kvideo-settings-preferences.e2e.spec.ts`、`kvideo-premium-settings.e2e.spec.ts`、`kvideo-player-settings.e2e.spec.ts`；只修改 `section21-ui-contract.test.mjs` 的 `S21-T10` Premium 读取目标，使其检查授权成功分支的真实六域，其他任务、断言名及行为要求只读；创建候选 `work-products/tests/fixtures/ui-review/section21-candidate/settings-{locale}-{viewport}.png`，不覆盖既有基线。
+**共享可变资源：** `app/globals.css`、设置组件树、视觉 fixture；串行。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T10" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/settings-preferences-contract.test.mjs work-products/tests/settings-sources-contract.test.mjs work-products/tests/player-settings-contract.test.mjs work-products/tests/premium-settings-contract.test.mjs`、`npx playwright test work-products/tests/kvideo-settings-preferences.e2e.spec.ts work-products/tests/kvideo-premium-settings.e2e.spec.ts work-products/tests/kvideo-player-settings.e2e.spec.ts --config playwright.config.ts`；不得并行。Premium 流程必须证明 loading/locked/error 时锚点与六域均未挂载，授权成功后才显示同序六域；播放器流程不得继续寻找已退役的全局片头/片尾控件。
+**失败保留/回滚：** attempt 1 的 16 项 RED、旧 Node 11/11 与旧浏览器 4/4 输出归档；候选截图写新目录，不覆盖已批基线；若三语任一失败或完整活动测试仍依赖全局跳过 UI，任务保持未完成。
+**阶段/启动条件：** Serial 9 attempt 2；T09 统一管理 GREEN，attempt 1 已在产品写入前归档，持续计划批准有效。
+**主代理集成责任：** 逐断点审查实际渲染而非仅字符串测试，控制 CSS diff 范围。
+
+### S21-T11：逐视频片头片尾规则与同步迁移
+
+**目标：** 把跳过配置从全局设置迁到播放器，并按视频安全持久化/同步。
+
+**验收标准：**
+- [ ] `mode:source:videoId` 规则隔离，0—600 秒、最多 200 项、按 `updatedAt` 淘汰最旧；切视频/来源不泄漏状态。
+- [ ] 播放器 dialog/popover 可保存/删除规则，Escape/焦点归还/错误/44 px 完整，保存不重置播放时间。
+- [ ] timestamped config 与 v2 导入导出保留规则、忽略旧 IPTV；旧全局 skip 字段不驱动也不自动复制。
+
+**依赖：** S21-T10。
+**读取范围：** `document-types.ts`、settings transfer、player settings/skip hooks/auto-skip、`PlayerExperience`、`components/media/MediaPlayer.tsx`、播放器状态与同步测试。
+**写入范围：** 修改 `../UXUV-Pages/lib/sync/document-types.ts`、`lib/data/settings-transfer.ts`、`lib/player/auto-skip.ts`、`lib/hooks/usePlayerSettings.ts`、`components/PlayerExperience.tsx`、`components/media/MediaPlayer.tsx`、`components/player/hooks/useSkipControls.ts`、`useAutoSkip.ts`、`components/settings/PlayerSettings.tsx`、`app/globals.css`、`work-products/tests/auto-skip.test.mjs`、`player-settings-contract.test.mjs`、`data-settings-contract.test.mjs`、`sync-foundation.test.mjs`、`kvideo-player-settings.e2e.spec.ts`、`kvideo-data-settings.e2e.spec.ts`；T01 聚合合同保持只读。
+**共享可变资源：** config document schema、导入导出版本、`PlayerExperience`、`MediaPlayer`、`app/globals.css`；串行。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T11" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/auto-skip.test.mjs work-products/tests/player-settings-contract.test.mjs work-products/tests/data-settings-contract.test.mjs work-products/tests/sync-foundation.test.mjs`、`npx playwright test work-products/tests/kvideo-player-settings.e2e.spec.ts work-products/tests/kvideo-data-settings.e2e.spec.ts --config playwright.config.ts`；不得并行。
+**失败保留/回滚：** 保留 201 项淘汰、键冲突和字节预算 fixture；不得提高文档上限。v1 回滚必须安全忽略 v2 字段。
+**阶段/启动条件：** Serial 10 attempt 2；设置页不再拥有全局 skip UI，attempt 1 已在产品写入前归档，持续计划批准有效。
+**主代理集成责任：** 复算最坏 200 项序列化字节，审核 LWW/timestamp 语义和播放不中断证据。
+
+### S21-T12：播放器影院布局、顶栏与网页全视窗
+
+**目标：** 统一播放页宽度和控制位置，使影院/横向选集/顶栏在桌面、移动和网页全视窗一致。
+
+**验收标准：**
+- [ ] 影院为单主列，来源/选集在视频下横排；触摸、Shift+滚轮、方向键、自动滚入和焦点可用。
+- [ ] 顶栏/视频/控制/选集/元数据边界误差 ≤1 CSS px；收藏位于用户首字设置入口左侧，无底部重复、无语言下拉/齿轮。
+- [ ] `player-web-fullscreen-open` 隐藏且禁用返回顶部；原生全屏、Cast、PiP、播放错误回退不回归。
+
+**依赖：** S21-T05、S21-T06、S21-T11。
+**读取范围：** `PlayerExperience`、`PlayerNavbar`、`EpisodeList`、`PlayerFavoriteButton`、`BackToTop`、player hooks 与播放器测试。
+**写入范围：** 修改 `../UXUV-Pages/components/PlayerExperience.tsx`、`components/player/PlayerNavbar.tsx`、`EpisodeList.tsx`、`PlayerFavoriteButton.tsx`、`components/ui/BackToTop.tsx`、`components/player/hooks/useFullscreenControls.ts`、`lib/utils/display-initial.ts`、`app/globals.css`、`work-products/tests/player-shell-contract.test.mjs`、`desktop-player-contract.test.mjs`、`mobile-device-player-contract.test.mjs`、`media-ui-contract.test.mjs`、`kvideo-player-shell.e2e.spec.ts`、`kvideo-desktop-player.e2e.spec.ts`；T01 聚合合同保持只读。
+**共享可变资源：** `PlayerExperience`、`app/globals.css`、player fixture；串行。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T12" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/player-shell-contract.test.mjs work-products/tests/desktop-player-contract.test.mjs work-products/tests/mobile-device-player-contract.test.mjs work-products/tests/media-ui-contract.test.mjs`、`npx playwright test work-products/tests/kvideo-player-shell.e2e.spec.ts work-products/tests/kvideo-desktop-player.e2e.spec.ts --config playwright.config.ts`；不得并行。
+**失败保留/回滚：** 保留四断点边界测量与输入法 fixture；回滚布局不得恢复底部收藏或顶栏语言。
+**阶段/启动条件：** Serial 11；T11 规则入口稳定。
+**主代理集成责任：** 实测边界/焦点和系统全屏，审查共享宽度只定义一次。
+
+### S21-T13：其余页面与弹层材质收敛
+
+**目标：** 把 Liquid Glass 边界扩展到尚未被功能切片触及的认证、收藏、历史、Premium 与通用弹层，不改业务行为。
+
+**验收标准：**
+- [ ] 所有路由的导航/浮动控制/dialog/popover 使用统一功能层材质，内容卡/表格/长文保持 standard material。
+- [ ] 三主题、forced colors、reduced motion/transparency、320—1440 和 200% 缩放无 glass-on-glass、溢出或不可见焦点。
+- [ ] 收藏、历史、Premium、认证、PWA、TV/WebView 83 行为测试保持绿色，无新依赖或组件重写。
+- [ ] 正式 Node 清单完整绿色；旧设置顺序按批准六域验证，退休扫描区分被禁止的可达 IPTV 表面与规格要求的旧字段丢弃/负向兼容证据。
+
+**依赖：** S21-T07、S21-T10、S21-T12。
+**读取范围：** `../UXUV-Pages/components/PasswordGate.tsx`、`PublicPage.tsx`、`FavoritesExperience.tsx`、`favorites/FavoritesSidebar.tsx`、`history/WatchHistorySidebar.tsx`、`premium/PremiumExperience.tsx`、`premium/PremiumSettingsExperience.tsx`、`ThemeSwitcher.tsx`、`VideoCard.tsx`、`VideoTogetherController.tsx`、`app/favorites/page.tsx`、`app/premium/page.tsx`、`app/premium/favorites/page.tsx`、`app/globals.css` 与明确列出的 PWA/TV/WebView/可访问性合同。
+**写入范围：** 仅修改上述 14 个产品路径、`package.json`（只把已全绿的 `section21-ui-contract.test.mjs` 纳入正式 Node 清单，不改依赖或版本）、`work-products/tests/app-update-control-contract.test.mjs`、`iptv-retirement-contract.test.mjs`、`auth-ui-contract.test.mjs`、`favorites-contract.test.mjs`、`history-contract.test.mjs`、`premium-home-contract.test.mjs`、`premium-library-contract.test.mjs`、`premium-settings-contract.test.mjs`、`pwa-contract.test.mjs`、`kvideo-webview-compatibility.test.mjs`、`accessibility.e2e.spec.ts`、`kvideo-auth-parity.e2e.spec.ts`、`kvideo-favorites.e2e.spec.ts`、`kvideo-history.e2e.spec.ts`、`kvideo-premium-home.e2e.spec.ts`、`kvideo-premium-library.e2e.spec.ts`；创建 `work-products/tests/fixtures/ui-review/section21-candidate/routes-{route}-{locale}-{viewport}.png`。退休合同只可精确分类必要的旧字段丢弃器、其生成字节与成对负向断言，不得整文件跳过 `out`、`release/current` 或活动测试；T01 聚合合同保持只读。
+**共享可变资源：** `app/globals.css`、通用 dialog/popover、全路由视觉 fixture；串行。
+**聚焦验证：** 在 Pages 仓运行 `node --test --test-name-pattern="S21-T13" work-products/tests/section21-ui-contract.test.mjs`、`node --test work-products/tests/app-update-control-contract.test.mjs work-products/tests/iptv-retirement-contract.test.mjs`、`node --test work-products/tests/auth-ui-contract.test.mjs work-products/tests/favorites-contract.test.mjs work-products/tests/history-contract.test.mjs work-products/tests/premium-home-contract.test.mjs work-products/tests/premium-library-contract.test.mjs work-products/tests/premium-settings-contract.test.mjs work-products/tests/pwa-contract.test.mjs work-products/tests/kvideo-webview-compatibility.test.mjs`、`npm test`、`npx playwright test work-products/tests/accessibility.e2e.spec.ts work-products/tests/kvideo-auth-parity.e2e.spec.ts work-products/tests/kvideo-favorites.e2e.spec.ts work-products/tests/kvideo-history.e2e.spec.ts work-products/tests/kvideo-premium-home.e2e.spec.ts work-products/tests/kvideo-premium-library.e2e.spec.ts --config playwright.config.ts`、`npx playwright test work-products/tests/section21-visual.e2e.spec.ts work-products/tests/section21-performance.e2e.spec.ts --config work-products/tests/section21-playwright.config.ts`、`npm run lint`；不得并行。
+**失败保留/回滚：** 行为测试失败时只回退本任务表面 diff；候选图不覆盖基线，不以降低对比阈值通过。
+**阶段/启动条件：** Serial 12；搜索/设置/播放器功能切片已 GREEN。
+**主代理集成责任：** 审核每个改动可追溯到需求 22，拒绝顺手重构。
+
+### S21-T14：README、版本与双仓发布合同同步
+
+**目标：** 同步用户文档与本地候选身份，使 Worker/Pages 只能成对发布或回滚。
+
+**验收标准：**
+- [ ] README 删除 `SUBSCRIPTION_SOURCES`、`DANMAKU_API_URL`、`IPTV_SOURCES`，声明用户自备合法来源、项目不提供/存储视频及 24 小时规则不构成许可/免责。
+- [ ] 审计 Worker `2.0.0`、Pages `0.3.0`、package/lock/build ID、manifest API `2` 与 `>=2.0.0 <3.0.0` 已由 T03/T08 原子同步；v1/v2 混搭在 release gate 失败关闭。
+- [ ] v2 导入导出文档、21 路由、parity 退休说明、成对发布/回滚矩阵和可执行顺序一致；无机器路径、Secret、真实源或账户数据。
+- [ ] v1/v2 导入预览对被丢弃的退休字段只报告去重、有界的字段名/数量，不回显字段值；取消导入零写入，确认后才应用其余合法数据。
+- [ ] app-update artifact 的成功、package fallback、畸形版本、超限和旧版本拒绝 fixture 均使用明确的 v2/v1 身份，不能先被无关版本 409 截断；产品失败关闭逻辑保持不变。
+- [ ] 所有 Section 21 计划归档与视觉候选二进制均以精确 repository/path/MIME/SHA-256 登记；登记不代表视觉质量获批，T15 在用户明确批准前仍为 HOLD。
+- [ ] 只读发布 runbook 固定顺序：前向先发布 Pages v2 到唯一公开根目录并验证 manifest/公开字节（旧 Worker 只允许保护性 503），再激活 Worker v2；回滚先恢复 Pages v1 根目录，再恢复 Worker v1。第二步或健康检查若未在预先批准的维护窗完成，立即恢复原配对；任一 SHA/绑定/健康检查不符停止。runbook 不授权执行这些远程动作，也不自行规定未经规格批准的维护窗时长。
+
+**依赖：** S21-T04、S21-T08、S21-T13。
+**读取范围：** 两仓 README/package/version、release scripts/manifest tests、parity/设置导入导出文档。
+**写入范围：** 修改 `README.md`、`CHANGELOG.md`、`work-products/tests/baseline-contract.test.mjs`、`worker-only-boundary.test.mjs`、`pages-integrity.test.mjs`、`app-update-artifact.test.mjs`、`work-products/kvideo-parity-matrix.md`、`work-products/evidence/section21/binary-allowlist.json`；修改 `../UXUV-Pages/.github/workflows/pages.yml`、`lib/data/settings-transfer.ts`、`components/settings/SettingsImportModal.tsx`、`work-products/tests/release-manifest.test.mjs`、`pages-deployment.test.mjs`、`runtime-config-contract.test.mjs`、`data-settings-contract.test.mjs`、`kvideo-data-settings.e2e.spec.ts`、`kvideo-feature-parity.test.mjs`、`iptv-retirement-contract.test.mjs`；创建 `work-products/tests/section21-rollback-drill.test.mjs`、`work-products/evidence/section21/pair-rollback.json`、`release-runbook.md`、`worker-v1.reverse.patch`、`pages-v1.reverse.patch`、`worker-v2.forward.patch`、`pages-v2.forward.patch`。Pages package/lock 在 T08 后只读；Pages 仓当前无 README，不新增重复用户文档；Pages builder 保持 API-major 中立，配对权威门仍是 Worker 对 manifest API/range 的失败关闭；若版本身份不一致，退回 T03/T08，不在 T14 临时修正产品身份。
+**共享可变资源：** 版本、package lock（只读）、release manifest/构建产物、导入预览与退休扫描器；串行。
+**聚焦验证：** Worker 仓运行 `node --check _worker.js`、`node --test work-products/tests/app-update-artifact.test.mjs work-products/tests/candidate-hygiene.test.mjs work-products/tests/worker-only-boundary.test.mjs work-products/tests/baseline-contract.test.mjs work-products/tests/pages-integrity.test.mjs`、`npm test`；Pages 仓先运行 `rg -n "section21-ui-contract|iptv-retirement-contract|hls-compatibility" package.json`、`npm run build`、`npm run release:build`，再运行 `node --test work-products/tests/release-manifest.test.mjs work-products/tests/pages-deployment.test.mjs work-products/tests/runtime-config-contract.test.mjs work-products/tests/data-settings-contract.test.mjs work-products/tests/kvideo-feature-parity.test.mjs work-products/tests/iptv-retirement-contract.test.mjs`、`npm test`、`npx playwright test work-products/tests/kvideo-data-settings.e2e.spec.ts --config playwright.config.ts`；最后在 Worker 仓运行 `node --test work-products/tests/section21-rollback-drill.test.mjs`。Pages 工作流必须同样固定 build → release:build → test 后才上传。回滚测试必须在仓库内隔离临时双仓中成对物化反向补丁、核对 scope 内全部 v1 canonical blob SHA/mode、向 v1 config 注入 v2 逐视频字段、运行 v1 runtime-config/sync/import/manifest/auth/security 合同，再物化前向补丁恢复并核对 scope 内全部 v2 SHA/mode；本地 drill base 与冻结生产回滚身份分别记录，不得把本地 HEAD 冒充生产字节；不得在真实工作树应用补丁，不得并行。
+**失败保留/回滚：** 不生成可混搭候选；失败时保留两仓工作树但标记 HOLD。只有回滚演练完整通过且 `pair-rollback.json` 的两仓 after SHA 全匹配时，真实回滚才具备候选资格；任何不匹配都停止，不覆盖工作。反向补丁候选检查、回滚后 v1 验证和前向恢复验证是三个独立阶段。二进制 allowlist 只能登记当前字节，不得隐藏未登记文件或替代 T15 视觉审批。
+**阶段/启动条件：** Serial 13 attempt 3；所有产品切片 GREEN，attempt 2 的 material writes 与三阶段回滚证据按归档 receipt 原样接纳。
+**主代理集成责任：** 复核版本/manifest/公开文档与前向/逆向顺序一致，逐步列出 Pages 根 manifest、Worker `/api/config`、认证、同步和普通播放健康检查，并明确尚未发布。
+
+### S21-T15：全量本地、浏览器视觉与发布前 HOLD 门
+
+**目标：** 聚合自动化与真实浏览器证据，形成可审阅的本地候选，不执行远程动作。
+
+**2026-08-20 attempt 11 调试替代：** attempt 10 的 121 图批准与当时证据原字节归档；后续 review/debug 已修改 Worker 与 Pages 产品字节，因此该批准不再覆盖活动候选。attempt 11 只接管已复现的上游 body 生命周期、逐视频规则键、分组来源缓存、跨模式导入冲突，以及 T15 收据生成/候选身份/活动收据合同；不得扩大产品功能。证据生成器只冻结产物身份，不执行验证命令、不硬编码 GREEN 或性能样本；机器审批记录内部绑定截图与完整 release-scope 身份，但不得要求用户提供、确认或复述哈希。完成新的自动门、fresh release/trace/rollback、二进制收据和用户视觉批准前，T15 保持 `in_progress` / HOLD。
+
+**2026-08-20 attempt 12 视觉拒绝替代：** 用户明确拒绝 attempt 11，原因是活动候选仍呈现近不透明的普通卡片，没有达到已批准的 iOS 27 Liquid Glass 材质与光感；同时再次指出人工审批不应使用 SHA。attempt 12 完整保留 attempt 1—11 的八项布局补修，只修复该已复现材质缺口：在 `app/globals.css` 把 regular/clear 功能层改为可见的背景扩散、暗边、明亮镜面高光与克制深度，并把版本/同步角落控件纳入同一材质；影片卡片、设置正文与长文本继续使用 standard material。只扩展既有 Pages 材质合同、可访问性/视觉/性能测试与 T15 evidence，不改业务 TSX、接口、版本或依赖。新的人类审批只使用“视觉候选 12”标签、代表预览和批准/拒绝反馈；哈希仅留在机器证据中。
+
+**2026-08-20 attempt 13 预呈交视觉复核替代：** attempt 12 的自动化与材质修复保持接纳，但内部预呈交复核发现设置页的持久同步角落浮层在 320 px 与 200% 文本下遮挡返回入口和页面标题；该候选未呈交用户，按原字节归档为内部拒绝。attempt 13 只把设置/高级设置页的同步角落状态改为参与文档流的可见状态条，保留原有 3 秒成功态、持久错误态、页面内 `SyncSettings` 状态与重试入口，并把视觉几何门扩展为同步状态不得与返回、标题或浮动操作相交。同时把 T15 证据转换抽成可执行纯守卫，负向证明旧证据缺失/漂移与非法决定均零写入；归档批准沿自身路径绑定归档 evidence/review。除此之外不改玻璃材质、同步业务、接口、版本或依赖。新的人类审批只使用“视觉候选 13”标签与可见预览。
+
+**验收标准：**
+- [ ] Worker syntax/test/size/security/hygiene/path/diff 与 Pages test/lint/build/release/E2E/锁文件检查全绿，SPEC 21 的 23 条验收矩阵无缺失；候选卫生扫描覆盖两仓 tracked+untracked 文本、package/lock、配置、脚本、补丁/收据/evidence、`out` 与 `release/current`。
+- [ ] attempt 1 的正式 E2E `117/122` 五项失败全部闭合：三个来源对话框 locator 只同步 T09 的“单独来源”语义，usage 顺序只同步 T10 六域合同；原 app-update 不重叠断言保持不变，并用共享尺寸 token 修复 Premium 设置标题遮挡。视觉审计另发现的主页浮动收藏按钮与首个标签在 320/768/1024 的遮挡同样以几何断言闭合，不移动用户拖拽存储合同。attempt 2 内置浏览器发现的播放器 sticky 顶栏遮挡同样必须在 320/768/1024/1440 与 200% 下证明外层点击盒不覆盖后继内容，玻璃视觉边界至少留 8 px；attempt 3 发现的 200% 横向 reflow 必须在 640 px 视口证明 `scrollWidth=640`、播放器动作区/主题切换器/历史浮动按钮边界均位于视口内且图标命中盒不小于 44 px；attempt 4 发现的 320 px 历史浮动按钮/跳过设置碰撞必须证明两者相交面积为零、至少保留 8 px 水平间距且各自命中盒仍为 50 px/至少 44 px；attempt 5 全量暴露的标签管理旧绝对坐标只同步为避让后的 1024 px `x=94` 与 320 px `x=78`，管理按钮、y/height、关系几何与全部标签行为断言保持不变；attempt 6 视觉审查发现的三标签主页在 320 px 必须把可见 lane 右缘置于历史按钮左侧至少 8 px、完整显示前两个标签并保留横向滚动，英文播放器四断点必须证明 episode panel 无内部横向 overflow 且来源/选集控制与最右剧集不越过内容右缘，候选 producer 每次截图前必须清除本 URL 的 `scroll-pos:*` fixture 状态并断言 `scrollX=scrollY=0`；attempt 7 的经典滚动条边界必须在 `innerWidth=320`、`clientWidth=305` 时证明标签 list 右缘固定为 240 px、第二标签右缘不超过 list、list 到历史按钮至少 8 px，且滚到末端后第三标签完整落在 list 内而不与历史按钮相交；attempt 8 最终视觉抽检发现的搜索/播放器浮钮内容遮挡必须在三语四断点证明搜索结果 grid 与左右浮钮各留至少 8 px、320 px 单列且无文档横滚，并在 901—1439 px 非 cinema 播放器中证明历史浮钮与当前来源卡相交面积为零、水平安全间距至少 8 px，1440 px 原布局保持不变。
+- [ ] 所有最终候选 fixture 固定 Worker `2.0.0`、Pages `0.3.0`、API `2`，不再以 v1 徽章、检查更新失败或缺参数播放器冒充候选。自动视觉套件与 Codex 内置浏览器在三语、四断点、200% 缩放、浅/深主题、forced-colors、reduced-motion/reduced-transparency 和失败关闭降级下审查主页、真实搜索结果/折叠工具栏、六域设置、ready 播放器/剧集/逐视频跳过入口、not-found 及其余静态路由；设置页与高级设置页不显示角落同步浮层，全局同步状态在这些路由只以页面文档流状态条显示，既有 `SyncSettings` 页面内状态与重试入口保留，且两者均不得与返回、标题或浮动操作相交；截图只写候选目录，review sheet 以“视觉候选 13”标签和代表预览请求用户批准或拒绝，不要求用户处理机器身份值。
+- [ ] 固定性能套件重跑 T01 同一 fixture/浏览器条件并满足 T06 数值门，以 CLI 强制保留成功 trace，保存三次原始指标、中位数、阈值比较、trace 与 SHA；只靠视觉顺滑不得替代性能证据。
+- [ ] 两仓候选 SHA、fresh `out`→`release/current` 字节身份、发布顺序、v1 配对回滚和未执行远程动作清楚记录；批准视觉前状态为 HOLD，不得宣称部署 GO。
+
+**依赖：** S21-T14。
+**读取范围：** 两仓完整 diff、所有测试/发布合同、候选截图与第 21 节矩阵。
+**写入范围：** T15 evidence/workflow 只修改 `work-products/plan.md`、`work-products/todo.md`、`work-products/tests/section21-plan-contract.test.mjs`、`work-products/evidence/section21/`（含 attempt 归档/replan/receipt、`red-matrix.md`、`binary-allowlist.json`、`t15-candidate-evidence.json`、`t15-visual-review.md`、`t15-performance-trace.zip`、最终 `pair-rollback.json` 与四个 forward/reverse patch）；Pages 只修改 `app/globals.css`、`work-products/tests/app-flows.e2e.spec.ts`、`usage-ui.e2e.spec.ts`、`accessibility.e2e.spec.ts`、`global-shell-contract.test.mjs`、`section21-ui-contract.test.mjs`、`kvideo-settings-preferences.e2e.spec.ts`、`kvideo-search-results.e2e.spec.ts`、`kvideo-player-shell.e2e.spec.ts`、`kvideo-tag-management.e2e.spec.ts`、`section21-visual.e2e.spec.ts`、`static-server.mjs` 及 `work-products/tests/fixtures/ui-review/section21-candidate/`。attempt 1—11 的既有布局边界保持不变；attempt 12 额外允许在 `app/globals.css` 统一 regular/clear 的语义透明度、背景扩散、暗边、镜面高光和克制深度，把 `.app-update-trigger` 与 `.sync-status` 纳入玻璃功能层，并同步正常态/降级态材质回归。不得给影片卡、设置正文或滚动列表逐项增加 blur，不得新增伪 3D、霓虹、运行时依赖或业务组件。既有第四项只可把播放器图标动作的局部命中 token 固定为 44 px、浮动按钮局部 token 固定为既有 50 px；第五项只可在 `max-width: 520px` 内为 `.player-skip-rule-control` 预留 64 px inline-end；第六项只可在 `max-width: 520px` 内把 `.kvideo-tag-sort-list` 细化为 `inline-size: calc(100vw - 98px)` 并把 column gap 保持为 4 px，使 overlay/classic scrollbar 下 list 均为 `[18,240]`、第二标签完整且第三标签仍可滚入；不得隐藏第三标签、禁用经典滚动条、移动/缩小浮动按钮或改拖拽存储；第七项只可用 `minmax(0,1fr)` 固定 episode panel 单列收缩合同并允许 heading/右侧控制组自然换行、右对齐，不得用 hidden/clip 掩盖 overflow；第八项只可引入 `--floating-sidebar-content-inset: clamp(0px, calc(720px - 50vw), 64px)`，用该 token 对 `.kvideo-search-results .kvideo-result-grid` 对称收窄并保持居中、仅在 `max-width: 479px` 改为单列，同时对 `min-width: 901px` 的非 cinema `.player-layout` 预留同 token 的 inline-end margin；四断点搜索 grid 与左右 50 px 浮钮、播放器历史浮钮与来源卡均须至少留 8 px，1440 px、cinema、浮钮位置/尺寸/拖拽状态不变，不得隐藏卡片、禁用交互、overflow clip 或制造横滚。`kvideo-search-results.e2e.spec.ts` 只可增加左右浮钮/grid 关系回归并同步第八项直接改变的四断点结果卡几何，不得放宽卡片内容、操作、200%、隔离或 a11y 断言；`kvideo-player-shell.e2e.spec.ts` 只可增加历史浮钮/current-source 关系回归，既有 producer 稳定化仍只可清除本测试 URL 的 scroll-position session fixture、等待并断言原点，不得改产品滚动恢复；`kvideo-tag-management.e2e.spec.ts` 只可把两个旧 x 坐标字面量 `36/20` 同步为 `94/78`，不得删除或放宽 y、height、功能与隔离断言；`app-update-control.e2e.spec.ts` 保持只读回归门，其他业务代码和历史基线只读。
+
+**attempt 13 附加写入范围：** Worker evidence/workflow 额外允许 `work-products/tests/candidate-hygiene.test.mjs`、`generate-t15-attempt10-receipts.mjs`、`generate-t15-validation-receipt.mjs`、`t15-evidence-generator.test.mjs`、`t15-evidence-transition.mjs`、`t15-validation-receipt.test.mjs`；Pages 额外允许 `components/SyncStatus.tsx`。这些路径只用于设置类路由去除重复角落状态、同步状态几何门和可执行证据转换守卫。
+**共享可变资源：** 全量测试进程、Next dev server、Playwright/内置浏览器、候选 SHA 与视觉审批状态；串行。
+**聚焦验证：** 先接纳 attempt 3 已完成的播放器 sticky inset 四断点与 200% RED/GREEN：对可见的 `.player-navbar` 外盒要求后继首项不被点击盒覆盖，对 `.player-navbar-glass` 要求至少 8 px 间距；320/768 的后继首项为 `.media-player`，1024/1440 为 `.player-viewport-control`。再接纳 attempt 4 在 640 px 视口、根字体 200% 下完成的横向 reflow RED/GREEN：`documentElement.scrollWidth` 等于 640，`.player-navbar-actions`、`.theme-switcher`、`.history-sidebar-toggle` 的 rect 完全位于视口内，播放器动作按钮与两个浮动按钮命中盒分别不小于 44 px 与 50 px；测试不得注入诊断 CSS。然后接纳 attempt 5 对 320/768/1024/1440 历史浮动按钮与跳过设置入口完成的交互碰撞 RED/GREEN。接纳 attempt 6 的 test-only 标签坐标 GREEN 后，先只加回归并分别运行 `section21-visual.e2e.spec.ts` 与 `kvideo-player-shell.e2e.spec.ts`：主页三种 320 px 降级状态在旧 CSS 下 lane gap `-56` 必须 RED；英文播放器 320/1024 的 panel `scrollWidth/clientWidth` 和最右控件必须 RED；player producer 必须清除本 URL 的 `scroll-pos:*` session fixture 并在每张图前轮询 `scrollX=scrollY=0`。attempt 7 已让这些门、`124/124` 与 fresh trace 转绿，但其内置浏览器经典滚动条 RED 必须作为 attempt 8 的先验失败保留：`innerWidth=320`、`clientWidth=305`、list right 225、tag2 right 236。先把视觉 fixture 的推荐内容同步为两个固定本地卡片并扩展几何回归，自动环境分别记录 `innerWidth-clientWidth`（overlay 可为 0，不能冒充经典模型）；再仅用 viewport-derived inline size 细化第六项 CSS，重跑特殊状态图并在 Codex 内置浏览器 strict fixture 下取得真实 15 px classic gutter GREEN：list right 240、tag2 完整、lane gap 至少 8，滚到末端后 tag3 完整且不与历史按钮相交。attempt 8 已让该边界与正式 `124/124` 转绿，但其 116 张候选的浮钮/内容视觉 RED 必须作为 attempt 9 先验失败保留；先只在 `kvideo-search-results.e2e.spec.ts` 与 `kvideo-player-shell.e2e.spec.ts` 加关系几何回归，证明旧 CSS 下搜索 320/768/1024 grid 安全间距 RED、1440 保持 GREEN，播放器三语 1024 current-source/history 相交 RED、其余断点保持 GREEN；再用同一 viewport-derived exclusion token 实现第八项 CSS，使搜索 grid/左右浮钮及播放器来源卡/历史浮钮均至少留 8 px，50 px 浮钮命中盒、拖拽语义、320 单列卡片交互、cinema 与 1440 布局不变，并在 Codex 内置浏览器以 320 搜索与 1024 ready-player 复核。之后按正式入口重跑 `npm run test:e2e` 达到完整发现数 `124/124` 并重新冻结全部 116 图。产品 CSS 已改变，性能必须重新运行 `npx playwright test work-products/tests/section21-performance.e2e.spec.ts --config work-products/tests/section21-playwright.config.ts --trace on`，保存新的三样本、中位数与成功 trace，不再把 `88b6bc…` 冒充最终候选。全部 Playwright 与内置浏览器完成后，Pages 最后重新执行 `npm run build`→`npm run release:build`→`npm test`、manifest/release 字节身份、`npm run lint`、`npm ls --all`、锁文件/`next-env.d.ts`/`git diff --check`；随后重新生成最终 `pair-rollback.json` 与四补丁并运行三阶段隔离 drill，最终 Pages v2 manifest 必须包含当前 CSS 而不是 T14/pre-T15 字节。Worker 最后执行 `node --check _worker.js`、`npm test`、`npm run check:size`、`npm ls --all`、两仓路径/秘密/diff 审计。候选 evidence/review sheet 与所有最终 PNG/ZIP 写完并精确更新 MIME/SHA 后，在 Worker 仓最后运行冻结的 `node --test work-products/tests/candidate-hygiene.test.mjs`：它从两仓 `git ls-files --cached --others --exclude-standard` 加显式 `out`/`release/current` 生成存在文件清单，扫描全部文本候选和 T14/T15 patch/receipt/evidence，机器绝对路径只在字符串/行边界识别，合法 `components/home/hooks` 不命中；无匹配为成功、匹配为失败、读取/未覆盖为错误，二进制截图/trace/归档只允许按 MIME+SHA 清单排除。它覆盖 `github_pat_`、OpenAI/GitHub/AWS/private-key、项目 Secret 赋值、Bearer/session、Cloudflare Token 与高熵候选，并只允许明确脱敏 fixture。依赖漏洞/签名检查仅作为 `Recommended`：另获用户授权后，可用两仓权威 lockfile 运行 `npm audit --audit-level=high --registry=https://registry.npmjs.org`，Pages 在 npm 支持时另运行 `npm audit signatures`；未授权、镜像 `NOT_IMPLEMENTED`、网络失败或未完成记为 `unperformed`，不阻断本地候选完成，也不得自动 `npm audit fix`/`--force`。
+**失败保留/回滚：** attempt 1 已按 `117/122`、v1 视觉 fixture 与缺失成功性能 trace 原样归档；attempt 2 已按 116 张候选、成功性能 trace 与播放器几何失败原样归档；attempt 3 已按 sticky inset GREEN、116 张候选及 200% 横向 reflow RED 原样归档；attempt 4 已按 reflow GREEN、播放器 3/3 及 320 px 交互碰撞 RED 原样归档；attempt 5 已按碰撞 GREEN、聚焦 46/46、内置浏览器 GREEN 与全量 123/124 的旧标签坐标失败原样归档；attempt 6 已按标签 3/3、全量 124/124、fresh release、被否决的 116 张候选及三项视觉 blocker 原样归档；attempt 7 已按三项 blocker GREEN、全量 `124/124`、116 张候选、fresh trace 与经典滚动条实页 RED 原样归档；attempt 8 已按经典滚动条 GREEN、全量 `124/124`、被拒绝的 116 张候选与三张浮钮/内容 blocker 原样归档，attempt 9 接纳这些字节但不视为最终候选；attempt 11 保留自动门全绿但视觉被拒绝的机器身份和用户反馈。任何新增真实产品缺陷、全量回归、候选不稳定或证据缺口都保留日志/截图并把 todo 标记 `failed`/`blocked`；attempt 12 只允许上述材质根因修复与对应测试/evidence，不得顺手修改业务代码。视觉未获用户明确批准即保持 `in_progress` 与 HOLD。
+**阶段/启动条件：** Serial 14 attempt 13；T14 双仓身份一致，attempt 1—12 的失败、历史收据与视觉决定均保留，attempt 13 只接管预呈交复核确认的同步状态遮挡和证据转换测试缺口。
+**主代理集成责任：** 复核 v2 fixture 与真实候选身份，使用 Codex 内置浏览器完成本地可见状态审查，停止所有服务、只清理本次生成且已确认可再生的缓存，复核工作树范围，并向用户提交“视觉候选 13”的代表预览与本地证据结论；人工决定只使用候选标签和可见预览，用户视觉批准仍不授权 commit、push 或部署。
+
+## 7. 串行执行合同
+
+本次 `fast = false`，不形成并行波次。固定顺序为：
+
+`T01 → T02 → T06 → T03 → T05 → T04 → T07 → T08 → T09 → T10 → T11 → T12 → T13 → T14 → T15`
+
+每项启动前必须满足其显式依赖和上一串行阶段的集成屏障。T07 完成后、T08 启动前，主代理运行 `node work-products/tests/section21-inventory-generator.mjs --write-snapshot S21-PRE-T08` 生成不可覆盖的启动前清单，并立即以 `--verify-snapshot S21-PRE-T08` 复验；这样 T03/T05/T07 的已批准修改不会被错误识别为快照漂移。任一任务的 diff、命令输出、失败保留或 todo 原子更新未验证时，后续任务全部冻结。
+
+## 8. 风险、停止与回滚
+
+| 风险 | 影响 | 控制 |
 | --- | --- | --- |
-| 从截图重写而非迁移源码 | 视觉与隐藏行为继续丢失 | 固定提交源码/测试优先，截图只做视觉证据 |
-| 矩阵漏项 | 少量 E2E 全绿却功能残缺 | 稳定 ID、源码可达性审计、零 `unverified` 门 |
-| 当前 0.1.2 被当作基准 | 简化设计被固化 | 0.1.2 只作 RED 对象，不可更新参考截图 |
-| 静态导出与旧 Next 依赖冲突 | 构建失败或恢复服务端代码 | 纯浏览器适配；禁止 `app/api`、server-only、fs、Upstash |
-| 共享 store/schema 迁移破坏数据 | 收藏/历史/设置丢失 | 兼容读取、账户/模式隔离、回滚不删数据 |
-| 播放器与 IPTV 真实源不稳定 | 自动化误判 | 合成确定性 fixture 与真实源证据分层 |
-| TV/Cast/PiP 无法完全自动化 | 隐藏缺陷 | 能力 mock + 可复验人工设备步骤，未执行不得标 pass |
-| 视觉基线被实现覆盖 | 回归被掩盖 | 基线更新 Ask first；固定 commit/hash；双重审阅 |
-| Worker 安全因兼容 UI 被放宽 | 认证/SSRF/配额风险 | 现有合同为不可退化门；UI 解释限制，不删除安全控制 |
-| 旧 Worker 无法读取精简 manifest | Pages 先发布会让现网 UI 503 | 一次性迁移严格先 T66 Worker、后 T67 Pages；T53 证明新 Worker 可读旧/新两种 manifest |
-| 兼容 Pages 内容发生非预期变化 | 无运行时 SHA 可识别内容漂移 | 保护仓库/Pages 权限，保留 Git/Actions artifact，发布前全门；异常时只重新发布上一兼容根 artifact |
-| Pages 版本或合同伪造 | Worker 加载不兼容 UI | 合法 semver、精确 API Contract、Worker range、安全路径/MIME/大小失败关闭；不拼接 `main/latest` |
-| 浏览器直接取可变 Worker 源码 | CORS/污染或提示版本与复制字节不一致 | 只调用同源鉴权 `artifact=worker`；Worker 固定配置上游并校验版本、3 MiB 上限、SHA-256 与安全头 |
-| 全局入口重复挂载或提前检查 | 八路由重复请求，公开/登录页触发认证 API | 只挂 `application-shell` 一次；非认证分支零挂载/零请求；路由切换 E2E 统计一次自动检查 |
-| 版本入口覆盖播放器或移动顶栏 | 关键控件不可操作 | 统一 chrome 预留、safe-area、四断点、200% 缩放和真实控制层遮挡门；禁止逐页偏移补丁 |
-| 图标自动接受或小尺寸失真 | 品牌基线错误且 PWA mask 裁切 | T63 六档/两 mask 预览，T64 用户审批 HOLD；未批准不更新局部基线或发布 |
-| “降低 AI 感”扩大为全站重写 | diff 与回归范围失控 | 只允许 SPEC 20.7 表面；overlay 外不新增 elevation，不做全站 CSS/组件库/播放器重构 |
+| v1/v2 或 Worker/Pages 混搭 | 认证页/静态资产不可用 | T03/T08 才切身份；T14 固定 Pages-first、健康检查与成对逆序恢复；维护窗时长另行审批，混搭只允许保护性 503 |
+| IPTV 删除误伤普通媒体 | 视频无法播放 | T03/T08 正向普通媒体回归；共享函数无证据不得删 |
+| 已有账户来源被误删 | 用户数据损失 | 不迁移/扫描真实 D1；脱敏 fixture 证明只停止环境回灌 |
+| 逐视频 config 膨胀/冲突 | 同步失败 | 200 项、字节预算、timestamp/LWW、最旧淘汰 |
+| 全局 CSS 并发冲突或过度 blur | 布局/性能/可访问性回归 | Pages 视觉任务串行；功能层限定、无 blur fallback、固定性能 fixture 与 T01/T06/T13/T15 同条件 trace |
+| 开发/构建改写生成文件 | 非预期 diff | 每阶段停止服务并检查 `next-env.d.ts`、`.next/`、`out/` 与工作树 |
 
-## 8. 并行与冲突约束
+出现以下任一情况立即停止并返回规格或用户裁决：新增依赖/D1 schema；删除或批量改写真实数据；改变 8 秒、key、200 项、法律措辞或版本配对；普通媒体回归无法隔离；根路由仍依赖旧前缀；320 px/200%/高对比不可用；发现用户未提交改动与计划冲突。
 
-- T01-T07 和所有共享样式/provider/store 任务必须串行。
-- T08-T14 在各自依赖稳定后可按不重叠文件并行；共享搜索状态由 T10-T12 的单一所有者维护。
-- T15-T20 的设置 shell/store 共享度高，默认串行。
-- T22/T23 可并行研究但不能并发修改共享播放器状态；T24 合并后才能做 T25/T26。
-- T27 与 T29 可并行；T28/T30 分别等待其前置。
-- T31 与 T32 可在各自前置完成后并行；T33/T34 共享同步基础但按不同文档类型串行合并，T35/T36 各自独立回滚。
-- T37 与 T38 在各自前置完成后可独立验证；T39 是独立授权 HOLD。T49 后 T50/T51 可分仓并行，T52-T53 必须串行。
-- T54-T56 是三个互不改产品文件的 RED，可分别准备；进入产品修改后，T57/T58 可在文件所有权不重叠时并行，T59 必须先于 T60，T60-T62 串行。T63 可与 T57-T62 并行产出候选，但 T64 必须同时等待两边完成。
-- T64 是用户视觉审批 HOLD；T65-T68 全部串行。任何并行任务合并后重跑 CP9 对应合同，不允许两个任务并发修改 `app/globals.css`。
+## 9. 持续计划批准与完整性门
 
-## 9. 当前未决项
-
-- 首次视觉基线已获用户批准；后续仍禁止无批准更新基线或修改阈值。
-- 真实 Cast、PiP、PWA 安装、TV 与 Cloudflare 环境由用户部署后验收；本地证据不得冒充真实设备或生产证明。
-- `pagesVersion` 继续来自 UXUV-Pages `package.json`，只用于用户可见版本与兼容诊断；同版本允许内容修订。是否升版由 Pages 变更语义决定，不再触发 Worker 更新。
-- 第 20 节没有待补的产品决策；T64 图标候选和局部视觉基线已获用户明确批准。后续基线变更仍须重新审批，自动合同或截图工具不得代替用户批准。
-- `gh-pages` 遗留版本目录已由 T67 清理；远端 tree 无 `0.1.2/` 或 `0.2.0/` 目录，生产请求使用公开根路径。
-- 用户指定的 Edge 登录态已完成生产 artifact 复制与设置界面复验：入口只显示首字母 `A`，设置页无版本区块；三种语言为同一 grid 行的三个等宽按钮，且无说明小字。
-- 任何固定提交中可达、但当前矩阵未覆盖的行为都自动扩大矩阵，而不是静默删减；若它需要非 13.3 架构差异，停止并请求修订 SPEC。
-
-## 10. 完成与授权边界
-
-- 本计划获批后，只有用户明确调用 `@uxu-code:build`（或 `@uxu-code:build auto`）才允许开始本地实现。
-- 本地实现授权不包含 commit、push、Pages 发布、Worker 部署、真实 D1/Secret/Analytics Token 或生产切换。
-- T39 已按用户明确的单文件 Worker 交付边界完成本地/受控真实房间验证；T43-T45 是历史已完成事实。原 T46-T48 已取代且禁止执行；T64-T68、生产登录态复验与 CP10 均已完成，最终发布门 GO。
-- 计划完成不等于产品完成；产品完成必须满足 SPEC 15.A-G、第 20 节和本计划 CP8-CP10。
-
-## 11. 单模型对抗审查修订记录
-
-用户选择跳过跨模型复核。以下 8 项均按“有效且需修订”处理，没有以 trade-off 或 noise 驳回：
-
-| 发现 | 修订 |
-| --- | --- |
-| T02 只按领域 RED，旧闭环任务可事后补证据 | T02 改为每个用户能力 ID 在固定 0.1.2 commit 上先 RED；T40 只聚合，遗漏必须退回 T01/T02 |
-| 收藏/历史与播放器依赖倒置 | T13/T14 限定资料库能力；T21 接播放页收藏，T24 接自动历史/断点 |
-| T24 未依赖播放器设置 | T24 增加 T18，并验证持久化设置真实驱动 media client |
-| T04-T06 横向迁移、质量拖到最终 | T04 改为完整登录流、T05 改为可用基础首页、T06 改为可操作导航/主题/语言/TV 流；所有后续切片同步闭合质量，T37 只汇总 |
-| 原 T31 过大且不可独立回滚 | 拆为 T31 PWA、T32 同步基础、T33/T34 逐文档同步、T35 账户/D1 状态、T36 用量卡 |
-| Pages 发布前未冻结精确身份且误指 workflow | T42 验证 `.github/workflows/pages.yml` 的 expectedCommit/GITHUB_SHA 与 artifact manifest；T43 冻结 commit/tree；T44 逐级绑定 artifact、gh-pages 和公网字节 |
-| Worker 远端门没有精确 commit | T46 冻结 commit/tree、部署字节与 schema 哈希；T47/T48 绑定 deployment ID/digest |
-| 回滚未证明旧组合兼容 | T47 验证旧 Worker 精确字节 + Pages 0.1.2 + 同一 schema 的完整状态读写合同，T48 将其列为 GO 必需证据 |
-
-第二轮单模型审查同样由用户选择跳过跨模型复核；8 项均按“有效且需修订”处理：
-
-| 发现 | 修订 |
-| --- | --- |
-| 功能闭环未依赖数据、弹幕、广告等终端任务 | T40 显式依赖 T19/T25/T26/T28/T30/T31/T33-T39 等所有终端功能任务 |
-| VideoTogether 无实施任务 | 新增 T38，覆盖创建、加入、配置、CSP、禁用和失败态 |
-| T04-T06 仍是横向层 | 改为可独立 GREEN 的登录、基础首页、全局导航/主题/语言/TV 用户流程 |
-| 收藏/历史/来源在同步基础前声称同步通过 | T13/T14/T15/T30 仅验本地行为，跨设备同步由 T33/T34 闭合 |
-| 全设置导入导出缺播放器/Premium 依赖 | T19 依赖 T18 并实现普通 schema；T20 接入 Premium 后才闭合完整 DAT ID |
-| T37 仍首次实现 TV 行为 | TV/遥控分配到 T06/T08/T10/T15/T21/T23/T27/T28；T37 只汇总证据 |
-| Pages workflow 与发布产物身份非原子 | T42 要求 expectedCommit == GITHUB_SHA 并生成 artifact manifest；T43/T44 绑定 commit→artifact→gh-pages→公网字节 |
-| Worker 部署与回滚状态身份不足 | T46 冻结 Git object 字节/schema 哈希；T47 绑定 deployment ID/digest/远端 schema 并运行旧组合完整状态合同 |
-
-第三轮单模型审查仍发现 5 项 P1。用户明确授权修复并直接定稿、不再进行疑点审查；以下均按“有效且需修订”完成：
-
-| 发现 | 修订 |
-| --- | --- |
-| `ARCH-*` 被排除在逐项 RED 外 | 架构差异改为无 ID 登记表；所有用户能力 ID 一律需要固定 0.1.2 RED |
-| T20 未依赖 T19 | 增加 T19→T20，由 T20 独占包含 Premium 的完整设置往返闭环 |
-| T35 未依赖 T33 | 增加 T33→T35，并验证所有文档类型的离线/冲突/配额/恢复状态 |
-| 真实 Cast/VideoTogether 可能未经授权启用 | T23/T38 只允许 mock/禁用态；新增 T39 独立 HOLD，真实脚本/设备/房间证据须单独授权 |
-| 多个切片缺 TV/遥控验收 | T16/T19/T20/T29/T30/T38 增加遥控焦点/陷阱/方向键 E2E；T37 仍只汇总 |
-
-2026-08-11 用户以 CfGfwAX 的固定公共根地址模式取代运行时精确身份固定；本次规划修订不重写上述历史审查结论，只声明其中 T42-T48 的 pin/逐字节发布建议已不再规范当前执行：
-
-| 新约束 | 计划处理 |
-| --- | --- |
-| Pages 小改不得要求 Worker 更新 | T50 只按 `pagesVersion`/API Contract/Worker range/安全映射判断兼容，T53 验证同版本修订和新兼容版本 |
-| Worker/manifest 不使用 commit 或 SHA 固定 | T49 先 RED，T50/T51 删除 runtime/published identity 字段；Git/Actions 只留作外部审计记录 |
-| 公开 Pages 不配置对接密钥 | T49/T50/秘密扫描证明 Worker→Pages 请求无 Cookie、Authorization、Token 或 Secret |
-| 移除多版本目录 | T51 本地删除版本目录逻辑；T67 在先更新 Worker并确认零引用后才删除远端遗留目录 |
-| 一次性迁移不能中断现网 | T50 新 Worker兼容当前旧字段 manifest，T66 先更新 Worker，T67 后发布精简 manifest |
-
-2026-08-11 用户直接调用 `@uxu-code:plan` 批准 SPEC 第 20 节进入规划。本次修订是对已批准合同的依赖拆分，没有新增产品决策；保留以下计划转换记录：
-
-| 已批准合同 | 计划处理 |
-| --- | --- |
-| 顶栏删除四项，用户首字符进入设置 | T54 先 RED；T57 只改 `ContentNavigation` 与直接样式，普通/Premium 路由分别验证 |
-| 三语言并排且无小字 | T55 先 RED；T58 只改语言子区，保护其他设置说明和 locale 持久化 |
-| 全局版本入口与按需复制 | T56 Worker RED→T59 后端 GREEN；T60 单一控件→T61 shell 单挂→T62 E2E，避免页面级重复实例 |
-| 蓝灰 U/V 默认图标 | T63 生成候选与六档/mask fixture；T64 用户审批后才冻结局部基线 |
-| 降低嵌套和 AI 感 | T57/T58/T60/T62 按可执行 DOM/token/elevation 合同收敛；不扩大到全站重写 |
+用户于 2026-08-19 明确“批准所有计划，不再设置 SHA”。因此 **STANDING APPROVAL ACTIVE**：后续为修复已证实任务边界而产生的计划替代不再等待用户逐次确认摘要或 SHA，`todo.md` 可在结构、依赖、写集和验证合同全绿后直接保持 `APPROVED / READY FOR BUILD`。实现器仍自动计算 plan/todo/receipt 哈希用于漂移检测和失败归因；该内部值不是用户审批凭据，也不得再次要求用户提交。持续批准不扩大已有实现范围，更不授权 commit、push、Pages 发布、Cloudflare/D1/Secret 操作或生产结论。

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 12,
+  "state": "failed",
+  "planSha256": "38cb43feee408c5cbac73df1c8a565dd0ed10b92934b5b653378d41ef1362cf3",
+  "startedAt": "2026-08-20T10:58:27.959Z",
+  "objective": "Repair the rejected iOS 27 Liquid Glass material and remove SHA from the human visual-approval contract.",
+  "priorAttempt": {
+    "attempt": 11,
+    "state": "failed",
+    "visualDecision": "REJECTED",
+    "receipt": "work-products/evidence/section21/receipts/invalidated/debug-20260820/S21-T15-attempt11-rejected.json",
+    "approval": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt11-rejected.json",
+    "automationDisposition": "Historical local automation remained green, but it does not override the visual rejection."
+  },
+  "scope": {
+    "pages": [
+      "app/globals.css",
+      "work-products/tests/global-shell-contract.test.mjs",
+      "work-products/tests/section21-ui-contract.test.mjs",
+      "work-products/tests/section21-visual.e2e.spec.ts",
+      "work-products/tests/accessibility.e2e.spec.ts",
+      "work-products/tests/section21-performance.e2e.spec.ts",
+      "work-products/tests/fixtures/ui-review/section21-candidate/"
+    ],
+    "workerEvidence": [
+      "work-products/plan.md",
+      "work-products/todo.md",
+      "work-products/tests/section21-plan-contract.test.mjs",
+      "work-products/tests/candidate-hygiene.test.mjs",
+      "work-products/tests/generate-t15-attempt10-receipts.mjs",
+      "work-products/tests/generate-t15-validation-receipt.mjs",
+      "work-products/tests/t15-validation-receipt.test.mjs",
+      "work-products/evidence/section21/"
+    ]
+  },
+  "verification": {
+    "red": [
+      "normal regular material used 95 percent light and 90 percent dark opacity",
+      "glass primitives lacked visible dark edge and bright specular highlight",
+      "version and sync corner controls were outside the shared glass material",
+      "human approval copy incorrectly required SHA despite the standing plan"
+    ],
+    "focusedGreen": {
+      "pagesMaterialContracts": "15/15",
+      "pagesMaterialBrowser": "1/1",
+      "evidenceTransitionAndHygiene": "10/10"
+    },
+    "fullGreen": {
+      "pagesNode": "163/163 plus Section21 9/9",
+      "pagesE2E": "125/125",
+      "pagesPerformance": "1/1 with three sanitized samples",
+      "pagesBuild": "next build and release build passed",
+      "pagesStaticChecks": "ESLint, TypeScript, npm dependency tree, and diff check passed",
+      "workerNode": "168/168",
+      "workerSyntaxAndSize": "passed",
+      "rollbackReplay": "1/1 with bootstrap, reverse, and forward restore phases passed",
+      "workerStaticChecks": "npm dependency tree and diff check passed"
+    },
+    "manualBrowser": {
+      "desktop": "1280x720 material and geometry inspected",
+      "mobile": "320x720 no horizontal overflow; 44px action remained visible",
+      "result": "passed"
+    },
+    "candidate": "121 screenshots ready for user review",
+    "remaining": ["user visual decision for candidate 12"]
+  },
+  "gate": {
+    "local": "GREEN",
+    "release": "HOLD",
+    "visualApproval": "REJECTED"
+  },
+  "failure": {
+    "stage": "internal_pre_presentation_visual_review",
+    "reason": "Persistent sync status covered settings navigation and title at 320px and 200 percent text.",
+    "userPresented": false,
+    "supersededByAttempt": 13
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

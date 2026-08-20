@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T03",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-19T12:58:02.0958890+08:00",
+  "completedAt": "2026-08-19T13:01:59.0006812+08:00",
+  "planSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "cf18f945644549a4f68fcf260a777eb5c8aeec3563d015435d66769266795c5c"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "c0244f8fd7b49f5ea432e3379a18c176644b09aae4211b3989d1ddded968b51c"
+    }
+  },
+  "writeSet": [
+    "worker:_worker.js",
+    "worker:package.json",
+    "worker:package-lock.json",
+    "worker:README.md",
+    "worker:CHANGELOG.md",
+    "worker:work-products/tests/pages-integrity.test.mjs",
+    "worker:work-products/tests/worker-route-contract.test.mjs",
+    "worker:work-products/tests/worker-only-boundary.test.mjs",
+    "worker:work-products/tests/low-fanout-routes.test.mjs",
+    "worker:work-products/tests/media-routes.test.mjs",
+    "worker:work-products/tests/auth-d1.test.mjs",
+    "worker:work-products/tests/security-boundary.test.mjs",
+    "worker:work-products/tests/sync-cas.test.mjs",
+    "worker:work-products/tests/d1-free-budget.test.mjs",
+    "worker:work-products/tests/free-budget.test.mjs",
+    "worker:work-products/tests/source-import-route.test.mjs",
+    "worker:work-products/tests/iptv-stream-resilience.test.mjs",
+    "worker:work-products/tests/upstream-stream-resilience.test.mjs",
+    "worker:work-products/evidence/section21/receipts/S21-T03.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:_worker.js": "174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "worker:package.json": "6bc3a2ff830c07c667b675db33f3faa1a6cb19c98acf9276055f936d36d6f589",
+    "worker:package-lock.json": "584e39b75d30016f7429f37f669ef247c76686b510ac4eb1d5970ac9d643cca9",
+    "worker:README.md": "ff03512832950f5e6e59463b626b04ddb9f50d42b4d80e01e8a5eb6f9ab85f29",
+    "worker:CHANGELOG.md": "2ec9cc1bab8b00a188e7902505381de50170b2a352726c962e9e9cf96d19eb2c",
+    "worker:work-products/tests/pages-integrity.test.mjs": "6f0989697802c85d63a64940713af8e6f4609d0018268e0fbf4eab73cd6113d0",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "aa37c4b2242ec1a59fac3dc1db697bfa8b9c7f471f2b303cd802b3794bb975d9",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf",
+    "worker:work-products/tests/low-fanout-routes.test.mjs": "97138fb435bdd6a8404934844d7edf3d3e4f9833b6554eb6a8b790aa07d005f9",
+    "worker:work-products/tests/media-routes.test.mjs": "3e68bd43cafa816c612c06fce6e6d3fd7e962c7399f299f3b6b5c47b7f82952c",
+    "worker:work-products/tests/auth-d1.test.mjs": "b0bbf033f6895e626765e6f3fa588c56e6a4428e7ad9ae0fce07fd05d7a92e66",
+    "worker:work-products/tests/security-boundary.test.mjs": "59bffafbce13dab3b1f16d0d8aa87fbf4527b4ba1607e0fdc71ae149307d907f",
+    "worker:work-products/tests/sync-cas.test.mjs": "2ed27a457a59a5209423fa60716f4a36b46e18ca79d391b11fe836f17d085fa7",
+    "worker:work-products/tests/d1-free-budget.test.mjs": "411e38244c77b28d97a5ee0d4b75d2243b45cabe3ac338a21ac9720dd8bd4da0",
+    "worker:work-products/tests/free-budget.test.mjs": "cf1c4e3b33953b606c0e13573af5695504a1dadb8e170c2df5b3a25716aabbde",
+    "worker:work-products/tests/source-import-route.test.mjs": "45d0895f4d02ec8be39a46131abf48e997a8c3116ed8ecf080300dc4820d67ba",
+    "worker:work-products/tests/iptv-stream-resilience.test.mjs": null,
+    "worker:work-products/tests/upstream-stream-resilience.test.mjs": "005205f02b3f9c1ba2d253050d5c5b09843a5a9ff769557d83247bc353b87f51",
+    "worker:work-products/tests/section21-security-baseline.test.mjs": "999b0077c26c0bedd6c6616265fe6cfc4866be2247366c32e36bb95eaa00865d",
+    "worker:work-products/evidence/section21/receipts/invalidated/6ef4a951/S21-T03.json": "033f5db3b8188fc348ef31883136db7f2e7a0535b2e5af21555b73e203ede6d6",
+    "worker:work-products/evidence/section21/receipts/S21-T03.json": null,
+    "worker:work-products/todo.md": "5f4907854a6902d1d03138b4a039df3ba75273e1c20d78e8d5873cab66c10ef3"
+  },
+  "afterSha256": {
+    "worker:_worker.js": "174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "worker:package.json": "6bc3a2ff830c07c667b675db33f3faa1a6cb19c98acf9276055f936d36d6f589",
+    "worker:package-lock.json": "584e39b75d30016f7429f37f669ef247c76686b510ac4eb1d5970ac9d643cca9",
+    "worker:README.md": "ff03512832950f5e6e59463b626b04ddb9f50d42b4d80e01e8a5eb6f9ab85f29",
+    "worker:CHANGELOG.md": "2ec9cc1bab8b00a188e7902505381de50170b2a352726c962e9e9cf96d19eb2c",
+    "worker:work-products/tests/pages-integrity.test.mjs": "22253eb4f4aaa482cb0fef07ff6bf9c38af0375a66fe3587dd4b1d5b51b366f7",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "aa37c4b2242ec1a59fac3dc1db697bfa8b9c7f471f2b303cd802b3794bb975d9",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "55dc91f38638910e79bfcde18e105dbaf7f7943d6ccd72aac305f69b0d12e243",
+    "worker:work-products/tests/low-fanout-routes.test.mjs": "97138fb435bdd6a8404934844d7edf3d3e4f9833b6554eb6a8b790aa07d005f9",
+    "worker:work-products/tests/media-routes.test.mjs": "3e68bd43cafa816c612c06fce6e6d3fd7e962c7399f299f3b6b5c47b7f82952c",
+    "worker:work-products/tests/auth-d1.test.mjs": "b0bbf033f6895e626765e6f3fa588c56e6a4428e7ad9ae0fce07fd05d7a92e66",
+    "worker:work-products/tests/security-boundary.test.mjs": "59bffafbce13dab3b1f16d0d8aa87fbf4527b4ba1607e0fdc71ae149307d907f",
+    "worker:work-products/tests/sync-cas.test.mjs": "2ed27a457a59a5209423fa60716f4a36b46e18ca79d391b11fe836f17d085fa7",
+    "worker:work-products/tests/d1-free-budget.test.mjs": "411e38244c77b28d97a5ee0d4b75d2243b45cabe3ac338a21ac9720dd8bd4da0",
+    "worker:work-products/tests/free-budget.test.mjs": "cf1c4e3b33953b606c0e13573af5695504a1dadb8e170c2df5b3a25716aabbde",
+    "worker:work-products/tests/source-import-route.test.mjs": "45d0895f4d02ec8be39a46131abf48e997a8c3116ed8ecf080300dc4820d67ba",
+    "worker:work-products/tests/iptv-stream-resilience.test.mjs": null,
+    "worker:work-products/tests/upstream-stream-resilience.test.mjs": "005205f02b3f9c1ba2d253050d5c5b09843a5a9ff769557d83247bc353b87f51",
+    "worker:work-products/tests/section21-security-baseline.test.mjs": "999b0077c26c0bedd6c6616265fe6cfc4866be2247366c32e36bb95eaa00865d"
+  },
+  "validation": {
+    "priorEvidence": "archived blocked receipt validated 5 independently attributable RED cases and old implementation patch SHA-256 fdc40dd7ecbf7bbca83c1c50c7e35a9e7d06fcff0dbad5736bdaff410f19f955; current slice matched every recorded prior after-hash",
+    "manifestRed": "2/9 GREEN and 7/9 attributable RED with API 1 fixtures against the API 2 Worker",
+    "manifestGreen": "9/9 GREEN after synchronizing API 2 fixtures, five-case migration matrix, MIME, size, and fail-closed cases",
+    "focused": "5/5 S21-T03 GREEN",
+    "relatedAndSecurity": "67/67 GREEN across manifest, security baseline, routing, identity, media, authentication, D1, CSRF/SSRF, CAS, Free budget, source import, and upstream resilience",
+    "retiredSurfaceAudit": "only the three approved legacy read-tolerance permission strings remain; active IPTV routes, defaults, and environment fields are absent, and permission writes omit retired values",
+    "syntaxSizeHygiene": "node --check GREEN; Worker gzip 39359 / 3145728 bytes; candidate hygiene 3/3 GREEN",
+    "taskChanges": "only pages-integrity and worker-only-boundary test contracts changed in this attempt; the previously implemented product slice was revalidated byte-for-byte",
+    "pagesWriteBoundary": "Pages tracked patch SHA-256 remained c0244f8fd7b49f5ea432e3379a18c176644b09aae4211b3989d1ddded968b51c",
+    "diffCheck": "task write set GREEN"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T04",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-19T13:17:00.0000000+08:00",
+  "completedAt": "2026-08-19T13:22:32.3750639+08:00",
+  "planSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "925d209498534607afedb1044c669f13ed472abd39f81b0971baaca3b58857cc"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "824ca251bf78533b386c2dabb62da3a86b2efda5166bc724f8ab0aee37858acb"
+    }
+  },
+  "writeSet": [
+    "worker:_worker.js",
+    "worker:work-products/tests/high-fanout-routes.test.mjs",
+    "worker:work-products/tests/structured-logging.test.mjs",
+    "worker:work-products/evidence/section21/receipts/S21-T04.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:_worker.js": "174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "worker:work-products/tests/high-fanout-routes.test.mjs": "71884e6a293a66ef482a323adc02c732c1945751b200028596731136ed3eed3a",
+    "worker:work-products/tests/structured-logging.test.mjs": "e42690fd1bab67e1ff33d9935897c8b737de83ecda7940b7ba9c9f00bee3a55f",
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "e1a37aa2f22e1e247014f95eda148d9642f57ec0fb42795ec3a0a9823b3aac6b",
+    "worker:work-products/evidence/section21/receipts/S21-T04.json": null,
+    "worker:work-products/todo.md": "fe8360c041b7124f5f6a39aa3e79d6ee380385e19e0fe637f5e1e4d703656868"
+  },
+  "afterSha256": {
+    "worker:_worker.js": "873d6828bd4bbcafd25825e39bc61821dcfce8c384dfe591f726b384ca6eec59",
+    "worker:work-products/tests/high-fanout-routes.test.mjs": "0eff719b250bd8d527152daaa28612cadaf0cb8180cb5f578430b30923dd7ce6",
+    "worker:work-products/tests/structured-logging.test.mjs": "ae258dfd4b9576c34a7910cd71824038b2851fb0dd84d92b0c62ae5a56868ec2"
+  },
+  "validation": {
+    "focusedRed": "4 S21-T04 contracts discovered; timeout constant and legacy 20-second search deadline assertions failed before implementation",
+    "relatedRed": "16 related tests discovered; 3 task-attributable timeout and cancellation contracts failed before implementation",
+    "focusedGreen": "4/4 S21-T04 contracts GREEN",
+    "relatedGreen": "16/16 GREEN across high-fanout routing and structured logging",
+    "safetyRegression": "11/11 GREEN across candidate hygiene, Free-budget, Section 21 security baseline, and upstream stream resilience",
+    "syntaxSize": "node --check GREEN; Worker source 165038 bytes and gzip 39372/3145728 bytes",
+    "timeoutContract": "one 8000 ms controlled-fetch deadline per source page; a timed-out source stops paging and is not retried",
+    "partialSuccess": "fast source videos stream before slow-source completion; any valid source completes successfully; all failed or timed-out sources emit SEARCH_SOURCES_UNAVAILABLE",
+    "cancellationCleanup": "external request cancellation is classified before deadline timeout; timer, abort listener, and waiting-budget slot are released in finally",
+    "logBoundary": "search.sources_unavailable contains only request, route, stable error code, and bounded source counts; source URL credentials, referer, and response body are absent",
+    "protectedInputs": "Section 21 aggregate Worker contract SHA-256 e1a37aa2f22e1e247014f95eda148d9642f57ec0fb42795ec3a0a9823b3aac6b and Pages tracked patch SHA-256 824ca251bf78533b386c2dabb62da3a86b2efda5166bc724f8ab0aee37858acb remain unchanged",
+    "diffCheck": "git diff --check passes; line-ending notices are informational"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

@@ -1,0 +1,282 @@
+diff --git a/app/globals.css b/app/globals.css
+index 0e27dd4..ceb1393 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -1,13 +1,23 @@
+ :root {
+-  color-scheme: dark;
++  color-scheme: light dark;
+   --font-family-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+   --bg-color: #f2f4f7;
+   --bg-image: none;
+   --text-color: #1d1d1f;
+   --text-color-secondary: #6e6e73;
+   --accent-color: #0056b3;
+-  --glass-bg: rgba(255, 255, 255, 0.95);
++  --shell-edge-inset: max(1rem, env(safe-area-inset-top), env(safe-area-inset-right), env(safe-area-inset-bottom), env(safe-area-inset-left));
++  --glass-regular-bg: rgb(255 255 255 / 95%);
++  --glass-clear-bg: rgb(0 0 0 / 52%);
++  --glass-opaque-bg: #fff;
++  --glass-bg: var(--glass-regular-bg);
+   --glass-border: rgb(0 0 0 / 5%);
++  --glass-regular-filter: blur(18px) saturate(140%);
++  --glass-clear-filter: blur(10px) saturate(120%);
++  --control-radius: 1.25rem;
++  --content-radius: 1rem;
++  --control-hit-size: 2.75rem;
++  --focus-ring-color: #0056b3;
+   --shadow-color: rgb(0 0 0 / 5%);
+   --radius-2xl: 1.5rem;
+   --radius-full: 9999px;
+@@ -45,8 +55,11 @@ html[data-theme="dark"] body {
+   --text-color: #f5f5f7;
+   --text-color-secondary: #8e8e93;
+   --accent-color: #1a6dbf;
+-  --glass-bg: rgb(30 30 30 / 90%);
++  --glass-regular-bg: rgb(30 30 30 / 90%);
++  --glass-opaque-bg: #1e1e1e;
++  --glass-bg: var(--glass-regular-bg);
+   --glass-border: rgb(255 255 255 / 10%);
++  --focus-ring-color: #74a7ff;
+   --shadow-color: rgb(0 0 0 / 30%);
+ }
+ 
+@@ -59,19 +72,40 @@ html[data-theme="light"] body {
+   --bg-image: none;
+   --text-color: #1d1d1f;
+   --text-color-secondary: #6e6e73;
+-  --glass-bg: rgb(255 255 255 / 95%);
++  --glass-regular-bg: rgb(255 255 255 / 95%);
++  --glass-opaque-bg: #fff;
++  --glass-bg: var(--glass-regular-bg);
+   --glass-border: rgb(0 0 0 / 8%);
++  --focus-ring-color: #0056b3;
+   --shadow-color: rgb(0 0 0 / 8%);
+ }
+ 
++@media (prefers-color-scheme: dark) {
++  :root:not([data-theme]) body {
++    --bg-color: #121212;
++    --bg-image: linear-gradient(120deg, #1a1a1a 0%, #121212 100%);
++    --text-color: #f5f5f7;
++    --text-color-secondary: #8e8e93;
++    --accent-color: #1a6dbf;
++    --glass-regular-bg: rgb(30 30 30 / 90%);
++    --glass-opaque-bg: #1e1e1e;
++    --glass-border: rgb(255 255 255 / 10%);
++    --focus-ring-color: #74a7ff;
++    --shadow-color: rgb(0 0 0 / 30%);
++  }
++}
++
+ .auth-shell {
+   --bg-color: #121212;
+   --bg-image: linear-gradient(120deg, #1a1a1a 0%, #121212 100%);
+   --text-color: #f5f5f7;
+   --text-color-secondary: #8e8e93;
+   --accent-color: #1a6dbf;
+-  --glass-bg: rgb(30 30 30 / 90%);
++  --glass-regular-bg: rgb(30 30 30 / 90%);
++  --glass-opaque-bg: #1e1e1e;
++  --glass-bg: var(--glass-regular-bg);
+   --glass-border: rgb(255 255 255 / 10%);
++  --focus-ring-color: #74a7ff;
+   --shadow-color: rgb(0 0 0 / 30%);
+   position: fixed;
+   z-index: 9999;
+@@ -339,7 +373,7 @@ button:disabled {
+ button:focus-visible,
+ input:focus-visible,
+ select:focus-visible {
+-  outline: 3px solid var(--accent);
++  outline: 3px solid var(--focus-ring-color);
+   outline-offset: 2px;
+ }
+ 
+@@ -4779,3 +4813,112 @@ body.player-web-fullscreen-open {
+     grid-template-columns: repeat(3, minmax(0, 1fr));
+   }
+ }
++
++/* Liquid Glass stays on navigation and controls; scrolling content remains standard material. */
++.liquid-glass-regular,
++[data-liquid-glass="regular"],
++.content-nav-glass,
++.kvideo-result-controls,
++.player-navbar-glass,
++.player-viewport-control,
++.back-to-top,
++.favorites-sidebar-toggle,
++.history-sidebar-toggle,
++[role="dialog"],
++[role="alertdialog"] {
++  border-color: var(--glass-border);
++  border-radius: var(--control-radius);
++  background: var(--glass-regular-bg);
++  backdrop-filter: var(--glass-regular-filter);
++}
++
++.liquid-glass-clear,
++[data-liquid-glass="clear"],
++.player-status-badges span,
++.desktop-center-controls button,
++.desktop-icon-button,
++.desktop-speed-trigger,
++.desktop-speed-options {
++  background: var(--glass-clear-bg);
++  backdrop-filter: var(--glass-clear-filter);
++}
++
++.liquid-glass-regular,
++.liquid-glass-clear,
++[data-liquid-glass="regular"],
++[data-liquid-glass="clear"] {
++  min-height: var(--control-hit-size);
++}
++
++@supports not (backdrop-filter: blur(1px)) {
++  :root,
++  body,
++  .auth-shell,
++  html[data-theme] body {
++    --glass-regular-bg: var(--glass-opaque-bg);
++    --glass-clear-bg: var(--glass-opaque-bg);
++  }
++
++  * {
++    backdrop-filter: none !important;
++  }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  *,
++  *::before,
++  *::after {
++    scroll-behavior: auto !important;
++    animation-duration: 0.01ms !important;
++    animation-iteration-count: 1 !important;
++    transition-duration: 0.01ms !important;
++  }
++}
++
++@media (prefers-reduced-transparency: reduce) {
++  :root,
++  body,
++  .auth-shell,
++  html[data-theme] body {
++    --glass-regular-bg: var(--glass-opaque-bg);
++    --glass-clear-bg: var(--glass-opaque-bg);
++  }
++
++  * {
++    backdrop-filter: none !important;
++  }
++}
++
++@media (prefers-contrast: more) {
++  :root,
++  body,
++  .auth-shell,
++  html[data-theme] body {
++    --glass-regular-bg: var(--glass-opaque-bg);
++    --glass-clear-bg: var(--glass-opaque-bg);
++    --glass-border: currentColor;
++  }
++
++  * {
++    backdrop-filter: none !important;
++  }
++}
++
++@media (forced-colors: active) {
++  :root,
++  body,
++  .auth-shell,
++  html[data-theme] body {
++    --glass-regular-bg: Canvas;
++    --glass-clear-bg: Canvas;
++    --glass-opaque-bg: Canvas;
++    --glass-border: CanvasText;
++    --focus-ring-color: Highlight;
++  }
++
++  *,
++  *::before,
++  *::after {
++    backdrop-filter: none !important;
++  }
++}
+diff --git a/work-products/tests/accessibility.e2e.spec.ts b/work-products/tests/accessibility.e2e.spec.ts
+index 2238d56..8f6db37 100644
+--- a/work-products/tests/accessibility.e2e.spec.ts
++++ b/work-products/tests/accessibility.e2e.spec.ts
+@@ -117,3 +117,44 @@ test("service worker replaces old static caches and bypasses API and media", asy
+   expect(cachedUrls.some((url) => new URL(url).pathname.startsWith("/api/"))).toBe(false);
+   expect(cachedUrls.some((url) => /media-test\.mp4$/.test(new URL(url).pathname))).toBe(false);
+ });
++
++test("Liquid Glass keeps theme tokens, reduced motion, forced-color focus, and 44px controls", async ({ page }) => {
++  await mockWorker(page);
++  await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
++  await page.goto("./");
++
++  const navigation = page.locator(".content-nav-glass");
++  await expect(navigation).toBeVisible();
++  await expect(page.locator(".theme-switcher button")).toHaveCount(3);
++  const resolvedThemes = await page.evaluate(() => ["light", "dark"].map((theme) => {
++    document.documentElement.dataset.theme = theme;
++    const style = getComputedStyle(document.body);
++    return {
++      regular: style.getPropertyValue("--glass-regular-bg").trim(),
++      clear: style.getPropertyValue("--glass-clear-bg").trim(),
++      border: style.getPropertyValue("--glass-border").trim(),
++      hitSize: style.getPropertyValue("--control-hit-size").trim(),
++    };
++  }));
++  expect(resolvedThemes[0].regular).not.toBe(resolvedThemes[1].regular);
++  for (const theme of resolvedThemes) {
++    expect(theme.clear).not.toBe("");
++    expect(theme.border).not.toBe("");
++    expect(theme.hitSize).toBe("2.75rem");
++  }
++  const transitionDurations = await navigation.evaluate((element) => getComputedStyle(element).transitionDuration.split(","));
++  expect(transitionDurations.every((duration) => Number.parseFloat(duration) <= 0.01)).toBe(true);
++
++  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
++  await page.reload();
++  const forcedNavigation = page.locator(".content-nav-glass");
++  await expect(forcedNavigation).toBeVisible();
++  expect(await forcedNavigation.evaluate((element) => getComputedStyle(element).backdropFilter)).toBe("none");
++  expect(await forcedNavigation.evaluate((element) => getComputedStyle(element).getPropertyValue("--glass-regular-bg").trim())).toBe("Canvas");
++  const settingsLink = page.locator(".nav-user");
++  const box = await settingsLink.boundingBox();
++  expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
++  expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
++  await settingsLink.focus();
++  expect(await settingsLink.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe("none");
++});
+diff --git a/work-products/tests/global-shell-contract.test.mjs b/work-products/tests/global-shell-contract.test.mjs
+index cab43d6..e5e6286 100644
+--- a/work-products/tests/global-shell-contract.test.mjs
++++ b/work-products/tests/global-shell-contract.test.mjs
+@@ -43,3 +43,20 @@ test("activates bounded scroll restoration, back-to-top, and TV spatial focus",
+   assert.match(read("lib/hooks/useSpatialNavigation.ts"), /\[data-focusable\]/);
+   assert.match(read("components/ScrollPositionManager.tsx"), /sessionStorage/);
+ });
++
++test("S21-T06 centralizes bounded Liquid Glass materials and accessibility fallbacks", () => {
++  const css = read("app/globals.css");
++  for (const token of [
++    "--shell-edge-inset", "--glass-regular-bg", "--glass-clear-bg", "--glass-opaque-bg",
++    "--glass-border", "--control-radius", "--content-radius", "--control-hit-size", "--focus-ring-color",
++  ]) assert.match(css, new RegExp(token), token);
++  assert.match(css, /\.liquid-glass-regular[\s\S]*backdrop-filter:\s*var\(--glass-regular-filter\)/);
++  assert.match(css, /\.liquid-glass-clear[\s\S]*backdrop-filter:\s*var\(--glass-clear-filter\)/);
++  for (const fallback of [
++    /@supports not \(backdrop-filter:/,
++    /prefers-reduced-transparency:\s*reduce\)[\s\S]*body,[\s\S]*--glass-regular-bg:\s*var\(--glass-opaque-bg\)/,
++    /prefers-contrast:\s*more\)[\s\S]*body,[\s\S]*--glass-border:\s*currentColor/,
++    /forced-colors:\s*active\)[\s\S]*body,[\s\S]*--glass-regular-bg:\s*Canvas/,
++  ]) assert.match(css, fallback);
++  assert.doesNotMatch(css, /\.kvideo-result-card[^}]*backdrop-filter:\s*blur/s);
++});

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T19:24:05.7930032+08:00",
+  "reason": "T09 attempt 1 found before business edits that one-entry danmaku management and Premium parity require PlayerSettings, PremiumSettingsExperience, and their active tests. The replacement also makes subscription resync replace same-mode materialized IDs only after confirmed valid preview.",
+  "planSha256": "cd0f42b494ff0a382318c98687a5004f3823eb2366a747f86b40e06799c81552",
+  "predecessorPlanSha256": "376af11dc82d3c89b7a2d658e597494364c692bc51275d99f7b12ee18b6a8324",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t09-danmaku-boundary.zip",
+  "archiveSha256": "dc18c3428441038099eb82729cade78beaa73432f7bd60c56338cb301978c9c7",
+  "archiveBytes": 26303,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T09",
+      "attempt": 1,
+      "path": "plan-revisions/2026-08-19-t09-danmaku-boundary.zip::S21-T09.json",
+      "sha256": "b6317f28444a2c276f81f0494fb33cf9413d14c70e7cea42332f224e791cf5b4",
+      "bytes": 5416
+    }
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

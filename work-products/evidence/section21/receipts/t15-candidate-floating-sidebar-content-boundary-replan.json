@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-20T02:12:33.0287159+08:00",
+  "reason": "T15 attempt 8 closed the classic-scrollbar tag lane and reached 124/124, but final visual inspection rejected the frozen API 2 candidate because fixed sidebar controls overlap interactive search-result cards at 320px and the current-source card at 1024px; one shared floating-sidebar content exclusion zone is required without widening path ownership.",
+  "planSha256": "c06f97d5bf33c44455c1541f06801d6258b50acf4487bd04f45e43475d04dd30",
+  "predecessorPlanSha256": "1b86105166b284c152682aebf761127492249c08597370a3a747c05c7985f881",
+  "standingApproval": {
+    "active": true,
+    "source": "user: 批准所有计划，不再设置sha",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-candidate-floating-sidebar-content-boundary.zip",
+  "archiveSha256": "ffc3383f72ee863415d3c931f90606a22785675491ac81dbcc7b633418f0d587",
+  "archiveBytes": 37118,
+  "preservesCompletedTasks": [
+    "S21-T01", "S21-T02", "S21-T03", "S21-T04", "S21-T05", "S21-T06", "S21-T07", "S21-T08", "S21-T09", "S21-T10", "S21-T11", "S21-T12", "S21-T13", "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 8,
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-candidate-floating-sidebar-content-boundary.zip::S21-T15.json",
+      "sha256": "da06f7e503d8c2591337a77ffe8c5ea4b37fef9dcffeb5e1e22e7dd2dabd95dd",
+      "bytes": 13996
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 8,
+    "receiptSha256": "da06f7e503d8c2591337a77ffe8c5ea4b37fef9dcffeb5e1e22e7dd2dabd95dd",
+    "formalE2E": "124/124 GREEN",
+    "inAppBrowser": "GREEN for the 15px classic-scrollbar tag lane",
+    "candidateCount": 116,
+    "candidateBytes": 16099136,
+    "candidateCombinedSha256": "00292fbe3967580217ab50a88a25f1443f86e40069a1399c15aaec4cd324b7d8",
+    "candidateDisposition": "rejected by final visual inspection; retained only as historical attempt 8 evidence",
+    "performanceTraceSha256": "88b6bc3d4eb9f76f5955eaa6d01337e7b7842974f11aa82ce385681552c3df0c",
+    "performanceTraceDisposition": "attempt 7 historical trace; the attempt 8 fresh run was aborted and this trace is not final candidate evidence",
+    "rollbackDisposition": "pair rollback remains pre-T15 and must be regenerated after the final CSS freeze",
+    "currentTreeRetained": true,
+    "rule": "attempt9 before must equal archived attempt8 after for adopted non-control-plane paths"
+  },
+  "observedVisualBlockers": {
+    "searchResults": {
+      "classification": "fixed favorites and history controls overlap the first row of clickable result cards",
+      "viewport": { "width": 320, "height": 1000 },
+      "candidates": [
+        {
+          "path": "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-320.png",
+          "bytes": 72498,
+          "sha256": "dec487287df251b818a4b29d8b652126e7b804ac219e1074044d757ed8cdeb62"
+        },
+        {
+          "path": "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-zh-CN-320.png",
+          "bytes": 78012,
+          "sha256": "6ca4e08c9bf4af46097bac025895ff093984c880eb6b19b1fee9d0e4d3085ed2"
+        }
+      ]
+    },
+    "playerCurrentSource": {
+      "classification": "the fixed history control overlaps the interactive current-source card",
+      "viewport": { "width": 1024, "height": 900 },
+      "candidate": {
+        "path": "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-1024.png",
+        "bytes": 115502,
+        "sha256": "e83e55561eed5d6c006513cbc1b9d69720a5bdd1f39a8c5a1d77f97ed2865cad"
+      }
+    }
+  },
+  "excludedFindings": [
+    {
+      "path": "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-zh-TW-320.png",
+      "bytes": 71673,
+      "sha256": "9190bc25d974204ca764cc1bfe245d57461cf2eb7fcd7a775999d68bbd6c6de1",
+      "reason": "current frozen image is at the origin with the update control, navbar, and media player present; no product or producer scroll-restoration change is authorized"
+    }
+  ],
+  "requiredOwnershipAdditions": [],
+  "scopeClarification": {
+    "maxNewCssSemanticRemediations": 1,
+    "existingOwnedPaths": [
+      "pages:app/globals.css",
+      "pages:work-products/tests/kvideo-search-results.e2e.spec.ts",
+      "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts"
+    ],
+    "allowed": [
+      "introduce one shared --floating-sidebar-content-inset viewport token capped at 64px",
+      "apply the token symmetrically to the search-result grid while preserving centering and use one column only below 480px",
+      "apply the same token only to the inline end of non-cinema player layouts at or above 901px",
+      "add four-breakpoint geometry regressions proving at least 8px gaps without weakening existing content, interaction, origin, containment, 200%, or accessibility assertions"
+    ],
+    "forbidden": [
+      "moving, hiding, shrinking, clipping, or disabling either floating button",
+      "changing floating-position hooks, drag storage, component markup, product scroll restoration, or candidate naming",
+      "overflow hidden or clip, pointer-events none, z-index tricks, or fixed vertical spacers as substitutes for a content safe lane",
+      "changing cinema or 1440px layout, removing result cards, or weakening full-E2E and visual assertions"
+    ]
+  },
+  "evidenceRefresh": {
+    "candidateRequired": true,
+    "freshPerformanceRequired": true,
+    "freshReleaseRequired": true,
+    "freshRollbackRequired": true,
+    "strictBinaryAllowlistRequired": true,
+    "visualReviewRequired": true
+  },
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

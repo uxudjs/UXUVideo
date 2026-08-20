@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T07",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-19T13:23:50.8171006+08:00",
+  "completedAt": "2026-08-19T13:40:26.5119905+08:00",
+  "planSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "e584551290d162f8027b68b980a26d8701a892dab632c58a9f7d85bda080e673"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "3aacafb75b9bb737a63e85b0c08c8a0e99be0bd8ee00d41e63ceaf98e8b2c2d8"
+    }
+  },
+  "writeSet": [
+    "pages:components/search/VideoGrid.tsx",
+    "pages:components/search/SearchResults.tsx",
+    "pages:components/search/SearchResultControls.tsx",
+    "pages:components/search/SearchResultCard.tsx",
+    "pages:components/search/VideoGroupCard.tsx",
+    "pages:lib/utils/search-result-policy.ts",
+    "pages:app/globals.css",
+    "pages:work-products/tests/search-results-contract.test.mjs",
+    "pages:work-products/tests/search-strategy-contract.test.mjs",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts",
+    "worker:work-products/evidence/section21/receipts/S21-T07.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "pages:components/search/VideoGrid.tsx": "399ffad74f2165e1649469e3279d3f6ce9602823e87943e81a5aa02947321d55",
+    "pages:components/search/SearchResults.tsx": "39a3a9f5edb69dcb4fcafd8f5757025f571a7b6daead6d3c53c34c030e55dad2",
+    "pages:components/search/SearchResultControls.tsx": "aa064604297a167bdc75cfe46817469c44dec0583d9a0b03ce6002912026c80a",
+    "pages:components/search/SearchResultCard.tsx": "2a42c9ff4382c8052fa6dfe9ccc92a9bd78fa642d7ff06dd5bead8a035656667",
+    "pages:components/search/VideoGroupCard.tsx": "6dc81ce88110af6b54f0f6e5b1eec4874492071058e081b204e25ee65c76c3b8",
+    "pages:lib/utils/search-result-policy.ts": "a53df504ba681fceadbc2d3ee7dfdcf2baa3383d81fcd85a3253f17199d0dc18",
+    "pages:app/globals.css": "7879d1b03abcc64d83d3e20af4e78705a6518554d22076eebac0f2eabb9b4f14",
+    "pages:work-products/tests/search-results-contract.test.mjs": "61817dfad34c7cf7503487dfbd51870270dc753119ce6969457e7220d7f06be8",
+    "pages:work-products/tests/search-strategy-contract.test.mjs": "3cb98c1e6ad675f480e1d30c588378ebbb424951ef210cb9adc239df1dd75ccd",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts": "f2624ab25edbe8c19ec71fda4bf2462ac3bf8deb1b680638565c47a1d81bc39f",
+    "pages:work-products/tests/section21-ui-contract.test.mjs": "4b34dca7e697f14bf9f1a58aa678b04215c9aeea7162114638fbeb96301c6754",
+    "pages:work-products/tests/section21-flows.e2e.spec.ts": "8ff1c198c8ae584bcad59bd95a2e874e21e75e27a4895836986f89445940020d",
+    "worker:work-products/evidence/section21/receipts/S21-T07.json": null,
+    "worker:work-products/todo.md": "4354167b364642e8b6205ca9e138f111d84d92fcd99f74d63d98326b4c833769"
+  },
+  "afterSha256": {
+    "pages:components/search/VideoGrid.tsx": "031fcac7ee6e685ed0776707a5c4b4b83168f4d159d4b49317fb7a15a1478d9c",
+    "pages:components/search/SearchResults.tsx": "39a3a9f5edb69dcb4fcafd8f5757025f571a7b6daead6d3c53c34c030e55dad2",
+    "pages:components/search/SearchResultControls.tsx": "a2553fec49b4846ecfdf939743186141f660dbd0217460e30fe3336612f23d73",
+    "pages:components/search/SearchResultCard.tsx": "e8fd7618b5f360eb585b3d90f3102894822c8f6e2f83d6b39c8c07e3dd1091f2",
+    "pages:components/search/VideoGroupCard.tsx": "795271ef98468c108c2f9f65ff88438c6bdf55d727d08d291f5ec31b3d2b83cd",
+    "pages:lib/utils/search-result-policy.ts": "66e438d767273458b868ca0b9e4c188c639897f4bae1fde996a65b5e55426fa5",
+    "pages:app/globals.css": "d199d8a5c56180ef8d63b9ea63a2ccb50fc959ebed99c26ab4ae665eb59faeda",
+    "pages:work-products/tests/search-results-contract.test.mjs": "a7a27883297f919087a05cad7742798b1bcdc56c00a46c19b93973e2d862c67f",
+    "pages:work-products/tests/search-strategy-contract.test.mjs": "b27d0986dec5274d2bef6b4d144c90b7c71ea3209a4225d6346c031f8a56d702",
+    "pages:work-products/tests/kvideo-search-results.e2e.spec.ts": "fbafb2b7926a3005106619cdd7188e41a23020ede34a3eedd2f9fe2eb8a41cf9"
+  },
+  "validation": {
+    "focusedRed": "1 frozen S21-T07 static contract failed with 9 independent assertions; all 3 frozen browser flows failed before implementation",
+    "relatedRed": "8 related Node tests discovered; 4 task-attributable grouping, compact-control, and action-region contracts failed before implementation",
+    "focusedStatic": "1/1 S21-T07 frozen static contract GREEN",
+    "relatedNode": "8/8 GREEN across search-result and pure strategy contracts, including the five required conservative fingerprint fixtures",
+    "focusedBrowser": "3/3 GREEN for anime/TV isolation, collapsed toolbar, and 44px actions with at least 8px separation",
+    "extendedBrowser": "4/4 GREEN for incremental SSE cards, account-scoped grouping, filtering/sorting/probing, three locales, 320/768/1024/1440 breakpoints, and 200 percent text scaling",
+    "grouping": "title trim, NFC, whitespace collapse, and case normalization preserve punctuation and digits; type family and reasonable four-digit year are NUL-separated; unknown buckets remain isolated",
+    "toolbar": "sort and category blocking remain on one grid row while latency, source, type, language, and clear controls stay hidden until the aria-expanded toggle opens them",
+    "capabilityHint": "Paid/Free hint has no card or minimum height, uses an 8px top margin, stays one line at desktop widths and at most two lines at 320px in all three locales",
+    "visualBaseline": "existing grouped-results PNG remains unchanged; 1.5 percent pixel tolerance covers observed antialiasing while exact geometry and horizontal-overflow assertions remain active",
+    "productionBuild": "Next.js 16.3.0 static export GREEN with 10 generated routes and 27 transpiled client assets",
+    "typescriptLint": "npx tsc --noEmit and npm run lint GREEN",
+    "candidateHygiene": "3/3 GREEN with no machine path, unreviewed binary, or credible secret material",
+    "protectedInputs": "frozen Section 21 UI SHA-256 4b34dca7e697f14bf9f1a58aa678b04215c9aeea7162114638fbeb96301c6754 and flows SHA-256 8ff1c198c8ae584bcad59bd95a2e874e21e75e27a4895836986f89445940020d remain unchanged",
+    "diffCheck": "both repositories pass git diff --check; line-ending notices are informational"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

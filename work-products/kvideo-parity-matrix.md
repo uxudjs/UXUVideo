@@ -1,6 +1,6 @@
 # KVideo 4.9.19 完整复刻对照矩阵
 
-状态：**T40 Final；273 个用户能力已闭合为 272 个 `pass` 与 1 个 `approved-difference`，零 `unverified`、零缺失映射**
+状态：**T40 Final；250 个当前用户能力已闭合为 249 个 `pass` 与 1 个 `approved-difference`；另保留 23 个 `approved-retired-by-SPEC-21` 历史行，零 `unverified`、零缺失映射**
 
 权威源码：UXUVideo commit `28334f41407082ae1028fa4a4180bcc46d31c52a`（KVideo `4.9.19`）。
 
@@ -94,8 +94,8 @@
 
 | ID | 用户能力 | 固定基准入口 | 目标入口 | 测试映射 | 状态 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
-| SRC-001 | 系统来源展示 | `SourceManager.tsx` | UXUV-Pages:`SourceManager.tsx` | SET, VIS | pass | `kvideo-settings-sources.e2e.spec.ts` 系统徽章 |
-| SRC-002 | 个人来源展示 | `UserSourceSettings.tsx` | UXUV-Pages:`UserSourceSettings.tsx` | SET | pass | `kvideo-settings-sources.e2e.spec.ts` 个人徽章 |
+| SRC-001 | 既有账户来源兼容展示 | `SourceManager.tsx` | UXUV-Pages:`SourceManager.tsx` | SET, VIS | pass | 既有 legacy 来源保留为用户管理的“单独添加”来源，不显示系统默认徽章 |
+| SRC-002 | 统一来源管理 | `UserSourceSettings.tsx` | UXUV-Pages:`SourceSettings.tsx`, `SourceManager.tsx` | SET | pass | 所有独立来源统一在视频源管理中添加、编辑与删除；订阅导入单独标记 |
 | SRC-003 | Premium 来源展示 | `PremiumSourceSettings.tsx` | UXUV-Pages:`SourceSettings.tsx` | SET | pass | Premium 来源 CRUD/导入已由 T20 验证；T33 双 context payload 证明 Premium 记录在普通来源同步后保持独立 |
 | SRC-004 | 添加来源 | `AddSourceModal.tsx` | UXUV-Pages:`AddSourceModal.tsx` | SET | pass | 中英文名称添加与本地文档断言 |
 | SRC-005 | 编辑来源 | `SourceManager.tsx` | UXUV-Pages:`SourceManager.tsx` | SET | pass | `kvideo-settings-sources.e2e.spec.ts` |
@@ -245,31 +245,33 @@
 
 ## IPTV：直播电视
 
+退役状态：`approved-retired-by-SPEC-21`。以下行仅作为已冻结历史复刻证据保留，不再表示当前 Pages 的可达功能或活跃验证入口。
+
 | ID | 用户能力 | 固定基准入口 | 目标入口 | 测试映射 | 状态 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
-| IPTV-001 | M3U 来源 | `m3u-parser.ts` | UXUV-Pages:`lib/iptv/playlist.ts` | IPD | pass | 相对 HTTP(S) URL、EXTINF/tvg/EXTVLCOPT 与 5,000 频道上限 fixture GREEN |
-| IPTV-002 | M3U8 来源 | `m3u-parser.ts` | UXUV-Pages:`lib/iptv/playlist.ts` | IPD | pass | M3U8 媒体 URL 与重复频道线路合并 fixture GREEN |
-| IPTV-003 | JSON 频道源 | `IPTVSourceManager.tsx` | UXUV-Pages:`lib/iptv/playlist.ts` | IPD | pass | 数组、channels/list/items/data、lives 嵌套及最多 3 层引用 GREEN |
-| IPTV-004 | 自定义源管理 | `IPTVSourceManager.tsx` | UXUV-Pages:`components/iptv/IPTVSourceManager.tsx` | IPD, VIS | pass | 新增、编辑、删除、稳定 ID、UA/Referer 与账户配置同步 E2E GREEN |
-| IPTV-005 | 逐源缓存 | `iptv-store.ts` | UXUV-Pages:`lib/iptv/source-loader.ts` | IPD | pass | 每根来源 5 分钟/16 项会话内存缓存，刷新显式绕过且缓存状态可见 |
-| IPTV-006 | 最多三源并发 | `app/iptv/page.tsx` | UXUV-Pages:`lib/iptv/source-loader.ts` | IPD | pass | 根来源与嵌套请求共享全局 3 并发限制，单元/E2E 最大并发均为 3 |
-| IPTV-007 | 分组浏览 | `IPTVChannelGrid.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD | pass | 来源级分类与全部分类切换，分类变更重置分页 |
-| IPTV-008 | 频道搜索 | `IPTVChannelGrid.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD | pass | 来源/分类内大小写无关搜索，零结果状态可见 |
-| IPTV-009 | 频道分页 | `IPTVChannelGrid.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD | pass | 每页 100 条，205 条 fixture 依次显示 100/200/205 |
-| IPTV-010 | 源→分类→频道三级导航 | `app/iptv/page.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD, VIS | pass | 左右跨层、上下层内循环；四断点截图与 320/1440 人工检查 GREEN |
-| IPTV-011 | 多线路前三条折叠 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx` | IPD | pass | 默认前三条、显式展开/收起，4 线路单元/E2E GREEN |
-| IPTV-012 | 频道自动切源 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx` | IPD, MEDIA | pass | 每条线路最多尝试一次，耗尽后保留明确错误；切台/切线销毁旧 HLS 与探测 |
-| IPTV-013 | 频道延迟选择 | `IPTVPlayer.tsx` | UXUV-Pages:`lib/iptv/playback-policy.ts`, `components/iptv/IPTVPlayer.tsx` | IPD | pass | 同源 `/api/ping`、最多 3 并发/12 线路，兼容等级内按延迟稳定排序 |
-| IPTV-014 | UA 支持 | `iptv-store.ts` | UXUV-Pages:`lib/iptv/playlist.ts`, `components/IptvExperience.tsx` | IPD, MEDIA | pass | 来源/频道 UA 经同源列表与播放路由传递；不进入直连请求 |
-| IPTV-015 | Referer 支持 | `iptv-store.ts` | UXUV-Pages:`lib/iptv/playlist.ts`, `components/IptvExperience.tsx` | IPD, MEDIA | pass | 仅接受 HTTP(S) Referer，经同源 `/api/iptv/stream` E2E 验证 |
-| IPTV-016 | HLS 代理 | `app/api/iptv/stream/route.ts` | UXUVideo:`_worker.js` | IPD, MEDIA | pass | 认证首请求、签名子资源、Range/取消传播与一 MiB manifest 上限 GREEN |
-| IPTV-017 | HLS URL 重写 | `app/api/iptv/stream/route.ts` | UXUVideo:`_worker.js` | IPD, MEDIA | pass | 相对 segment/key 重写为同作用域 `/api/iptv/stream` 签名 URL，跨路由 token 被拒绝 |
-| IPTV-018 | 重定向处理 | `app/api/iptv/stream/route.ts` | UXUVideo:`_worker.js` | IPD, MEDIA | pass | 手动逐跳、最多三次、每跳 URL/SSRF 重验并取消重定向响应体 |
-| IPTV-019 | 超时处理 | `IPTVPlayer.tsx` | UXUV-Pages:`components/player/hooks/useHlsPlayer.ts`, UXUVideo:`_worker.js` | IPD, MEDIA | pass | HLS manifest/level/fragment 与 Worker 响应头均 20 秒超时，504 显式分类 |
-| IPTV-020 | 重试处理 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx`, `components/player/hooks/useHlsPlayer.ts` | IPD | pass | 网络重试受设置上限约束，媒体恢复最多 2 次，线路故障有界切换 |
-| IPTV-021 | HEVC/H.264 兼容选择 | `IPTVPlayer.tsx` | UXUV-Pages:`lib/iptv/playback-policy.ts`, `components/player/hooks/useHlsPlayer.ts` | IPD | pass | URL 线路与 master level 均优先 H.264；HEVC-only 不支持时三语解释并失败关闭 |
-| IPTV-022 | IPTV 播放器快捷键 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx`, `components/media/MediaPlayer.tsx` | IPD, A11Y | pass | Space/K/J/L/方向键/M/F/W/P/Escape；E2E 证明方向键焦点不逃逸与 Escape 关闭 |
-| IPTV-023 | IPTV 权限状态 | `PermissionGate.tsx` | UXUV-Pages:`components/IptvExperience.tsx` | IPD | pass | 权限不足与部署禁用均显示三语解释且零播放列表请求 |
+| IPTV-001 | M3U 来源 | `m3u-parser.ts` | UXUV-Pages:`lib/iptv/playlist.ts` | IPD | approved-retired-by-SPEC-21 | 相对 HTTP(S) URL、EXTINF/tvg/EXTVLCOPT 与 5,000 频道上限 fixture GREEN |
+| IPTV-002 | M3U8 来源 | `m3u-parser.ts` | UXUV-Pages:`lib/iptv/playlist.ts` | IPD | approved-retired-by-SPEC-21 | M3U8 媒体 URL 与重复频道线路合并 fixture GREEN |
+| IPTV-003 | JSON 频道源 | `IPTVSourceManager.tsx` | UXUV-Pages:`lib/iptv/playlist.ts` | IPD | approved-retired-by-SPEC-21 | 数组、channels/list/items/data、lives 嵌套及最多 3 层引用 GREEN |
+| IPTV-004 | 自定义源管理 | `IPTVSourceManager.tsx` | UXUV-Pages:`components/iptv/IPTVSourceManager.tsx` | IPD, VIS | approved-retired-by-SPEC-21 | 新增、编辑、删除、稳定 ID、UA/Referer 与账户配置同步 E2E GREEN |
+| IPTV-005 | 逐源缓存 | `iptv-store.ts` | UXUV-Pages:`lib/iptv/source-loader.ts` | IPD | approved-retired-by-SPEC-21 | 每根来源 5 分钟/16 项会话内存缓存，刷新显式绕过且缓存状态可见 |
+| IPTV-006 | 最多三源并发 | `app/iptv/page.tsx` | UXUV-Pages:`lib/iptv/source-loader.ts` | IPD | approved-retired-by-SPEC-21 | 根来源与嵌套请求共享全局 3 并发限制，单元/E2E 最大并发均为 3 |
+| IPTV-007 | 分组浏览 | `IPTVChannelGrid.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD | approved-retired-by-SPEC-21 | 来源级分类与全部分类切换，分类变更重置分页 |
+| IPTV-008 | 频道搜索 | `IPTVChannelGrid.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD | approved-retired-by-SPEC-21 | 来源/分类内大小写无关搜索，零结果状态可见 |
+| IPTV-009 | 频道分页 | `IPTVChannelGrid.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD | approved-retired-by-SPEC-21 | 每页 100 条，205 条 fixture 依次显示 100/200/205 |
+| IPTV-010 | 源→分类→频道三级导航 | `app/iptv/page.tsx` | UXUV-Pages:`components/iptv/IPTVChannelBrowser.tsx` | IPD, VIS | approved-retired-by-SPEC-21 | 左右跨层、上下层内循环；四断点截图与 320/1440 人工检查 GREEN |
+| IPTV-011 | 多线路前三条折叠 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx` | IPD | approved-retired-by-SPEC-21 | 默认前三条、显式展开/收起，4 线路单元/E2E GREEN |
+| IPTV-012 | 频道自动切源 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx` | IPD, MEDIA | approved-retired-by-SPEC-21 | 每条线路最多尝试一次，耗尽后保留明确错误；切台/切线销毁旧 HLS 与探测 |
+| IPTV-013 | 频道延迟选择 | `IPTVPlayer.tsx` | UXUV-Pages:`lib/iptv/playback-policy.ts`, `components/iptv/IPTVPlayer.tsx` | IPD | approved-retired-by-SPEC-21 | 同源 `/api/ping`、最多 3 并发/12 线路，兼容等级内按延迟稳定排序 |
+| IPTV-014 | UA 支持 | `iptv-store.ts` | UXUV-Pages:`lib/iptv/playlist.ts`, `components/IptvExperience.tsx` | IPD, MEDIA | approved-retired-by-SPEC-21 | 来源/频道 UA 经同源列表与播放路由传递；不进入直连请求 |
+| IPTV-015 | Referer 支持 | `iptv-store.ts` | UXUV-Pages:`lib/iptv/playlist.ts`, `components/IptvExperience.tsx` | IPD, MEDIA | approved-retired-by-SPEC-21 | 仅接受 HTTP(S) Referer，经同源 `/api/iptv/stream` E2E 验证 |
+| IPTV-016 | HLS 代理 | `app/api/iptv/stream/route.ts` | UXUVideo:`_worker.js` | IPD, MEDIA | approved-retired-by-SPEC-21 | 认证首请求、签名子资源、Range/取消传播与一 MiB manifest 上限 GREEN |
+| IPTV-017 | HLS URL 重写 | `app/api/iptv/stream/route.ts` | UXUVideo:`_worker.js` | IPD, MEDIA | approved-retired-by-SPEC-21 | 相对 segment/key 重写为同作用域 `/api/iptv/stream` 签名 URL，跨路由 token 被拒绝 |
+| IPTV-018 | 重定向处理 | `app/api/iptv/stream/route.ts` | UXUVideo:`_worker.js` | IPD, MEDIA | approved-retired-by-SPEC-21 | 手动逐跳、最多三次、每跳 URL/SSRF 重验并取消重定向响应体 |
+| IPTV-019 | 超时处理 | `IPTVPlayer.tsx` | UXUV-Pages:`components/player/hooks/useHlsPlayer.ts`, UXUVideo:`_worker.js` | IPD, MEDIA | approved-retired-by-SPEC-21 | HLS manifest/level/fragment 与 Worker 响应头均 20 秒超时，504 显式分类 |
+| IPTV-020 | 重试处理 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx`, `components/player/hooks/useHlsPlayer.ts` | IPD | approved-retired-by-SPEC-21 | 网络重试受设置上限约束，媒体恢复最多 2 次，线路故障有界切换 |
+| IPTV-021 | HEVC/H.264 兼容选择 | `IPTVPlayer.tsx` | UXUV-Pages:`lib/iptv/playback-policy.ts`, `components/player/hooks/useHlsPlayer.ts` | IPD | approved-retired-by-SPEC-21 | URL 线路与 master level 均优先 H.264；HEVC-only 不支持时三语解释并失败关闭 |
+| IPTV-022 | IPTV 播放器快捷键 | `IPTVPlayer.tsx` | UXUV-Pages:`components/iptv/IPTVPlayer.tsx`, `components/media/MediaPlayer.tsx` | IPD, A11Y | approved-retired-by-SPEC-21 | Space/K/J/L/方向键/M/F/W/P/Escape；E2E 证明方向键焦点不逃逸与 Escape 关闭 |
+| IPTV-023 | IPTV 权限状态 | `PermissionGate.tsx` | UXUV-Pages:`components/IptvExperience.tsx` | IPD | approved-retired-by-SPEC-21 | 权限不足与部署禁用均显示三语解释且零播放列表请求 |
 
 ## PRE：Premium
 
@@ -398,11 +400,11 @@
 
 | 差异类别 | 固定基准 | 目标架构 | 依据 |
 | --- | --- | --- | --- |
-| Next API → Worker Web API | `app/api/**/route.ts` | UXUVideo `_worker.js` 同源 22 路由 | SPEC 13.3 Worker 运行时 |
+| Next API → Worker Web API | `app/api/**/route.ts` | UXUVideo `_worker.js` 同源 21 路由 | SPEC 13.3 Worker 运行时 |
 | Upstash → D1/CAS | `lib/server/redis.ts`, sync hooks | D1 + local-first + tombstone | SPEC 13.3 D1 与同步 |
 | 旧登录 → HttpOnly session/角色权限 | auth routes/components | Worker session + PasswordGate | SPEC 13.3 登录与会话 |
 | 安全/Free 上限 | old proxy routes | SSRF/CSRF/限流/受控流 | SPEC 13.3 安全边界 |
-| Next standalone → 静态 Pages + Worker pin | `next.config.ts` | immutable Pages release | SPEC 13.3 静态发布 |
+| Next standalone → 静态 Pages + Worker manifest gate | `next.config.ts` | 唯一 Pages 根目录 + semver/API/range gate | SPEC 13.3 静态发布 |
 | 账户/用量/同步状态增量 UI | fixed commit 无对应区块 | KVideo `SettingsSection` 视觉插入 | SPEC 13.3 架构新增 UI |
 
 ## 完成门

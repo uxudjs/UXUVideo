@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "receiptKind": "post_approval_candidate_invalidation",
+  "attempt": 13,
+  "invalidatedAt": "2026-08-20T14:56:08.937Z",
+  "historicalDecision": {
+    "decision": "APPROVED",
+    "exactApprovalText": "批准视觉候选 13",
+    "disposition": "The user approval remains immutable historical evidence and does not apply to replacement candidate bytes."
+  },
+  "archives": {
+    "approval": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt13-approved-invalidated.json",
+      "bytes": 2104,
+      "sha256": "a42d76ceea30d3b71eb5187ab99f5b0233ca82de6249759084f35349ceed5bd7"
+    },
+    "candidateEvidence": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-candidate-evidence-attempt13-approved-invalidated.json",
+      "bytes": 8953,
+      "sha256": "43542b02439d78b1598f8e977f2e985fa1d08ac3ce2a4404443f09ad165388e4"
+    },
+    "visualReview": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-review-attempt13-approved-invalidated.md",
+      "bytes": 3660,
+      "sha256": "a01f68d9bdc26ca7e51dc473187b69ca06388d1be2da527e998d5dedd5359a78"
+    },
+    "binaryAllowlist": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/binary-allowlist-attempt13-approved-invalidated.json",
+      "bytes": 49257,
+      "sha256": "5e9c62b59c16deafbe391b4c16d541130dc68d58373019e2e10090568f119442"
+    },
+    "taskReceipt": {
+      "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/S21-T15-attempt13-approved-invalidated.json",
+      "bytes": 5046,
+      "sha256": "c16dff4680dc192eabb19aea82f5cd30c7f4dcc46825c6f8a41ba5b66c565ff6"
+    }
+  },
+  "approvedCandidateCombinedSha256": "91d753b90197edbedd5b468097857faefc66b6836d7e5d2a96059b37c79b2c11",
+  "replacementCandidateCombinedSha256": "ecd34b9d3b650caa864039ceb899409358f7229782464e9fb8855a63bde8c9b3",
+  "reasons": [
+    "routine E2E rewrote the active approved screenshot directory during the ship gate",
+    "post-ship debug changed Worker response-body lifecycle bytes",
+    "paired rollback evidence was regenerated with the missing Pages public release source"
+  ],
+  "unavailableHistoricalArtifacts": [
+    "the exact approved PNG set was overwritten before this remediation",
+    "the attempt 13 pair rollback and patch bytes were replaced during rollback-scope repair"
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

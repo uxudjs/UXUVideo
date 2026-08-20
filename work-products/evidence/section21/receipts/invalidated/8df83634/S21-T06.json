@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T06",
+  "attempt": 2,
+  "state": "completed",
+  "startedAt": "2026-08-18T13:26:55.8065119+08:00",
+  "completedAt": "2026-08-18T13:30:03.5731986+08:00",
+  "planSha256": "6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "uncommittedPatchSha256": "f953f2727bcf043e418a20b1fed7bfea559de398eb7981110c7ec04e772b9c4a"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "uncommittedPatchSha256": "52bbb9451acf0ebee4b0f70faff73cf98d5837b75c266156367d8cf39cd81c2b"
+    }
+  },
+  "beforeSha256": {
+    "pages:app/globals.css": "4555e743a144445f5ec1986126ac07cf5b093fa1e9de3a19878ad22464f2fdcd",
+    "pages:work-products/tests/global-shell-contract.test.mjs": "675f2942d389b4f912c7d0c609588b31dcc2ae41e2fb8cb4d8c87a9149535ba7",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "c4b0e1944ed800af2409e1fa95c0d00caccf3cf6603e9e9c4dea5341a88f6ac6"
+  },
+  "afterSha256": {
+    "pages:app/globals.css": "4555e743a144445f5ec1986126ac07cf5b093fa1e9de3a19878ad22464f2fdcd",
+    "pages:work-products/tests/global-shell-contract.test.mjs": "675f2942d389b4f912c7d0c609588b31dcc2ae41e2fb8cb4d8c87a9149535ba7",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "c4b0e1944ed800af2409e1fa95c0d00caccf3cf6603e9e9c4dea5341a88f6ac6"
+  },
+  "patches": {
+    "forward": {
+      "path": "work-products/evidence/section21/receipts/S21-T06.forward.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reverse": {
+      "path": "work-products/evidence/section21/receipts/S21-T06.reverse.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "validation": {
+    "focusedContract": "1/1 S21-T06 GREEN; 8 unrelated task tests skipped",
+    "globalShellContract": "5/5 GREEN",
+    "accessibility": "3/3 GREEN",
+    "performance": "GREEN; 3 samples; median p95 RAF 10.1 ms; median long task 0 ms; median dropped frames 0",
+    "planContract": "7/7 GREEN",
+    "taskDiff": "No task-owned byte change in attempt 2; this attempt revalidated and re-signed the existing T06 implementation against the approved plan SHA.",
+    "nextEnv": "unchanged"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-20T00:08:00.0000000+08:00",
+  "reason": "T15 attempt 4 closed the 200% horizontal reflow but the in-app browser exposed a distinct 1900px2 collision between the mobile history toggle and skip-settings trigger; the plan's explicit four-CSS-remediation cap requires a fifth scoped semantic authorization.",
+  "planSha256": "1e1e73eb4883dc9918f2099b7ab60b9e4e9a132b90dc5a29818d9160672c29c2",
+  "predecessorPlanSha256": "7ce03e23ba613b65d5793eda24b4ccf882ce8de1fda20b0ef7549f1e9db669f5",
+  "standingApproval": {
+    "active": true,
+    "source": "user: 批准所有计划，不再设置sha",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-player-floating-control-boundary.zip",
+  "archiveSha256": "87ebf41d8ab04e914a70bad72e043a0641d0bb58dff68a31a06fbeca321ee4b2",
+  "archiveBytes": 33071,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10",
+    "S21-T11",
+    "S21-T12",
+    "S21-T13",
+    "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 4,
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-player-floating-control-boundary.zip::S21-T15.json",
+      "sha256": "ebe79d06c6c313f9313c152149b239d3b76df64660ec1397d30b1c6826a60110",
+      "bytes": 10067
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 4,
+    "receiptSha256": "ebe79d06c6c313f9313c152149b239d3b76df64660ec1397d30b1c6826a60110",
+    "candidateCount": 116,
+    "candidateCombinedSha256": "ad66de052ca700e6d5da54f625db18df485fbfd8a03c8850dc0804bdc43ddb82",
+    "performanceTraceSha256": "86c55fec6dc35034eb946b4f34d3eefd512d678347f275cf58d6406ae90c2ebf",
+    "currentTreeRetained": true,
+    "rule": "attempt5 before must equal archived attempt4 after for adopted non-control-plane paths"
+  },
+  "observedCollision": {
+    "viewport": { "width": 320, "height": 900 },
+    "historyToggle": { "left": 248, "right": 298, "top": 422, "bottom": 472, "width": 50, "height": 50 },
+    "skipTrigger": { "left": 206, "right": 304, "top": 416, "bottom": 460, "width": 98, "height": 44 },
+    "intersectionAreaPx2": 1900,
+    "horizontalGapPx": -56
+  },
+  "requiredOwnershipAdditions": [],
+  "scopeClarification": {
+    "existingOwnedPaths": [
+      "pages:app/globals.css",
+      "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts"
+    ],
+    "allowed": "fifth CSS remediation only for the 320px player history-toggle and skip-settings interactive collision: reserve 64px inline-end inside the existing mobile skip-control row",
+    "forbidden": [
+      "hiding or removing either control",
+      "pointer-events:none or equivalent interaction suppression",
+      "z-index-only changes that retain geometric overlap",
+      "clipping or overflow hiding",
+      "moving floating buttons or changing their drag hook, storage, or components",
+      "weakening the collision, gap, viewport, or hit-target assertions",
+      "expanding the behavior to non-player surfaces"
+    ]
+  },
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

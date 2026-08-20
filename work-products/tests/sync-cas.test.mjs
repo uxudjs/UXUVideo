@@ -34,6 +34,19 @@ async function documentRequest(env, cookie, path, options = {}) {
   }), env, {});
 }
 
+function timestampedRecords(count, prefix) {
+  return Array.from({ length: count }, (_, index) => ({ id: `${prefix}-${index}`, updatedAt: index + 1 }));
+}
+
+async function expectInvalidDocument(env, cookie, path, payload) {
+  const response = await documentRequest(env, cookie, path, {
+    method: 'POST',
+    body: { baseVersion: 0, payload },
+  });
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).error.code, 'INVALID_DOCUMENT');
+}
+
 test('document APIs require a session and exact same-origin mutations', async () => {
   const { db, calls } = createAuthD1Stub();
   const env = envFor(db);
@@ -208,4 +221,66 @@ test('library merges newer records and tombstones while rejecting oversized payl
   assert.equal(oversized.status, 413);
   assert.equal((await oversized.json()).error.code, 'DOCUMENT_TOO_LARGE');
   assert.equal(state.documents.get(`${accountId}:library`).version, 2);
+});
+
+test('document APIs reject client-contract collection and video-skip-rule overflows', async () => {
+  const { db, state } = createAuthD1Stub();
+  const env = envFor(db);
+  const cookie = await login(env);
+  const emptyConfig = { fields: {}, sources: [], subscriptions: [], tombstones: [] };
+  const skipRules = Object.fromEntries(Array.from({ length: 201 }, (_, index) => [`standard:source:${index}`, {
+    introEnabled: false, introSeconds: 0, outroEnabled: false, outroSeconds: 0, updatedAt: index + 1,
+  }]));
+
+  await expectInvalidDocument(env, cookie, '/api/user/config', {
+    ...emptyConfig,
+    fields: Object.fromEntries(Array.from({ length: 129 }, (_, index) => [`field-${index}`, { value: index, updatedAt: index + 1 }])),
+  });
+  await expectInvalidDocument(env, cookie, '/api/user/config', { ...emptyConfig, sources: timestampedRecords(201, 'source') });
+  await expectInvalidDocument(env, cookie, '/api/user/config', { ...emptyConfig, subscriptions: timestampedRecords(51, 'subscription') });
+  await expectInvalidDocument(env, cookie, '/api/user/config', {
+    ...emptyConfig,
+    fields: { videoSkipRules: { value: skipRules, updatedAt: 1 } },
+  });
+  await expectInvalidDocument(env, cookie, '/api/user/config', {
+    ...emptyConfig,
+    fields: { videoSkipRules: { value: { 'standard:source:video': {
+      introEnabled: true, introSeconds: 601, outroEnabled: false, outroSeconds: 0, updatedAt: 1,
+    } }, updatedAt: 1 } },
+  });
+  await expectInvalidDocument(env, cookie, '/api/user/config', {
+    ...emptyConfig,
+    tombstones: Array.from({ length: 401 }, (_, index) => ({ collection: 'sources', id: `source-${index}`, deletedAt: index + 1 })),
+  });
+  await expectInvalidDocument(env, cookie, '/api/user/sync', {
+    history: timestampedRecords(201, 'history'), favorites: [], tombstones: [],
+  });
+  await expectInvalidDocument(env, cookie, '/api/user/sync', {
+    history: [], favorites: timestampedRecords(201, 'favorite'), tombstones: [],
+  });
+  assert.equal(state.documents.size, 0);
+});
+
+test('document merge rejects a collection that would exceed its bounded result', async () => {
+  const { db, state } = createAuthD1Stub();
+  const env = envFor(db);
+  const cookie = await login(env);
+  const created = await documentRequest(env, cookie, '/api/user/config', {
+    method: 'POST',
+    body: { baseVersion: 0, payload: {
+      fields: {}, sources: timestampedRecords(200, 'source'), subscriptions: [], tombstones: [],
+    } },
+  });
+  assert.equal(created.status, 200);
+  const accountId = [...state.accounts.values()][0].id;
+  state.documents.get(`${accountId}:config`).updated_at = Date.now() - 60_001;
+
+  const overflow = await documentRequest(env, cookie, '/api/user/config', {
+    method: 'POST',
+    headers: { 'If-Match': '"1"' },
+    body: { payload: { fields: {}, sources: [{ id: 'source-extra', updatedAt: 1 }], subscriptions: [], tombstones: [] } },
+  });
+  assert.equal(overflow.status, 400);
+  assert.equal((await overflow.json()).error.code, 'INVALID_DOCUMENT');
+  assert.equal(state.documents.get(`${accountId}:config`).version, 1);
 });

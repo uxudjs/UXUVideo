@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "event": "section21-review-remediation",
+  "planSha256": "6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a",
+  "state": "ARCHIVED",
+  "invalidatedPlanSha256": "ac7a5714be0f6668e21e67269ec808272b8d0c3ffb870c647155cbe25364ca9d",
+  "archive": "invalidated/ac7a5714",
+  "invalidates": [
+    { "path": "S21-T01.json", "sha256": "3577f1603023543b99325f502956c8d814ca0de9b75c5f7b817908cd458cc091" },
+    { "path": "S21-T01.forward.patch", "sha256": "da418bc0a70813a999d3765d094b48d7186d959695bc5bb9354f1d2a8bd10c40" },
+    { "path": "S21-T01.reverse.patch", "sha256": "3b13f97e4b23005cc9e866447bc55defd4be235f933af16323b31a85203922cb" },
+    { "path": "S21-T02.json", "sha256": "2d99081608aadd288e71957bcc6fa66311391f2b5293299a2c1172fbb0729f5b" },
+    { "path": "S21-T02.forward.patch", "sha256": "e21d24a48df6635c2ada281d689461eac37e5546fec473ad9fad8fcd49cb0570" },
+    { "path": "S21-T02.reverse.patch", "sha256": "bb1df765da7bd9e658e94f429d375b83b048c2b271b07c52323fd8ac820bddfa" },
+    { "path": "S21-T06.json", "sha256": "c14c8b31668bcaecdfe035d8cca212fd8339dcea3f38d876df4b31508658bd77" },
+    { "path": "S21-T06.forward.patch", "sha256": "86523b9db6d148026b9e69f20f1b4a44dbfd4984ce81a63bb1434ca408167d73" },
+    { "path": "S21-T06.reverse.patch", "sha256": "876ccd0230c1b6e73b6ecbd8b498096b65231e782fd90152eeef6c3b46c95668" }
+  ],
+  "reasons": [
+    "The original RED aggregate stopped at its first failure and overstated attributable coverage.",
+    "The retired-prefix fallback depended on the upstream manifest and could return 503 instead of a local 404.",
+    "The performance baseline could be created by the verifier and lacked immutable source provenance.",
+    "The inventory and hygiene gates omitted active tests, generated evidence, and several credential families.",
+    "The approved plan changed, so the previous approval and task receipts no longer bind the current candidate."
+  ],
+  "completionReceiptsIssued": false,
+  "wave2SnapshotIssued": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

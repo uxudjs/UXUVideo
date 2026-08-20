@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 13,
+  "receiptKind": "visual_approval",
+  "candidateLabel": "S21-T15 视觉候选 13",
+  "recordedAt": "2026-08-20T12:14:37.295Z",
+  "preapprovalEvidence": {
+    "path": "work-products/evidence/section21/t15-candidate-evidence.json",
+    "sha256": "43542b02439d78b1598f8e977f2e985fa1d08ac3ce2a4404443f09ad165388e4",
+    "gateStatus": "local_validation_passed_visual_pending"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/t15-visual-review.md",
+    "sha256": "a01f68d9bdc26ca7e51dc473187b69ca06388d1be2da527e998d5dedd5359a78"
+  },
+  "machineBinding": {
+    "candidateCombinedSha256": "91d753b90197edbedd5b468097857faefc66b6836d7e5d2a96059b37c79b2c11",
+    "releaseScopeSha256": "6d7994163aaeb016f9893b3e16ba68ab646f052732ab5845b5c5eac3f08ba9df"
+  },
+  "previewPaths": [
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-1440.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-320.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-1024.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-CN-1024.png"
+  ],
+  "decision": "APPROVED",
+  "decidedAt": "2026-08-20T13:58:26.833Z",
+  "decisionSummary": "用户明确批准视觉候选 13。",
+  "exactApprovalText": "批准视觉候选 13",
+  "feedback": [],
+  "humanDecisionContract": {
+    "shaRequired": false,
+    "approvePhrase": "批准视觉候选 13",
+    "rejectPhrase": "拒绝视觉候选 13：说明问题"
+  },
+  "supersedesDecision": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt12-rejected.json",
+    "sha256": "20450425fc2f4717e8185e654cb9ff1b844eb7fd40de045e8d51f9a5fcbc554e",
+    "disposition": "attempt 12 rejection retained; attempt 13 requires a new visible candidate and a new user decision"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import worker from '../../_worker.js';
+import worker, { controlledFetch } from '../../_worker.js';
 import { createAuthD1Stub } from './fixtures/d1.mjs';
 
 const ORIGIN = 'https://worker.example';
@@ -43,6 +43,16 @@ async function withFetchStub(fetchImpl, run) {
   const original = globalThis.fetch;
   globalThis.fetch = fetchImpl;
   try { return await run(); } finally { globalThis.fetch = original; }
+}
+
+async function withImmediateSearchTimeout(run) {
+  const originalSetTimeout = globalThis.setTimeout;
+  const delays = [];
+  globalThis.setTimeout = (callback, delay, ...arguments_) => {
+    delays.push(delay);
+    return originalSetTimeout(callback, delay === 8_000 || delay === 20_000 ? 0 : delay, ...arguments_);
+  };
+  try { return await run(delays); } finally { globalThis.setTimeout = originalSetTimeout; }
 }
 
 const source = (index) => ({
@@ -261,6 +271,83 @@ test('search still completes when at least one source returns a valid empty resp
   const events = sseData(result.text);
   assert.equal(events.some(({ type }) => type === 'error'), false);
   assert.deepEqual(events.at(-1), { type: 'complete', totalVideosFound: 0, totalSources: 2, maxPageCount: 3 });
+});
+
+test('S21-T04 streams a fast source while one slow source times out without paging or retrying', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await viewerSession(env);
+  let slowFetches = 0;
+  let slowAborts = 0;
+  const result = await withImmediateSearchTimeout((delays) => withFetchStub(async (input, init) => {
+    const host = new URL(String(input)).hostname;
+    if (host === 'source-1.example') {
+      slowFetches += 1;
+      return new Promise((_resolve, reject) => init.signal.addEventListener('abort', () => {
+        slowAborts += 1;
+        reject(new DOMException('Aborted', 'AbortError'));
+      }, { once: true }));
+    }
+    return Response.json({ code: 1, pagecount: 1, list: [{ vod_id: 'fast', vod_name: 'Fast result' }] });
+  }, async () => {
+    const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
+      body: { query: 'test', sources: [source(1), source(2)], page: 1 },
+    }), env, {});
+    return { delays, status: response.status, text: await response.text() };
+  }));
+
+  assert.equal(result.status, 200);
+  assert.equal(slowFetches, 1);
+  assert.equal(slowAborts, 1);
+  assert.ok(result.delays.includes(8_000));
+  assert.equal(result.delays.includes(20_000), false);
+  const events = sseData(result.text);
+  assert.equal(events.some(({ type }) => type === 'error'), false);
+  assert.equal(events.find(({ type }) => type === 'videos')?.source, 'source-2');
+  assert.ok(events.findIndex(({ type }) => type === 'videos') < events.findIndex(({ completedSources }) => completedSources === 2));
+  assert.deepEqual(events.at(-1), { type: 'complete', totalVideosFound: 1, totalSources: 2, maxPageCount: 3 });
+});
+
+test('S21-T04 reports all timed-out sources unavailable without retrying', async () => {
+  const { db } = createAuthD1Stub();
+  const env = environment(db);
+  const cookie = await viewerSession(env);
+  let fetches = 0;
+  const result = await withImmediateSearchTimeout((delays) => withFetchStub((_input, init) => {
+    fetches += 1;
+    return new Promise((_resolve, reject) => init.signal.addEventListener('abort', () => {
+      reject(new DOMException('Aborted', 'AbortError'));
+    }, { once: true }));
+  }, async () => {
+    const response = await worker.fetch(apiRequest('/api/search-parallel', cookie, {
+      body: { query: 'test', sources: [source(1), source(2)], page: 1 },
+    }), env, {});
+    return { delays, status: response.status, text: await response.text() };
+  }));
+
+  assert.equal(result.status, 200);
+  assert.equal(fetches, 2);
+  assert.ok(result.delays.includes(8_000));
+  assert.equal(result.delays.includes(20_000), false);
+  const events = sseData(result.text);
+  assert.deepEqual(events.find(({ type }) => type === 'error')?.error?.details, { failedSources: 2, totalSources: 2 });
+  assert.equal(events.some(({ type }) => type === 'complete'), false);
+  assert.equal(events.filter(({ type }) => type === 'progress').at(-1)?.completedSources, 2);
+});
+
+test('S21-T04 client cancellation wins a response-timeout race', async () => {
+  const client = new AbortController();
+  const request = controlledFetch('https://cancel-source.example/api', {
+    signal: client.signal,
+    timeoutMs: 1,
+    fetchImpl: (_input, init) => new Promise((_resolve, reject) => {
+      init.signal.addEventListener('abort', () => {
+        setTimeout(() => reject(new DOMException('Aborted', 'AbortError')), 10);
+      }, { once: true });
+    }),
+  });
+  client.abort(new DOMException('Client cancelled', 'AbortError'));
+  await assert.rejects(request, (error) => error?.code === 'UPSTREAM_ABORTED' && error?.status === 499);
 });
 
 test('premium aggregation requires server-side authorization and avoids Node Buffer', async () => {

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T08",
+  "attempt": 2,
+  "state": "completed",
+  "startedAt": "2026-08-19T18:30:24.2405971+08:00",
+  "completedAt": "2026-08-19T19:08:35.9331286+08:00",
+  "planSha256": "376af11dc82d3c89b7a2d658e597494364c692bc51275d99f7b12ee18b6a8324",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "b3382f3d517df02960c7f1dd7872ccdeafd927cb6b177649c6c6b8e9646bb9ea"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "9c0073f071f86bb05ba2089506db37866d0bf8aa3d535c320f8d77f4892098c7"
+    }
+  },
+  "adoptedAttempt": {
+    "attempt": 1,
+    "archive": "work-products/evidence/section21/plan-revisions/2026-08-19-t08-e2e-boundary.zip",
+    "archiveSha256": "29e6af876752b12f485fbb42331af15b34fb71a559bcb1faf4e458500a5ebd29",
+    "focusedStatic": "GREEN",
+    "relatedNode": "28/28 GREEN",
+    "productionBuild": "GREEN",
+    "fullE2e": "95/119 with 24 attributable failures"
+  },
+  "writeBoundary": {
+    "runtimeAndActiveTests": true,
+    "section21FlowsFixtureOnly": [
+      "release identity",
+      "capabilities",
+      "removed v1 default-source fields",
+      "portable locale, timezone, and service-worker execution context"
+    ],
+    "section21FlowAssertionsReadOnly": true,
+    "futureAggregatePackageRegistrationOwnedBy": "S21-T13"
+  },
+  "writeSet": [
+    "pages:package.json",
+    "pages:package-lock.json",
+    "pages:scripts/build-release.mjs",
+    "pages:app/globals.css",
+    "pages:components/RuntimeConfigProvider.tsx",
+    "pages:components/player/hooks/useHlsPlayer.ts",
+    "pages:lib/player/hls-compatibility.ts",
+    "pages:work-products/tests/section21-ui-contract.test.mjs",
+    "pages:work-products/tests/section21-flows.e2e.spec.ts",
+    "pages:work-products/tests/iptv-retirement-contract.test.mjs",
+    "pages:work-products/tests/hls-compatibility.test.mjs",
+    "pages:work-products/tests/app-flows.e2e.spec.ts",
+    "pages:work-products/tests/app-update-control.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-home-search-parity.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-pwa.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-settings-sources.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-source-import.e2e.spec.ts",
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts",
+    "worker:work-products/evidence/section21/receipts/S21-T08.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:work-products/plan.md": "376af11dc82d3c89b7a2d658e597494364c692bc51275d99f7b12ee18b6a8324",
+    "worker:work-products/todo.md": "db707663f40900a324af1d5ec7e43f69dc3c71f75629eb48f226ab65dd1cc1b2",
+    "pages:package.json": "596afdc16fa0bbc6c48430bc3b1b9bf70e4b16ed9e185ac952494f2bc103370d",
+    "pages:work-products/tests/section21-flows.e2e.spec.ts": "8ff1c198c8ae584bcad59bd95a2e874e21e75e27a4895836986f89445940020d"
+  },
+  "afterSha256": {
+    "pages:package.json": "b0ad3a38171beb7e9625be70cc70d1338d0cffc75a3b1c2cfb6844101b11c024",
+    "pages:package-lock.json": "6178cfafec856836f5d3b065dd0b1c531302a7d24c8b1863d293a7cb0877fafe",
+    "worker:work-products/todo.md": "2098625c011853da6a081d47f4f2daeac2817ba29d868345e9878585fca0fdca",
+    "pages:scripts/build-release.mjs": "92fb719f8a8440c5ec97e0c8b952ceff203a6a710f2623534188230bb96295b2",
+    "pages:app/globals.css": "e25473d09fb0c8ddcb6b3f2b4aacba6105295dce1c3becba5b838626e22fa587",
+    "pages:components/RuntimeConfigProvider.tsx": "9bd85e679525a596d18c54c290eb1a1353f72efa29c70216e01caaea1526c0b3",
+    "pages:components/player/hooks/useHlsPlayer.ts": "24254c7c1489184d0790d57c695fd0bb2a05c4635fc36d8be21cf8f4e7ea2aaf",
+    "pages:lib/player/hls-compatibility.ts": "29c8e1e3aa574aa8508e7e312460774fb411f467fafd6c2e4c2ea8c6989fe811",
+    "pages:work-products/tests/section21-ui-contract.test.mjs": "d20ab4c660f12a94363a1f287046614003596314b5f7e7809ef82cc3d5db8d2f",
+    "pages:work-products/tests/section21-flows.e2e.spec.ts": "86d545d95c33997310b8598e6ab4820b85832f1fe96130daff2829e2fd479933",
+    "pages:work-products/tests/iptv-retirement-contract.test.mjs": "d862d980739d95276be9e5f399474aa47c954ee3afd4299781e2f8fa52b82007",
+    "pages:work-products/tests/hls-compatibility.test.mjs": "8b0332a70ee3a6034c82851edfe05007c8d92db8576467fd29f48fdd9bf25972",
+    "pages:work-products/tests/app-flows.e2e.spec.ts": "c76dddeb0a6ece9948939b1d838e24c881e04b235fca8bea6bdfdec884b62810",
+    "pages:work-products/tests/app-update-control.e2e.spec.ts": "cd9b887c2f8f8599eb59682522b8a329df280e0174416e53f09f6253376abbf2",
+    "pages:work-products/tests/kvideo-home-search-parity.e2e.spec.ts": "4e1230385d5126d63c63b830f7b644e54ac508f92f898181a06540e7213c1485",
+    "pages:work-products/tests/kvideo-pwa.e2e.spec.ts": "b08868ea260baeff95166656735acfa6d9bf6da4c8d36bfd9948610a13e62ac6",
+    "pages:work-products/tests/kvideo-settings-sources.e2e.spec.ts": "dfd16605bb64510fbb39ac27eddf8b207c31a07b5f65aedcc67d30467448f35f",
+    "pages:work-products/tests/kvideo-source-import.e2e.spec.ts": "4dbdce87948a6ab3d3f5690ba38811897f1d0b3c382dbefa662a547e5ab860aa",
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts": "2f6e667edd1be6a0c2b385d181dd551bd46fd11db8b6d6c65a8fbb26623ab397"
+  },
+  "validation": {
+    "focusedStatic": "1/1 S21-T08 contract GREEN; 8 unrelated Section 21 tasks skipped",
+    "relatedNode": "28/28 GREEN across retirement, HLS, media, mobile, routing, lifecycle, automation, and parity contracts",
+    "pagesNodeSuite": "142/142 GREEN via npm test",
+    "productionBuild": "Next.js 16.3.0 static export GREEN with 7 product routes plus framework 404 and 24 transpiled assets",
+    "releaseBuild": "npm run release:build GREEN and release/current regenerated",
+    "fullBrowser": "119/119 GREEN via npm run test:e2e",
+    "section21Browser": "6/6 GREEN under both the dedicated Section 21 config and the main Playwright config",
+    "performance": "all recorded p95 RAF samples 8.5ms, long tasks 0, dropped frames 0",
+    "retirementNegative": "3/3 GREEN for removed IPTV runtime surface",
+    "planContract": "11/11 GREEN",
+    "candidateHygiene": "3/3 GREEN with no machine path, unreviewed binary, or credible secret material",
+    "section21ExecutionContext": "spec-level zh-CN locale, Asia/Taipei timezone, and blocked service workers mirror the dedicated config; test names, interactions, request counts, and result assertions remain unchanged",
+    "visualBaseline": "existing historical PNG fixtures remain unchanged; geometry assertions were updated only for approved T05/T06 shell placement",
+    "diffCheck": "both repositories pass git diff --check; line-ending notices are informational"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

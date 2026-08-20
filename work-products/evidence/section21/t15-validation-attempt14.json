@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 14,
+  "generatedAt": "2026-08-20T14:57:58.763Z",
+  "status": "passed",
+  "e2e": {
+    "command": "UXUV_WRITE_VISUAL_CANDIDATE=1 playwright test --reporter=json --workers=1",
+    "discovered": 125,
+    "passed": 125,
+    "duration": "325497 ms",
+    "report": {
+      "path": "work-products/evidence/section21/t15-e2e-attempt14.json",
+      "bytes": 26616,
+      "sha256": "843b502a2af8a1463d9745b1954c5a270c086d3aedba808bbf4bf86f4e6be9dc"
+    }
+  },
+  "performance": {
+    "command": "included in the full attempt 14 Playwright run",
+    "discovered": 1,
+    "passed": 1,
+    "duration": "included in E2E report",
+    "samples": [
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 900
+      },
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      },
+      {
+        "p95RafIntervalMs": 8.5,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      }
+    ],
+    "median": {
+      "p95RafIntervalMs": 8.5,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0
+    },
+    "report": {
+      "path": "work-products/evidence/section21/t15-e2e-attempt14.json",
+      "bytes": 26616,
+      "sha256": "843b502a2af8a1463d9745b1954c5a270c086d3aedba808bbf4bf86f4e6be9dc"
+    },
+    "trace": {
+      "path": "work-products/evidence/section21/t15-performance-trace.zip",
+      "bytes": 18328869,
+      "sha256": "94e84a3e81562d4c9ef0be3a2fe7f121ae45a43579c4c7c7e3f80e64aa704122",
+      "sanitization": "passed in attempt 13",
+      "reusedFromAttempt": 13,
+      "pagesReleaseScopeExactMatch": true,
+      "pagesReleaseScope": {
+        "fileCount": 303,
+        "sha256": "6d7994163aaeb016f9893b3e16ba68ab646f052732ab5845b5c5eac3f08ba9df",
+        "algorithm": "sort release-scope paths; for each path hash bytes with SHA-256; hash path NUL digest records joined by NUL"
+      },
+      "reason": "Pages release-source bytes are unchanged; attempt 14 changes Worker lifecycle and test/evidence ownership only."
+    }
+  },
+  "rollback": {
+    "generateCommand": "node work-products/tests/section21-rollback-drill.test.mjs --generate",
+    "replayCommand": "node --test work-products/tests/section21-rollback-drill.test.mjs",
+    "pair": {
+      "path": "work-products/evidence/section21/pair-rollback.json",
+      "bytes": 101158,
+      "sha256": "956fef83a9abe266234539d250b7b063892b8acd5f4743612d3d3c6eb58cb080"
+    },
+    "phases": [
+      {
+        "name": "bootstrap-v2",
+        "status": "passed"
+      },
+      {
+        "name": "reverse-v1",
+        "status": "passed"
+      },
+      {
+        "name": "forward-restore-v2",
+        "status": "passed"
+      }
+    ],
+    "compatibility": {
+      "field": "videoSkipRules",
+      "status": "passed",
+      "behavior": "v1 import, timestamped config merge, and remote validation preserve the unknown v2 field"
+    }
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

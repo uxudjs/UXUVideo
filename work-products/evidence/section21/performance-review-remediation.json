@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "planSha256": "6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a",
+  "baselineRepositoryHead": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+  "fixture": {
+    "cards": 120,
+    "mutedVideoSeconds": 30,
+    "warmups": 3,
+    "samples": 3
+  },
+  "samples": [
+    {
+      "p95RafIntervalMs": 8.400000000001455,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0,
+      "totalFrames": 899
+    },
+    {
+      "p95RafIntervalMs": 8.400000000001455,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0,
+      "totalFrames": 899
+    },
+    {
+      "p95RafIntervalMs": 8.400000000008731,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0,
+      "totalFrames": 900
+    }
+  ],
+  "median": {
+    "p95RafIntervalMs": 8.400000000001455,
+    "longTaskTotalMs": 0,
+    "droppedFrames": 0
+  },
+  "status": "passed",
+  "scope": "local-browser-only"
+}

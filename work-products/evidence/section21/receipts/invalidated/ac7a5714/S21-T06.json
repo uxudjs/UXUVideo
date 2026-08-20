@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T06",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-18T01:02:00.0420213+08:00",
+  "completedAt": "2026-08-18T01:14:27.1997070+08:00",
+  "planSha256": "ac7a5714be0f6668e21e67269ec808272b8d0c3ffb870c647155cbe25364ca9d",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "uncommittedPatchSha256": "b6e5ecf546cbf9ec59251dcec4ed02f4bfb1d4b875918df46b0909e70a3471e1"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "uncommittedPatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "beforeSha256": {
+    "pages:app/globals.css": "a1121b8e0fe1ab634f6518630868a837c15cd8fc801c1f5cb468c8dfa13d939f",
+    "pages:work-products/tests/global-shell-contract.test.mjs": "2bcb232d4f9a297c2bf79caf99c80e97130e5c4f42c2cb132e3ae4791ce3c0c5",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "651fbdcab0a4f2155711c3250800e768e2bcdd06d213a46ec67422bb10a0e6ba"
+  },
+  "afterSha256": {
+    "pages:app/globals.css": "564c4536bb485840a48ee7590a6cfaf6c9f3cc069007f0d59beeca2f8a37f3de",
+    "pages:work-products/tests/global-shell-contract.test.mjs": "bc38a5144dbb9565d76d416952fa2e848215e634a8fee1f025b7af11ef2adad4",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "2b19174c7dcb65d4ba60bac6d4e31379d85a83c65c41c5338bb28946b3976ab3"
+  },
+  "patches": {
+    "forward": {
+      "path": "work-products/evidence/section21/receipts/S21-T06.forward.patch",
+      "sha256": "86523b9db6d148026b9e69f20f1b4a44dbfd4984ce81a63bb1434ca408167d73"
+    },
+    "reverse": {
+      "path": "work-products/evidence/section21/receipts/S21-T06.reverse.patch",
+      "sha256": "876ccd0230c1b6e73b6ecbd8b498096b65231e782fd90152eeef6c3b46c95668"
+    }
+  },
+  "validation": {
+    "focusedContract": "1/1 GREEN with 8 filtered skips",
+    "nodeContracts": "5/5 GREEN",
+    "accessibilityE2E": "3/3 GREEN",
+    "performanceE2E": "1/1 GREEN; median 10.2 ms / 0 ms / 0 dropped frames",
+    "performanceTrace": {
+      "path": "work-products/tests/artifacts/section21-playwright/section21-performance.e2e--069e4-0-second-muted-video-budget/trace.zip",
+      "sha256": "a7e918070299b5fc588784da5bd0cc9e25a9677ff59dafc9af3d208b7bdf6abf"
+    },
+    "diffCheck": "GREEN; only core.autocrlf warnings",
+    "nextEnv": "unchanged",
+    "port4181": "not listening after validation",
+    "dependencyChange": "none"
+  }
+}

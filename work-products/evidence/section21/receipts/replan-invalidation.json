@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-18T14:51:01.8919901+08:00",
+  "planSha256": "8df83634738324bd4b1277d55a9204b5f4ea8a92dbc28fd9b064a7bfec59ee6e",
+  "invalidatedPlanSha256": "6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a",
+  "archive": "invalidated/6ef4a951",
+  "reason": "The previous final-discovery contract permanently required the transient T02 v1 identity while T03 and T15 required the final v2 identity. The product slices remain in the working tree, but every prior completion or blocked receipt must be revalidated against the approved replacement plan.",
+  "invalidates": [
+    {
+      "taskId": "S21-T01",
+      "path": "S21-T01.json",
+      "sha256": "39f7f1e5636d8ba403aa7e91a1e5f6696695af784414a3f2ef30739ae3cf87e4",
+      "bytes": 5850
+    },
+    {
+      "taskId": "S21-T01",
+      "path": "S21-T01.forward.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "taskId": "S21-T01",
+      "path": "S21-T01.reverse.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "taskId": "S21-T02",
+      "path": "S21-T02.json",
+      "sha256": "0fa89bba60a46eb60d7a4ec9d3ff6cf22c6a17508c223346d985f32bf925b114",
+      "bytes": 2787
+    },
+    {
+      "taskId": "S21-T02",
+      "path": "S21-T02.forward.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "taskId": "S21-T02",
+      "path": "S21-T02.reverse.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "taskId": "S21-T03",
+      "path": "S21-T03.json",
+      "sha256": "033f5db3b8188fc348ef31883136db7f2e7a0535b2e5af21555b73e203ede6d6",
+      "bytes": 4871
+    },
+    {
+      "taskId": "S21-T06",
+      "path": "S21-T06.json",
+      "sha256": "7c5aeeb54f30390eaa5055eb69326793adefa0f2e445714a25aac83f7bdeb70c",
+      "bytes": 2406
+    },
+    {
+      "taskId": "S21-T06",
+      "path": "S21-T06.forward.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "taskId": "S21-T06",
+      "path": "S21-T06.reverse.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "absentArtifacts": [
+    {
+      "taskId": "S21-T03",
+      "path": "S21-T03.forward.patch",
+      "reason": "The previous attempt was blocked before its task patch was sealed."
+    },
+    {
+      "taskId": "S21-T03",
+      "path": "S21-T03.reverse.patch",
+      "reason": "The previous attempt was blocked before its task patch was sealed."
+    }
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

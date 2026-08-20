@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T12:45:32.3304311+08:00",
+  "planSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "invalidatedPlanSha256": "096e92fd1b7e084f118dd6939216003ace104ee9a7ad76155595ab38bbd8a77b",
+  "archive": "invalidated/096e92fd",
+  "reason": "The approved contract revision assigns version-independent root routing to S21-T02 and atomically assigns API 2 manifest fixtures, compatibility, MIME, size, and fail-closed behavior to S21-T03. Prior active receipts no longer bind the current plan.",
+  "invalidates": [
+    {
+      "taskId": "S21-T01",
+      "state": "completed",
+      "path": "S21-T01.json",
+      "sha256": "982539e8e53ff77ee51d88d73296a641764a5c9f9ad09c5607a008faf0df7359",
+      "bytes": 6000
+    },
+    {
+      "taskId": "S21-T02",
+      "state": "blocked",
+      "path": "S21-T02.json",
+      "sha256": "a84433bdb2d9fe79d44eabc6b82209f985c97b1674b5b421769e654932567071",
+      "bytes": 3282
+    }
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

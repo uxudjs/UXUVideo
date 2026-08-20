@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T01",
+  "attempt": 2,
+  "state": "completed",
+  "startedAt": "2026-08-18T13:17:48.6424799+08:00",
+  "completedAt": "2026-08-18T13:24:20.8800532+08:00",
+  "planSha256": "6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "uncommittedPatchSha256": "95fb106d9b5f08a6f78407490d97a1acac4b395c"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "uncommittedPatchSha256": "4a0bf58391822832c95756c71dfba43004d3a30e"
+    }
+  },
+  "beforeSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "2692746fa994b063a4cd96595be582042a8e367a374ae4db7b33aff8b3d821eb",
+    "worker:work-products/tests/section21-security-baseline.test.mjs": "999b0077c26c0bedd6c6616265fe6cfc4866be2247366c32e36bb95eaa00865d",
+    "worker:work-products/tests/candidate-hygiene.test.mjs": "62ecf730551a20e8c82290f67a751b100daa87214b6871e1bbc33f23e6e1014e",
+    "worker:work-products/tests/section21-inventory.mjs": "323503662103e52eeff6a24a529324ccb196fcbb0d0a188c9451f29987c0cabd",
+    "worker:work-products/tests/section21-inventory-generator.mjs": "f73537a487223324e2f35b1f4798883663210973ab0f08da5e072788cb66fbad",
+    "worker:work-products/evidence/section21/red-matrix.md": "1eb016cd5b5452ed9502a9960f507fcecca0eff64dd5cf090becf8d3f48be41c",
+    "worker:work-products/evidence/section21/root-prefix-inventory.txt": "d0b69bd64534c23c1238de550cc4e355a3b7a5cc0bd889bdec817e8b02c127ca",
+    "worker:work-products/evidence/section21/iptv-default-source-inventory.txt": "addb7fe723a0b6f640cb1fd56692b15313c291c11e5873a079134fc854cdb433",
+    "worker:work-products/evidence/section21/performance-baseline.json": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+    "worker:work-products/evidence/section21/binary-allowlist.json": "b6429e7d08029a34589e9c8956ef86dffab2fb6dd9ee37c08d5e9204e14cdbe6",
+    "pages:work-products/tests/section21-ui-contract.test.mjs": "4b34dca7e697f14bf9f1a58aa678b04215c9aeea7162114638fbeb96301c6754",
+    "pages:work-products/tests/section21-flows.e2e.spec.ts": "8ff1c198c8ae584bcad59bd95a2e874e21e75e27a4895836986f89445940020d",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts": "4d9c15abd357a0e0f03d24e13aa794cb12300c46cf0635ce8ff5d8ef043f7aa0",
+    "pages:work-products/tests/section21-performance.e2e.spec.ts": "40562bcda9a05ee1ca8fc79e85a1eb153e18264cd0b31d9f89e54f9f969261c5",
+    "pages:work-products/tests/section21-playwright.config.ts": "d83cbcece2fd0643aff74d11923f7e26594d233fa3472a2ceed3b84c1c8edc73"
+  },
+  "afterSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "2692746fa994b063a4cd96595be582042a8e367a374ae4db7b33aff8b3d821eb",
+    "worker:work-products/tests/section21-security-baseline.test.mjs": "999b0077c26c0bedd6c6616265fe6cfc4866be2247366c32e36bb95eaa00865d",
+    "worker:work-products/tests/candidate-hygiene.test.mjs": "62ecf730551a20e8c82290f67a751b100daa87214b6871e1bbc33f23e6e1014e",
+    "worker:work-products/tests/section21-inventory.mjs": "323503662103e52eeff6a24a529324ccb196fcbb0d0a188c9451f29987c0cabd",
+    "worker:work-products/tests/section21-inventory-generator.mjs": "f73537a487223324e2f35b1f4798883663210973ab0f08da5e072788cb66fbad",
+    "worker:work-products/evidence/section21/red-matrix.md": "1eb016cd5b5452ed9502a9960f507fcecca0eff64dd5cf090becf8d3f48be41c",
+    "worker:work-products/evidence/section21/root-prefix-inventory.txt": "d0b69bd64534c23c1238de550cc4e355a3b7a5cc0bd889bdec817e8b02c127ca",
+    "worker:work-products/evidence/section21/iptv-default-source-inventory.txt": "addb7fe723a0b6f640cb1fd56692b15313c291c11e5873a079134fc854cdb433",
+    "worker:work-products/evidence/section21/performance-baseline.json": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+    "worker:work-products/evidence/section21/binary-allowlist.json": "b6429e7d08029a34589e9c8956ef86dffab2fb6dd9ee37c08d5e9204e14cdbe6",
+    "pages:work-products/tests/section21-ui-contract.test.mjs": "4b34dca7e697f14bf9f1a58aa678b04215c9aeea7162114638fbeb96301c6754",
+    "pages:work-products/tests/section21-flows.e2e.spec.ts": "8ff1c198c8ae584bcad59bd95a2e874e21e75e27a4895836986f89445940020d",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts": "4d9c15abd357a0e0f03d24e13aa794cb12300c46cf0635ce8ff5d8ef043f7aa0",
+    "pages:work-products/tests/section21-performance.e2e.spec.ts": "40562bcda9a05ee1ca8fc79e85a1eb153e18264cd0b31d9f89e54f9f969261c5",
+    "pages:work-products/tests/section21-playwright.config.ts": "d83cbcece2fd0643aff74d11923f7e26594d233fa3472a2ceed3b84c1c8edc73"
+  },
+  "patches": {
+    "forward": {
+      "path": "work-products/evidence/section21/receipts/S21-T01.forward.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reverse": {
+      "path": "work-products/evidence/section21/receipts/S21-T01.reverse.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "validation": {
+    "securityAndHygiene": "5/5 GREEN",
+    "workerContract": "4 GREEN and 7 independently attributable RED",
+    "pagesNodeContract": "1 GREEN and 8 independently attributable RED",
+    "pagesFlowAndVisual": "1 visual GREEN and 6 independently attributable RED",
+    "pagesPerformanceBaseline": "GREEN; 3 samples; median p95 RAF 8.5 ms; median long task 0 ms; median dropped frames 0",
+    "planContract": "7/7 GREEN",
+    "diffCheck": "GREEN in both repositories",
+    "taskDiff": "No task-owned byte change in attempt 2; this attempt revalidated and re-signed the frozen baseline against the approved plan SHA.",
+    "nextEnv": "unchanged"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

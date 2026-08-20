@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T23:40:47.1241189+08:00",
+  "reason": "T15 attempt 2 closed the predecessor E2E, API 2 candidate, and performance-evidence gaps. Codex in-app Browser then found a real ready-player integration regression: the sticky navbar overlapped the first visible content by 52 px at both 1440 and 320 because its top inset was not reserved in normal flow. The existing file ownership is sufficient, but the predecessor plan semantically capped globals.css at two unrelated remediations.",
+  "planSha256": "f396b346b80604e5e78d0609ee5dac4013f5fe212b1198565e3b417f88a06ec3",
+  "predecessorPlanSha256": "853598fa00a91ad92ca73ab7a1dc64bbc0b72e1c895ff341cef7975558dbce56",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t15-player-navbar-boundary.zip",
+  "archiveSha256": "49ce71d5e0e75e10f42d57700e3af5838899c42e1a6c1601b97bf6680eded1fd",
+  "archiveBytes": 31680,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10",
+    "S21-T11",
+    "S21-T12",
+    "S21-T13",
+    "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 2,
+      "path": "plan-revisions/2026-08-19-t15-player-navbar-boundary.zip::S21-T15.json",
+      "sha256": "c0a6093d12ba81e03b2ad874fe178af7a8a002e517877ef36357067e117e93a8",
+      "bytes": 10221
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 2,
+    "receiptSha256": "c0a6093d12ba81e03b2ad874fe178af7a8a002e517877ef36357067e117e93a8",
+    "candidateCount": 116,
+    "candidateCombinedSha256": "536e655edf36bb6d5ccb78dfa767893200c129bdab8f2432e10a875fbd7e29dd",
+    "performanceTraceSha256": "86c55fec6dc35034eb946b4f34d3eefd512d678347f275cf58d6406ae90c2ebf",
+    "performanceTraceBytes": 17237376,
+    "currentTreeRetained": true,
+    "rule": "attempt3 before must equal archived attempt2 after for adopted non-control-plane paths"
+  },
+  "requiredOwnershipAdditions": [],
+  "scopeClarification": {
+    "existingOwnedPaths": [
+      "pages:app/globals.css",
+      "pages:work-products/tests/kvideo-player-shell.e2e.spec.ts"
+    ],
+    "allowed": "third CSS remediation only for ready-player sticky-navbar vertical overlap, plus its four-breakpoint and 200 percent regression gate",
+    "forbidden": [
+      "new business path",
+      "components/player/PlayerNavbar.tsx",
+      "components/PlayerExperience.tsx",
+      "unrelated layout refactor",
+      "weakened geometry assertion"
+    ]
+  },
+  "observedGeometry": {
+    "desktop1440": { "navbar": [84, 172], "nextContent": [120, 206], "overlapPx": 52 },
+    "mobile320": { "navbar": [84, 228], "nextContent": [176, 338], "overlapPx": 52 }
+  },
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

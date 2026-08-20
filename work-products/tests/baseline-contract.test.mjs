@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const baselineUrl = new URL('../baseline.md', import.meta.url);
+const workerUrl = new URL('../../_worker.js', import.meta.url);
 
 const expectedRoutes = [
   'app/api/app-update/route.ts',
@@ -56,6 +57,17 @@ test('T01 baseline freezes the original route and page inventories', async () =>
   assert.deepEqual(contract.inventory.pages, expectedPages);
   assert.equal(contract.inventory.appTests.length, 22);
   assert.ok(contract.inventory.appTests.every((file) => /^tests\/.+\.test\.ts$/.test(file)));
+});
+
+test('S21-T14 keeps the historical baseline and separately locks the final 21-route Worker surface', async () => {
+  const worker = await readFile(workerUrl, 'utf8');
+  const routeBlock = worker.match(/const ROUTES = \[([\s\S]*?)\r?\n\];/);
+  assert.ok(routeBlock, 'Worker ROUTES block is missing');
+  assert.deepEqual([...routeBlock[1].matchAll(/id: '([^']+)'/g)].map((match) => match[1]), [
+    'app-update', 'auth-account', 'auth-accounts', 'auth', 'auth-session', 'config', 'danmaku', 'detail',
+    'douban-image', 'douban-recommend', 'douban-tags', 'ping', 'premium-category', 'premium-types',
+    'probe-resolution', 'proxy', 'search-parallel', 'source-import', 'user-config', 'user-sync', 'admin-usage',
+  ]);
 });
 
 test('T01 baseline records reproducible validation results without hiding failures', async () => {

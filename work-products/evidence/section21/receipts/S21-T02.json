@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T02",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-19T12:49:01.7880736+08:00",
+  "completedAt": "2026-08-19T12:49:51.1897910+08:00",
+  "planSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "8911509c2e1c6e12cb61e7c9054a93c4d1fc1d3d51ba6fdeca0045a88a1f55d5"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "c0244f8fd7b49f5ea432e3379a18c176644b09aae4211b3989d1ddded968b51c"
+    }
+  },
+  "writeSet": [
+    "worker:_worker.js",
+    "worker:work-products/tests/pages-integrity.test.mjs",
+    "worker:work-products/tests/worker-route-contract.test.mjs",
+    "worker:work-products/evidence/section21/receipts/S21-T02.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:_worker.js": "174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "worker:work-products/tests/pages-integrity.test.mjs": "6f0989697802c85d63a64940713af8e6f4609d0018268e0fbf4eab73cd6113d0",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "aa37c4b2242ec1a59fac3dc1db697bfa8b9c7f471f2b303cd802b3794bb975d9",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf",
+    "worker:work-products/evidence/section21/receipts/invalidated/096e92fd/S21-T02.json": "a84433bdb2d9fe79d44eabc6b82209f985c97b1674b5b421769e654932567071",
+    "worker:work-products/evidence/section21/receipts/invalidated/8df83634/S21-T02.json": "0fa89bba60a46eb60d7a4ec9d3ff6cf22c6a17508c223346d985f32bf925b114",
+    "worker:work-products/evidence/section21/receipts/S21-T02.json": null,
+    "worker:work-products/todo.md": "a1726e51d613a9e9807008c887b60aa8e5446e0a57a10c6e03f5fe214b99dbf5"
+  },
+  "afterSha256": {
+    "worker:_worker.js": "174bc209cee5d93a5059c9811460d8f63607614105487980794d2373d911adda",
+    "worker:work-products/tests/pages-integrity.test.mjs": "6f0989697802c85d63a64940713af8e6f4609d0018268e0fbf4eab73cd6113d0",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "aa37c4b2242ec1a59fac3dc1db697bfa8b9c7f471f2b303cd802b3794bb975d9",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf"
+  },
+  "validation": {
+    "focusedRootContract": "1/1 GREEN; retired prefix is a local 404",
+    "narrowedRelatedContracts": "7/7 GREEN across static CSP, true 404, unknown API paths, non-API methods, and baseline identity; 8/8 effective checks including the root contract",
+    "historicalIdentity": "archived T02 receipt binds repository HEAD 0a4c697cdb37692b31d313a231b6f8eaae54dfa3, whose committed Worker and package identities are 1.1.4 / API Contract 1",
+    "currentIdentity": "current candidate remains package 2.0.0 / API Contract 2; no downgrade was performed",
+    "manifestFixtureBoundary": "pages-integrity API 2 fixtures remained byte-identical and were not used as a T02 gate",
+    "taskOwnedProductChanges": "none",
+    "pagesWriteBoundary": "Pages tracked patch SHA-256 remained c0244f8fd7b49f5ea432e3379a18c176644b09aae4211b3989d1ddded968b51c",
+    "diffCheck": "task write set GREEN"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

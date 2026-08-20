@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T15",
+  "attempt": 12,
+  "receiptKind": "visual_approval",
+  "candidateLabel": "S21-T15 视觉候选 12",
+  "recordedAt": "2026-08-20T11:30:58.693Z",
+  "preapprovalEvidence": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-candidate-evidence-attempt12-rejected.json",
+    "sha256": "6d8bdfd60eb074298d799aa540386784a9660adffceb5624a3ef660eb13de149",
+    "gateStatus": "local_validation_passed_visual_pending"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-review-attempt12-rejected.md",
+    "sha256": "819343e1331671df1586909989fc28fdd59e3734ebd7834cc4fdfdc5b6088fdb"
+  },
+  "machineBinding": {
+    "candidateCombinedSha256": "c556a6fa6eb2175b251e3a2c6b58e70423d425d6fbe62b49454d8aa4ebcccac0",
+    "releaseScopeSha256": "c947257257c62f00000e6f13fb21d28483d706e7273043fefb7ed02a246058a5"
+  },
+  "previewPaths": [
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-home-zh-CN-1440.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-search-ready-en-320.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-player-ready-en-1024.png",
+    "pages:work-products/tests/fixtures/ui-review/section21-candidate/routes-settings-zh-CN-1024.png"
+  ],
+  "decision": "REJECTED",
+  "decidedAt": "2026-08-20T11:49:02.116Z",
+  "decisionSummary": "内部预呈交视觉复核发现持续同步状态会遮挡窄屏与 200% 文本下的返回入口和页面标题；候选未呈交用户。",
+  "feedback": [
+    "设置页已有同一同步状态的页面内信息块，不应再叠加固定角落状态。",
+    "下一候选必须证明同步状态不与返回入口、标题或浮动操作相交。"
+  ],
+  "humanDecisionContract": {
+    "shaRequired": false,
+    "approvePhrase": "批准视觉候选 12",
+    "rejectPhrase": "拒绝视觉候选 12：说明问题"
+  },
+  "supersedesDecision": {
+    "path": "work-products/evidence/section21/receipts/invalidated/debug-20260820/t15-visual-approval-attempt11-rejected.json",
+    "sha256": "7c610f8caad1e6adb4874ee881a0f3cd4db5cf6692e22992985f287dd15e1973",
+    "disposition": "attempt 11 rejection retained; attempt 12 requires a new visible candidate and a new user decision"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

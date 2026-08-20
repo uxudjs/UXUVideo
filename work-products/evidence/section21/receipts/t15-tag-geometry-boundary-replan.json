@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-20T00:31:00.0000000+08:00",
+  "reason": "T15 attempt 5 closed the fifth CSS defect, but the formal 124-test gate exposed one stale tag-management absolute-coordinate expectation that directly conflicts with the already-approved home floating-control avoidance.",
+  "planSha256": "8837b71153dc156ed5ba9260b6f7641ea00e54c1ff2537badd21482fffe4253d",
+  "predecessorPlanSha256": "1e1e73eb4883dc9918f2099b7ab60b9e4e9a132b90dc5a29818d9160672c29c2",
+  "standingApproval": {
+    "active": true,
+    "source": "user: 批准所有计划，不再设置sha",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-tag-geometry-boundary.zip",
+  "archiveSha256": "81e34528aa4985351d285315c29cd4730f7be6912b2f5946cd8dd0dac564699d",
+  "archiveBytes": 33904,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09",
+    "S21-T10",
+    "S21-T11",
+    "S21-T12",
+    "S21-T13",
+    "S21-T14"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T15",
+      "attempt": 5,
+      "path": "work-products/evidence/section21/plan-revisions/2026-08-20-t15-tag-geometry-boundary.zip::S21-T15.json",
+      "sha256": "74d375bb06aba8b9891eb18608c11f5059b00ae9e2eafd3f7fecaf6bd8708e40",
+      "bytes": 10630
+    }
+  ],
+  "preservesAttemptWrites": {
+    "taskId": "S21-T15",
+    "attempt": 5,
+    "receiptSha256": "74d375bb06aba8b9891eb18608c11f5059b00ae9e2eafd3f7fecaf6bd8708e40",
+    "candidateCount": 116,
+    "candidateCombinedSha256": "f3ebd8ec1cd9bd83da36b6c3e772ef5967b858bb759b4fd5019a6bcaf02be0c5",
+    "performanceTraceSha256": "86c55fec6dc35034eb946b4f34d3eefd512d678347f275cf58d6406ae90c2ebf",
+    "currentTreeRetained": true,
+    "rule": "attempt6 before must equal archived attempt5 after for adopted non-control-plane paths"
+  },
+  "observedFullE2E": {
+    "passed": 123,
+    "failed": 1,
+    "total": 124,
+    "testPath": "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts",
+    "line": 105,
+    "expectedDesktopX": 36,
+    "actualDesktopX": 94,
+    "expectedMobileX": 20,
+    "approvedMobileX": 78,
+    "deterministicOffsetPx": 58,
+    "classification": "stale test baseline; not a product regression"
+  },
+  "requiredOwnershipAdditions": [
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts"
+  ],
+  "newlyOwnedBeforeSha256": {
+    "pages:work-products/tests/kvideo-tag-management.e2e.spec.ts": "2f6e667edd1be6a0c2b385d181dd551bd46fd11db8b6d6c65a8fbb26623ab397"
+  },
+  "scopeClarification": {
+    "allowed": "test-only reconciliation: change only recommendation-tag x literals 36/20 to 94/78",
+    "forbidden": [
+      "any product CSS or component change",
+      "changing the manager-button coordinates",
+      "changing recommendation-tag y or height",
+      "removing or weakening tag behavior, account-isolation, or accessibility assertions",
+      "changing the approved floating-button geometry"
+    ]
+  },
+  "visualApprovalGranted": false,
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

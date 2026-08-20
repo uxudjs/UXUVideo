@@ -2,7 +2,19 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import worker from '../../_worker.js';
-import { createD1Stub } from './fixtures/d1.mjs';
+import { createAuthD1Stub, createD1Stub } from './fixtures/d1.mjs';
+
+const ORIGIN = 'https://worker.example';
+
+async function login(env) {
+  const response = await worker.fetch(new Request(`${ORIGIN}/api/auth`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: ORIGIN },
+    body: JSON.stringify({ username: 'admin', password: env.ADMIN_PASSWORD }),
+  }), env, {});
+  assert.equal(response.status, 200);
+  return response.headers.get('Set-Cookie').split(';', 1)[0];
+}
 
 test('emits one correlated completion log without request secrets, even in debug mode', async () => {
   const messages = [];
@@ -73,4 +85,47 @@ test('emits one correlated completion log without request secrets, even in debug
   ]) {
     assert.doesNotMatch(serialized, new RegExp(secret));
   }
+});
+
+test('S21-T04 source failures log only bounded counts, never source credentials or response bodies', async () => {
+  const { db } = createAuthD1Stub();
+  const env = {
+    DB: db,
+    ADMIN_PASSWORD: 'bootstrap-admin-password',
+    AUTH_SECRET: 'auth-secret-with-at-least-thirty-two-bytes',
+  };
+  const cookie = await login(env);
+  const messages = [];
+  const originalFetch = globalThis.fetch;
+  const originalLog = console.log;
+  globalThis.fetch = async () => Response.json({ detail: 'upstream-response-secret' });
+  console.log = (message) => messages.push(String(message));
+  try {
+    const response = await worker.fetch(new Request(`${ORIGIN}/api/search-parallel`, {
+      method: 'POST',
+      headers: { Cookie: cookie, Origin: ORIGIN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: 'test', sources: [{
+        id: 'private-source', name: 'Private source', enabled: true,
+        baseUrl: 'https://source-credential.example/api.php/provide/vod?token=source-query-secret',
+        searchPath: '/api.php/provide/vod/',
+        headers: { referer: 'https://private-referrer.example/path?token=referer-secret' },
+      }] }),
+    }), env, {});
+    await response.text();
+  } finally {
+    globalThis.fetch = originalFetch;
+    console.log = originalLog;
+  }
+
+  const entries = messages.map((message) => JSON.parse(message));
+  const unavailable = entries.find(({ event }) => event === 'search.sources_unavailable');
+  assert.deepEqual(Object.keys(unavailable).sort(), [
+    'errorCode', 'event', 'failedSources', 'requestId', 'routeId', 'totalSources',
+  ]);
+  assert.equal(unavailable.failedSources, 1);
+  const serialized = messages.join('\n');
+  for (const secret of [
+    'source-credential.example', 'source-query-secret', 'private-referrer.example',
+    'referer-secret', 'upstream-response-secret',
+  ]) assert.doesNotMatch(serialized, new RegExp(secret));
 });

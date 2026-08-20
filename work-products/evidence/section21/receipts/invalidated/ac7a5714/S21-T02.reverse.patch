@@ -1,0 +1,88 @@
+diff --git b/_worker.js a/_worker.js
+index 173fbb2..383bd53 100644
+--- b/_worker.js
++++ a/_worker.js
+@@ -3,6 +3,7 @@ const API_CONTRACT_VERSION = '1';
+ const PAGES_BASE_URL = 'https://uxudjs.github.io/UXUV-Pages/';
+ const PAGES_RELEASE_ROOT = new URL(PAGES_BASE_URL);
+ const MAX_STATIC_ASSET_BYTES = 5 * 1024 * 1024;
++const PAGES_PUBLIC_PREFIX = PAGES_RELEASE_ROOT.pathname.replace(/\/$/, '');
+ const FRONTEND_UNAVAILABLE_HTML = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>UXUVideo 暂不可用</title><body><h1>UXUVideo 暂不可用</h1><p>FRONTEND_INTEGRITY_ERROR</p></body></html>';
+ const STATIC_CONTENT_TYPES = new Set([
+   'application/json; charset=utf-8',
+@@ -3874,7 +3875,12 @@ async function loadPagesManifest() {
+ }
+ 
+ function pagesLookupPath(pathname) {
+-  return normalizePath(pathname);
++  let path = normalizePath(pathname);
++  if (path === PAGES_PUBLIC_PREFIX) return '/';
++  if (path.startsWith(`${PAGES_PUBLIC_PREFIX}/`)) {
++    path = path.slice(PAGES_PUBLIC_PREFIX.length);
++  }
++  return normalizePath(path);
+ }
+ 
+ function staticContentSecurityPolicy(env = {}) {
+@@ -4013,7 +4019,7 @@ function frontendIntegrityException(error) {
+   };
+ }
+ 
+-async function servePagesRequest(request, requestId, env, forceNotFound = false) {
++async function servePagesRequest(request, requestId, env) {
+   let failureStage = 'manifest.fetch';
+   let pagesVersion = null;
+   try {
+@@ -4021,14 +4027,12 @@ async function servePagesRequest(request, requestId, env, forceNotFound = false)
+     pagesVersion = manifest.pagesVersion;
+     failureStage = 'asset.resolve';
+     const path = pagesLookupPath(new URL(request.url).pathname);
+-    const routeAsset = !forceNotFound && Object.hasOwn(manifest.routes, path)
++    const routeAsset = Object.hasOwn(manifest.routes, path)
+       ? `/${manifest.routes[path]}`
+       : null;
+-    const assetKey = forceNotFound
+-      ? '/404.html'
+-      : routeAsset
++    const assetKey = routeAsset
+       ?? (Object.hasOwn(manifest.assets, path) ? path : '/404.html');
+-    const status = !forceNotFound && (routeAsset || Object.hasOwn(manifest.assets, path)) ? 200 : 404;
++    const status = routeAsset || Object.hasOwn(manifest.assets, path) ? 200 : 404;
+     const asset = manifest.assets[assetKey];
+     failureStage = 'asset.fetch';
+     const upstream = await fetchReleaseResponse(asset.path);
+@@ -4175,11 +4179,6 @@ async function routeRequest(request, requestId, env) {
+     };
+   }
+ 
+-  const isRetiredPages404 = path === '/UXUV-Pages' || path.startsWith('/UXUV-Pages/');
+-  if (isRetiredPages404) {
+-    return servePagesRequest(request, requestId, env, true);
+-  }
+-
+   if (method !== 'GET' && method !== 'HEAD') {
+     return {
+       routeId: 'pages',
+diff --git b/work-products/tests/pages-integrity.test.mjs a/work-products/tests/pages-integrity.test.mjs
+index d8dd0a6..7d80352 100644
+--- b/work-products/tests/pages-integrity.test.mjs
++++ a/work-products/tests/pages-integrity.test.mjs
+@@ -323,18 +323,3 @@ test('returns the manifest 404 and fails closed on incompatible or unavailable m
+   assert.equal(unavailable.response.status, 503);
+   assert.equal(JSON.parse(unavailable.messages[0]).failureReason, 'UPSTREAM_STATUS_REJECTED');
+ });
+-
+-test('returns a true 404 for the retired UXUV-Pages browser prefix family', async () => {
+-  for (const path of ['/UXUV-Pages', '/UXUV-Pages/', '/UXUV-Pages/settings']) {
+-    const result = await dispatch(path);
+-
+-    assert.equal(result.response.status, 404);
+-    assert.equal(result.response.headers.get('Location'), null);
+-    assert.deepEqual(Buffer.from(await result.response.arrayBuffer()), defaultBodies['404.html']);
+-    assert.equal(JSON.parse(result.messages[0]).errorCode, 'PAGE_NOT_FOUND');
+-    assert.deepEqual(result.requests.map(({ url }) => url), [
+-      `${RELEASE_BASE_URL}release-manifest.json`,
+-      `${RELEASE_BASE_URL}404.html`,
+-    ]);
+-  }
+-});

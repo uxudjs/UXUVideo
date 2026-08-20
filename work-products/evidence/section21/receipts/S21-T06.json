@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 3,
+  "taskId": "S21-T06",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-19T12:51:20.6966375+08:00",
+  "completedAt": "2026-08-19T12:56:45.5274304+08:00",
+  "planSha256": "b18979bf53a2c587278351d198ca6f27c173c3888d3da4eba53ba19d65bb69db",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "trackedPatchSha256": "0e0f04d16c7a4c91739240ec96acc61ab70262d49f0fa265815ec997b57a99c1"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "trackedPatchSha256": "c0244f8fd7b49f5ea432e3379a18c176644b09aae4211b3989d1ddded968b51c"
+    }
+  },
+  "writeSet": [
+    "pages:app/globals.css",
+    "pages:work-products/tests/global-shell-contract.test.mjs",
+    "pages:work-products/tests/accessibility.e2e.spec.ts",
+    "worker:work-products/evidence/section21/receipts/S21-T06.json",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "pages:app/globals.css": "4555e743a144445f5ec1986126ac07cf5b093fa1e9de3a19878ad22464f2fdcd",
+    "pages:work-products/tests/global-shell-contract.test.mjs": "675f2942d389b4f912c7d0c609588b31dcc2ae41e2fb8cb4d8c87a9149535ba7",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "c4b0e1944ed800af2409e1fa95c0d00caccf3cf6603e9e9c4dea5341a88f6ac6",
+    "pages:next-env.d.ts": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+    "worker:work-products/evidence/section21/performance-baseline.json": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+    "worker:work-products/evidence/section21/receipts/invalidated/6ef4a951/S21-T06.json": "7c5aeeb54f30390eaa5055eb69326793adefa0f2e445714a25aac83f7bdeb70c",
+    "worker:work-products/evidence/section21/receipts/S21-T06.json": null,
+    "worker:work-products/todo.md": "df0af89d4f359d19120d85d48327f16c92a661d2b6ae0bec67758e5f3dce7186"
+  },
+  "afterSha256": {
+    "pages:app/globals.css": "4555e743a144445f5ec1986126ac07cf5b093fa1e9de3a19878ad22464f2fdcd",
+    "pages:work-products/tests/global-shell-contract.test.mjs": "675f2942d389b4f912c7d0c609588b31dcc2ae41e2fb8cb4d8c87a9149535ba7",
+    "pages:work-products/tests/accessibility.e2e.spec.ts": "c4b0e1944ed800af2409e1fa95c0d00caccf3cf6603e9e9c4dea5341a88f6ac6",
+    "pages:next-env.d.ts": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+    "worker:work-products/evidence/section21/performance-baseline.json": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f"
+  },
+  "validation": {
+    "focusedContract": "1/1 S21-T06 GREEN; 8 unrelated task tests skipped",
+    "globalShellContract": "5/5 GREEN",
+    "accessibility": "3/3 GREEN in repository-local Chrome",
+    "performance": "GREEN; evidence run median p95 RAF 10.1 ms, median long task 0 ms, median dropped frames 0; all three samples advanced 900 total frames",
+    "trace": "work-products/tests/artifacts/section21-playwright/section21-performance.e2e--069e4-0-second-muted-video-budget/trace.zip SHA-256 0dc44f5c4e2851a5f5ceb76c790bc189f3501102d1c36075b3523fe744216d7c",
+    "sourceBoundary": "task-owned Pages files retained their pre-task SHA-256; this task revalidated the existing slice without byte changes",
+    "nextEnv": "unchanged",
+    "serviceBoundary": "no listener remained on ports 4173 or 4181",
+    "diffCheck": "task write set GREEN"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

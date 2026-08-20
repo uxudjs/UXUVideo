@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T01",
+  "attempt": 3,
+  "state": "blocked",
+  "startedAt": "2026-08-18T14:51:01.8919901+08:00",
+  "blockedAt": "2026-08-18T14:54:47.6936640+08:00",
+  "planSha256": "8df83634738324bd4b1277d55a9204b5f4ea8a92dbc28fd9b064a7bfec59ee6e",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "uncommittedPatchSha256": "939bbcee80f927feb054ced6a39770755f4afadb2139c71f8c07d6c532da943a"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "uncommittedPatchSha256": "52bbb9451acf0ebee4b0f70faff73cf98d5837b75c266156367d8cf39cd81c2b"
+    }
+  },
+  "writeSet": [
+    "worker:work-products/tests/section21-worker-contract.test.mjs",
+    "worker:work-products/tests/section21-plan-contract.test.mjs",
+    "worker:work-products/evidence/section21/red-matrix.md",
+    "worker:work-products/evidence/section21/receipts/replan-invalidation.json",
+    "worker:work-products/evidence/section21/receipts/invalidated/6ef4a951/",
+    "worker:work-products/evidence/section21/receipts/S21-T01.json",
+    "worker:work-products/evidence/section21/receipts/S21-T01.forward.patch",
+    "worker:work-products/evidence/section21/receipts/S21-T01.reverse.patch",
+    "worker:work-products/todo.md"
+  ],
+  "beforeSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "2692746fa994b063a4cd96595be582042a8e367a374ae4db7b33aff8b3d821eb",
+    "worker:work-products/tests/section21-plan-contract.test.mjs": "4c7058e44e202f7f1f4fe9fd82abfc6122c7c82b9c549b3c995c5bf3c2d13ea9",
+    "worker:work-products/evidence/section21/red-matrix.md": "1eb016cd5b5452ed9502a9960f507fcecca0eff64dd5cf090becf8d3f48be41c",
+    "worker:work-products/evidence/section21/receipts/replan-invalidation.json": null,
+    "worker:work-products/evidence/section21/receipts/invalidated/6ef4a951/": null,
+    "worker:work-products/evidence/section21/receipts/S21-T01.json": "39f7f1e5636d8ba403aa7e91a1e5f6696695af784414a3f2ef30739ae3cf87e4",
+    "worker:work-products/evidence/section21/receipts/S21-T01.forward.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker:work-products/evidence/section21/receipts/S21-T01.reverse.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker:work-products/todo.md": "8550fab2298133dfb550eed54c96d3a199f006b92cfc4f7f8043892b713c228b"
+  },
+  "archivedSourceSha256": {
+    "S21-T01.json": "39f7f1e5636d8ba403aa7e91a1e5f6696695af784414a3f2ef30739ae3cf87e4",
+    "S21-T01.forward.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "S21-T01.reverse.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "S21-T02.json": "0fa89bba60a46eb60d7a4ec9d3ff6cf22c6a17508c223346d985f32bf925b114",
+    "S21-T02.forward.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "S21-T02.reverse.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "S21-T03.json": "033f5db3b8188fc348ef31883136db7f2e7a0535b2e5af21555b73e203ede6d6",
+    "S21-T06.json": "7c5aee54f30390eaa5055eb69326793adefa0f2e445714a25aac83f7bdeb70c",
+    "S21-T06.forward.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "S21-T06.reverse.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "afterSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "e1a37aa2f22e1e247014f95eda148d9642f57ec0fb42795ec3a0a9823b3aac6b",
+    "worker:work-products/tests/section21-plan-contract.test.mjs": "e351a7a24d105a79b67e1f6fdae5310e06834131f4946347dc27360108fcbff2",
+    "worker:work-products/evidence/section21/red-matrix.md": "c9296ca4029dc597f5c7d20c664e512c8eedead6d542f7eeabc3a8aaa038d9bc",
+    "worker:work-products/evidence/section21/receipts/replan-invalidation.json": "69cfb377ee44348735f2ade0c3aa9ba501b04b45e20ac6da2447870a81359b5d"
+  },
+  "patches": {
+    "state": "not_sealed",
+    "reason": "The task stopped at a frozen-contract contradiction before integration; the pre-task bytes and invalidated receipts remain hash-addressed, and no reverse patch may delete the untracked frozen baseline."
+  },
+  "validation": {
+    "red": "S21-T02 phase-only v1 identity guard reproduced 1/2 RED while the final S21-T03 v2 contract was 5/5 GREEN.",
+    "planContract": "8/8 GREEN after byte-identical archive verification and removal of the phase-only identity guard.",
+    "workerContract": "S21-T02 1/1 GREEN; S21-T03 5/5 GREEN.",
+    "securityAndHygiene": "4/5 GREEN; immutable inventory verification fails before security baseline completion.",
+    "blocker": "The approved plan requires root-prefix-inventory.txt and iptv-default-source-inventory.txt to remain byte-identical and forbids editing candidate-hygiene.test.mjs, but that frozen test requires both inventory headers to equal the replacement plan SHA. Existing headers are bound to the invalidated plan SHA, so the requirements cannot all be satisfied within the authorized write set.",
+    "blockedRepositoryPatchSha256": "197d8df74b9ac91f820804bf4a30e955c8016ea5721a9496e14ca6bb9e9250d9",
+    "nextEnv": "unchanged"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

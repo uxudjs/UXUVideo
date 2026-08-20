@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-19T19:47:55.6609878+08:00",
+  "reason": "T10 attempt 1 found before business edits that the aggregate reads the Premium route wrapper instead of the authorization-gated implementation, while active Premium and player tests retain superseded five-domain and global-skip expectations.",
+  "planSha256": "adc19a7401fa9083c5ecf131840f33ba81d72e7f8e5f3e1e239735d7305e26a1",
+  "predecessorPlanSha256": "cd0f42b494ff0a382318c98687a5004f3823eb2366a747f86b40e06799c81552",
+  "standingApproval": {
+    "active": true,
+    "source": "user message 2026-08-19",
+    "manualShaConfirmationRequired": false
+  },
+  "archive": "plan-revisions/2026-08-19-t10-premium-contract-boundary.zip",
+  "archiveSha256": "9692335a7d1e8e872f5de27cde8cf87e90b79640de23bfe00b8a10bdaac973d1",
+  "archiveBytes": 27081,
+  "preservesCompletedTasks": [
+    "S21-T01",
+    "S21-T02",
+    "S21-T03",
+    "S21-T04",
+    "S21-T05",
+    "S21-T06",
+    "S21-T07",
+    "S21-T08",
+    "S21-T09"
+  ],
+  "invalidates": [
+    {
+      "taskId": "S21-T10",
+      "attempt": 1,
+      "path": "plan-revisions/2026-08-19-t10-premium-contract-boundary.zip::S21-T10.json",
+      "sha256": "9eb09ecb8bd5eda3d9ac0dc8a142c06acd703eecb8c42792cd8bfb9e4c1cceec",
+      "bytes": 5906
+    }
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

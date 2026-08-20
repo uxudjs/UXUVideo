@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T01",
+  "attempt": 1,
+  "state": "completed",
+  "startedAt": "2026-08-18T00:25:16.5234856+08:00",
+  "completedAt": "2026-08-18T01:07:58.7570819+08:00",
+  "amendment": {
+    "startedAt": "2026-08-18T01:06:00+08:00",
+    "reason": "The T02 source-slice end marker named a non-existent handleRequest function; the earlier behavior assertion masked this infrastructure defect during RED capture.",
+    "resolution": "Changed only the static slice end marker to the existing logCompletion boundary; no product sentinel or acceptance relaxation was introduced."
+  },
+  "planSha256": "ac7a5714be0f6668e21e67269ec808272b8d0c3ffb870c647155cbe25364ca9d",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "uncommittedPatchSha256": "7ce9b29aa6e39443cf5239a603542daa1ef2e1c1ee47f2acdbcc1a8d7ea91ccf",
+      "untracked": [
+        "work-products/tests/section21-plan-contract.test.mjs"
+      ]
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "uncommittedPatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "untracked": []
+    }
+  },
+  "beforeSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": null,
+    "worker:work-products/tests/section21-security-baseline.test.mjs": null,
+    "worker:work-products/tests/candidate-hygiene.test.mjs": null,
+    "pages:work-products/tests/section21-ui-contract.test.mjs": null,
+    "pages:work-products/tests/section21-flows.e2e.spec.ts": null,
+    "pages:work-products/tests/section21-visual.e2e.spec.ts": null,
+    "pages:work-products/tests/section21-performance.e2e.spec.ts": null,
+    "pages:work-products/tests/section21-playwright.config.ts": null,
+    "worker:work-products/evidence/section21/red-matrix.md": null,
+    "worker:work-products/evidence/section21/root-prefix-inventory.txt": null,
+    "worker:work-products/evidence/section21/iptv-default-source-inventory.txt": null,
+    "worker:work-products/evidence/section21/performance-baseline.json": null
+  },
+  "afterSha256": {
+    "worker:work-products/tests/section21-worker-contract.test.mjs": "2ec80401f3d67fac544db8483cc4edfd3d7b94ecb89b4b71eb8a86503deffa31",
+    "worker:work-products/tests/section21-security-baseline.test.mjs": "fc6e7e6c41bb4f03a9a752b1d7f3be576894dc7af9308616899aec24cff66119",
+    "worker:work-products/tests/candidate-hygiene.test.mjs": "0047d0253b783c89d448eae1377804ae1e8a09a58c1e0e62fefdda3083f24afa",
+    "pages:work-products/tests/section21-ui-contract.test.mjs": "070251f1ded053d0d13b339a2428dac47338d5030c8b558b455fa503389c281d",
+    "pages:work-products/tests/section21-flows.e2e.spec.ts": "9b4510b653002e636b6c48fa50329ae8bfc07d4a0111252f8e1c54155b833270",
+    "pages:work-products/tests/section21-visual.e2e.spec.ts": "4d9c15abd357a0e0f03d24e13aa794cb12300c46cf0635ce8ff5d8ef043f7aa0",
+    "pages:work-products/tests/section21-performance.e2e.spec.ts": "b06f58f713bb6e903af2fb64e91cb74be0884999b108e8948a6df1d82bc15f99",
+    "pages:work-products/tests/section21-playwright.config.ts": "d83cbcece2fd0643aff74d11923f7e26594d233fa3472a2ceed3b84c1c8edc73",
+    "worker:work-products/evidence/section21/red-matrix.md": "23a8b0578ab6adc22027c40e4db98f362638e09c2c898d454dda9de08f5f64a6",
+    "worker:work-products/evidence/section21/root-prefix-inventory.txt": "83d20c98ecb9a0c095f60fd3aad064e188ed2baadc2f00fd4c9febfb68a48fad",
+    "worker:work-products/evidence/section21/iptv-default-source-inventory.txt": "63d2ab5eeaddee6907826262278753c1b3324f91f26a9a534e7c18ddd7b243a2",
+    "worker:work-products/evidence/section21/performance-baseline.json": "76ca249b6bd8310df7120f4d93ef5e0973eb0ac6370cb80c84ebb66b6642ff39"
+  },
+  "patches": {
+    "forward": {
+      "path": "work-products/evidence/section21/receipts/S21-T01.forward.patch",
+      "sha256": "da418bc0a70813a999d3765d094b48d7186d959695bc5bb9354f1d2a8bd10c40"
+    },
+    "reverse": {
+      "path": "work-products/evidence/section21/receipts/S21-T01.reverse.patch",
+      "sha256": "3b13f97e4b23005cc9e866447bc55defd4be235f933af16323b31a85203922cb"
+    }
+  },
+  "validation": {
+    "securityAndHygiene": "3/3 GREEN",
+    "workerContract": "pre-implementation 3/3 attributable RED; T02 source-boundary infrastructure amendment validated against the same assertion",
+    "pagesNodeContract": "9/9 attributable RED",
+    "pagesFlowContract": "2/2 attributable RED",
+    "pagesVisualContract": "attributable RED",
+    "pagesPerformanceBaseline": "GREEN; 3 samples; median p95 RAF 10.2 ms; median long task 0 ms; median dropped frames 0",
+    "playwrightDiscovery": "4 tests in exactly 3 Section 21 files",
+    "planContract": "5/5 GREEN",
+    "diffCheck": "GREEN in both repositories",
+    "nextEnv": "unchanged"
+  }
+}

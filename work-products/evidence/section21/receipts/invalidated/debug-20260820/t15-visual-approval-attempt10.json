@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 10,
+  "receiptKind": "visual_approval",
+  "recordedAt": "2026-08-20T16:36:56.2901054+08:00",
+  "preapprovalEvidence": {
+    "path": "work-products/evidence/section21/t15-candidate-evidence.json",
+    "sha256": "42b55173539a64282ba5d5c383a16259a301a0928bdccfc6d72c5afaf9556336",
+    "gateStatus": "automated_gates_passed_visual_approval_required"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/t15-visual-review.md",
+    "sha256": "1320414c9fffeb64dd0067d8b7ba925e32d0b0d3cdfcf12862acf8c7872cba08"
+  },
+  "candidateCombinedSha256": "ba392ff93e963f2190dc91d03be4d3fff02dc9c5b36f2f828a793ba22fff6167",
+  "decision": "APPROVED",
+  "decidedAt": "2026-08-20T16:36:56.2901054+08:00",
+  "exactApprovalText": "批准当前视觉候选 ba392ff93e963f2190dc91d03be4d3fff02dc9c5b36f2f828a793ba22fff6167",
+  "scope": "Approval applies only to this chained 121-image candidate and combined SHA-256. Any later product, dependency, build, or screenshot byte change invalidates it.",
+  "supersedesApproval": {
+    "path": "work-products/evidence/section21/receipts/S21-T15.json",
+    "candidateCombinedSha256": "4ffcaa4267f35bf64931f00d826effae58482f91ff88886c47674081387cb25e",
+    "disposition": "historical approval retained; invalid for the attempt 10 candidate"
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

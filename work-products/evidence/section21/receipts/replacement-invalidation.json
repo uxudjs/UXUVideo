@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-18T16:25:40.1399220+08:00",
+  "planSha256": "096e92fd1b7e084f118dd6939216003ace104ee9a7ad76155595ab38bbd8a77b",
+  "invalidatedPlanSha256": "8df83634738324bd4b1277d55a9204b5f4ea8a92dbc28fd9b064a7bfec59ee6e",
+  "archive": "invalidated/8df83634",
+  "reason": "The approved replacement plan decouples immutable inventory provenance from the active plan, removes the phase-only v1 identity guard from final discovery, and requires every prior task slice to be revalidated against the current plan SHA.",
+  "invalidates": [
+    { "taskId": "S21-T01", "path": "S21-T01.json", "sha256": "0f669ebd71930ad9a8ebf970b998849eb2fd782723b9cbcccc2c9796612afd0b", "bytes": 5290 },
+    { "taskId": "S21-T02", "path": "S21-T02.json", "sha256": "0fa89bba60a46eb60d7a4ec9d3ff6cf22c6a17508c223346d985f32bf925b114", "bytes": 2787 },
+    { "taskId": "S21-T02", "path": "S21-T02.forward.patch", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0 },
+    { "taskId": "S21-T02", "path": "S21-T02.reverse.patch", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0 },
+    { "taskId": "S21-T03", "path": "S21-T03.json", "sha256": "033f5db3b8188fc348ef31883136db7f2e7a0535b2e5af21555b73e203ede6d6", "bytes": 4871 },
+    { "taskId": "S21-T06", "path": "S21-T06.json", "sha256": "7c5aeeb54f30390eaa5055eb69326793adefa0f2e445714a25aac83f7bdeb70c", "bytes": 2406 },
+    { "taskId": "S21-T06", "path": "S21-T06.forward.patch", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0 },
+    { "taskId": "S21-T06", "path": "S21-T06.reverse.patch", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0 }
+  ],
+  "absentArtifacts": [
+    { "taskId": "S21-T01", "path": "S21-T01.forward.patch", "reason": "The blocked attempt did not seal a task patch." },
+    { "taskId": "S21-T01", "path": "S21-T01.reverse.patch", "reason": "The blocked attempt did not seal a task patch." },
+    { "taskId": "S21-T03", "path": "S21-T03.forward.patch", "reason": "The blocked attempt did not seal a task patch." },
+    { "taskId": "S21-T03", "path": "S21-T03.reverse.patch", "reason": "The blocked attempt did not seal a task patch." }
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

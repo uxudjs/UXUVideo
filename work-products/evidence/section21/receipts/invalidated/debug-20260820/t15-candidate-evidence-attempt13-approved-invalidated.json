@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "taskId": "S21-T15",
+  "attempt": 13,
+  "planSha256": "cbbc27518ec5db9579a80373ecdcb989d102f25addd6e5e7329beffe3e4d95ff",
+  "generatedAt": "2026-08-20T12:14:37.295Z",
+  "gateStatus": "local_validation_passed_visual_pending",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "version": "2.0.0",
+      "apiContract": 2,
+      "candidateManifestSha256": "7eada0da31dc0a759cdedec3ba257a6c8e7afe163aa7cbc154fb8a06d3a3ac2b",
+      "runtime": {
+        "path": "_worker.js",
+        "bytes": 169027,
+        "sha256": "ba251afba642b177dfd5ea158134bc913efbe47c26ab33a7fd8beb9b9112b39a",
+        "gzipBytes": 40214,
+        "gzipLimitBytes": 3145728
+      }
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "version": "0.3.0",
+      "apiContract": 2,
+      "workerRange": ">=2.0.0 <3.0.0",
+      "candidateManifestSha256": "379fad2ab682e03f1c250bdae62d65359d31e2f690ab309ca78f82ce0652925d",
+      "packageSha256": "fc97494237638279a8854a6ad25c05c7090bfe27dbd858889029f6eaad085336",
+      "packageLockSha256": "a18b5b12f18b370ad745c8b9ff79bcf871a9000282b19ce0f00d84df0be41fde",
+      "nextEnvSha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+      "releaseScope": {
+        "fileCount": 303,
+        "sha256": "6d7994163aaeb016f9893b3e16ba68ab646f052732ab5845b5c5eac3f08ba9df",
+        "algorithm": "sort release-scope paths; for each path hash bytes with SHA-256; hash path NUL digest records joined by NUL"
+      },
+      "buildDependency": {
+        "name": "esbuild",
+        "declared": "0.28.2",
+        "locked": "0.28.2"
+      }
+    }
+  },
+  "candidate": {
+    "repository": "pages",
+    "pathPrefix": "work-products/tests/fixtures/ui-review/section21-candidate/",
+    "fileCount": 121,
+    "totalBytes": 41548277,
+    "fileNameSetSha256": "8ab918b20b708f6d29ed570ff3e54dc15856a412fe0a681048ce6c42b3516554",
+    "fileNameSetAlgorithm": "sort repository-relative file names, join with LF without a trailing LF, then SHA-256 the UTF-8 bytes",
+    "combinedSha256": "91d753b90197edbedd5b468097857faefc66b6836d7e5d2a96059b37c79b2c11",
+    "combinedAlgorithm": "sort repository-relative file paths, concatenate each file's lowercase SHA-256 hexadecimal digest, then SHA-256 the UTF-8 bytes",
+    "producerCommand": "npm run test:e2e",
+    "producerResult": "UNVERIFIED; this generator records artifact identity only"
+  },
+  "coverage": {
+    "routeCandidates": 108,
+    "routeSurfaces": [
+      "home",
+      "favorites",
+      "premium",
+      "premium-favorites",
+      "premium-settings",
+      "settings",
+      "not-found",
+      "search-ready",
+      "player-ready"
+    ],
+    "locales": [
+      "zh-CN",
+      "zh-TW",
+      "en"
+    ],
+    "widths": [
+      320,
+      768,
+      1024,
+      1440
+    ],
+    "specialStateCandidates": 13,
+    "specialStates": [
+      "theme-light",
+      "contrast-more",
+      "forced-colors",
+      "reduced-transparency",
+      "text-200-percent",
+      "setup-error-zh-CN",
+      "setup-error-zh-TW",
+      "setup-error-en",
+      "sync-synced",
+      "sync-offline",
+      "sync-quota",
+      "sync-conflict",
+      "sync-error-text-200"
+    ]
+  },
+  "performance": {
+    "status": "passed",
+    "reason": "Derived from the separately retained performance log and validation receipt; this generator does not execute validation commands.",
+    "command": "npx playwright test work-products/tests/section21-performance.e2e.spec.ts --config work-products/tests/section21-playwright.config.ts --trace on --workers=1",
+    "baseline": {
+      "path": "work-products/evidence/section21/performance-baseline.json",
+      "sha256": "a9e3047aca5bbf8ed59b8aab1e67e5c3eb6f16331b4ed2747dd7751db162cf4f",
+      "median": {
+        "p95RafIntervalMs": 10.200000000000728,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0
+      }
+    },
+    "samples": [
+      {
+        "p95RafIntervalMs": 10.10000000000582,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 900
+      },
+      {
+        "p95RafIntervalMs": 10.19999999999709,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 899
+      },
+      {
+        "p95RafIntervalMs": 10.19999999999709,
+        "longTaskTotalMs": 0,
+        "droppedFrames": 0,
+        "totalFrames": 900
+      }
+    ],
+    "median": {
+      "p95RafIntervalMs": 10.19999999999709,
+      "longTaskTotalMs": 0,
+      "droppedFrames": 0
+    },
+    "trace": {
+      "path": "work-products/evidence/section21/t15-performance-trace.zip",
+      "bytes": 18328869,
+      "sha256": "94e84a3e81562d4c9ef0be3a2fe7f121ae45a43579c4c7c7e3f80e64aa704122",
+      "sanitization": "passed; identity bound by the independent validation receipt"
+    }
+  },
+  "validation": {
+    "status": "passed",
+    "reason": "This generator does not execute validation commands; it verifies a separately generated receipt against retained logs and current artifact hashes.",
+    "receipt": {
+      "path": "work-products/evidence/section21/t15-validation-attempt13.json",
+      "bytes": 2705,
+      "sha256": "3379433a020bcd3a7ce6f27ff5ea46901bd7bfeb5301160a62572d6e31eb281e"
+    },
+    "e2e": {
+      "discovered": 125,
+      "passed": 125
+    },
+    "rollback": [
+      {
+        "name": "bootstrap-v2",
+        "status": "passed"
+      },
+      {
+        "name": "reverse-v1",
+        "status": "passed"
+      },
+      {
+        "name": "forward-restore-v2",
+        "status": "passed"
+      }
+    ]
+  },
+  "release": {
+    "sequence": [
+      "npm run build",
+      "npm run release:build",
+      "npm test",
+      "npm run lint",
+      "npx tsc --noEmit"
+    ],
+    "out": {
+      "payloadCount": 71,
+      "totalBytes": 4075856,
+      "namespaceSha256": "0881c6e9a969fa6529ec545f773ef2c2ab0b00402a478d5bede4bb939385f903"
+    },
+    "releaseCurrent": {
+      "assetCount": 72,
+      "outPayloadExactMatch": true,
+      "releaseOnlyPaths": [
+        "LICENSE"
+      ],
+      "namespaceSha256": "18d8d2db56c01f695f0e181ef64e1743f1dd2a48040ad7a427df258954fa27fe"
+    },
+    "releaseManifest": {
+      "path": "release/current/release-manifest.json",
+      "bytes": 10743,
+      "sha256": "0b477934c6a3a6cc3e3080c43bc353ac28ba47b6f39e8c411fd9d95712007674",
+      "pagesVersion": "0.3.0",
+      "apiContract": 2,
+      "workerRange": ">=2.0.0 <3.0.0",
+      "routeCount": 7,
+      "assetCount": 72
+    }
+  },
+  "rollback": {
+    "pairRollback": {
+      "path": "work-products/evidence/section21/pair-rollback.json",
+      "bytes": 98573,
+      "sha256": "42092cc377eebb157ed18d12d4e3663fe24118264f026dca0a4db18896a9fe9e"
+    },
+    "patches": [
+      {
+        "path": "work-products/evidence/section21/worker-v1.reverse.patch",
+        "bytes": 39268,
+        "sha256": "cd8e1e29daa61a38d4295790a6fc53b23019106142538a65d96bc1319bec7e36"
+      },
+      {
+        "path": "work-products/evidence/section21/pages-v1.reverse.patch",
+        "bytes": 378906,
+        "sha256": "096c5f91b7874c97aeb800dcd3c16e3e6f4e2e7d60f7dd38766cb41bac1406eb"
+      },
+      {
+        "path": "work-products/evidence/section21/worker-v2.forward.patch",
+        "bytes": 39338,
+        "sha256": "51b98f86c0449ff8c3d54f915614a7cadba7eca92e5a4974a1f6d66c1500b6c2"
+      },
+      {
+        "path": "work-products/evidence/section21/pages-v2.forward.patch",
+        "bytes": 379108,
+        "sha256": "43bcbedd9a55dec970f8310f499dc36f6eb08e1047a33113b0c60301ae642a9a"
+      }
+    ],
+    "phases": [
+      {
+        "name": "bootstrap-v2",
+        "status": "passed"
+      },
+      {
+        "name": "reverse-v1",
+        "status": "passed"
+      },
+      {
+        "name": "forward-restore-v2",
+        "status": "passed"
+      }
+    ],
+    "compatibility": {
+      "field": "videoSkipRules",
+      "status": "passed",
+      "behavior": "v1 import, timestamped config merge, and remote validation preserve the unknown v2 field"
+    },
+    "productionRollbackBoundary": "frozen historical production identity; not live-reverified in this task"
+  },
+  "binaryAudit": {
+    "allowlist": {
+      "path": "work-products/evidence/section21/binary-allowlist.json",
+      "bytes": 49257,
+      "sha256": "5e9c62b59c16deafbe391b4c16d541130dc68d58373019e2e10090568f119442"
+    },
+    "actualCount": 137,
+    "expectedCount": 137,
+    "workerZipCount": 16,
+    "pagesPngCount": 121,
+    "duplicateKeys": [],
+    "missing": [],
+    "unexpected": [],
+    "metadataMismatch": [],
+    "status": "passed"
+  },
+  "recommendedAudits": {
+    "npmAuditHigh": "unperformed; external registry access was not separately authorized",
+    "npmAuditSignatures": "unperformed; external registry access was not separately authorized"
+  },
+  "visualReview": {
+    "path": "work-products/evidence/section21/t15-visual-review.md",
+    "approvalRequired": true
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 2.0.0 - 2026-08-18
+
+- 移除 Worker 的 IPTV 路由、权限与缓存，以及部署环境中的系统预设视频源和弹幕 API；视频源与弹幕配置改由用户在网页账户设置中自行维护。
+- `/api/config` 仅公布普通代理能力和非来源运行信息；保留账户数据、普通 HLS/DASH 代理、媒体签名、广告过滤、认证、D1 与同步安全边界。
+- Worker `2.0.0` 与 Pages `0.3.0` 组成 API Contract `2` 的本地候选，Pages manifest 仅接受 Worker `>=2.0.0 <3.0.0`；两仓必须成对发布或回滚，不代表已部署。
+- Worker 当前保留精确 21 条同源 API 路由；v1/v2 混搭由 manifest API/range 门失败关闭。
+- 完整设置使用 schema v2 导入导出普通与 Premium 数据；旧 IPTV 与系统默认字段会被丢弃并在导入预览中报告，不恢复退休功能。
+
 ## 1.1.4 - 2026-08-15
 
 - 允许普通视频播放器在受控代理失败后直连 HTTPS 媒体：静态 CSP 开放 HTTPS 媒体与连接来源，同时保留无通配符、IPTV Worker 路径和现有 VideoTogether 边界。

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "taskId": "S21-T02",
+  "attempt": 2,
+  "state": "completed",
+  "startedAt": "2026-08-18T13:25:32.3031553+08:00",
+  "completedAt": "2026-08-18T13:26:18.5996340+08:00",
+  "planSha256": "6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a",
+  "repositories": {
+    "worker": {
+      "head": "0a4c697cdb37692b31d313a231b6f8eaae54dfa3",
+      "uncommittedPatchSha256": "d4ba8ef4b86018c5c021df8bb591a38db46d2baa1658ec4577eeed844e639b03"
+    },
+    "pages": {
+      "head": "9e084f486953850f8de3d23bcd63cc2b71336b64",
+      "uncommittedPatchSha256": "52bbb9451acf0ebee4b0f70faff73cf98d5837b75c266156367d8cf39cd81c2b"
+    }
+  },
+  "beforeSha256": {
+    "worker:_worker.js": "ca277d19ab79d90eb0b63d82123ed470a796ed49e4e44f12fa28029089f21805",
+    "worker:work-products/tests/pages-integrity.test.mjs": "6f0989697802c85d63a64940713af8e6f4609d0018268e0fbf4eab73cd6113d0",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "895fe13f7fde1439520e306a03f9bf83677d4a23bfa40d021cd81b65a99cea1b",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4"
+  },
+  "afterSha256": {
+    "worker:_worker.js": "ca277d19ab79d90eb0b63d82123ed470a796ed49e4e44f12fa28029089f21805",
+    "worker:work-products/tests/pages-integrity.test.mjs": "6f0989697802c85d63a64940713af8e6f4609d0018268e0fbf4eab73cd6113d0",
+    "worker:work-products/tests/worker-route-contract.test.mjs": "895fe13f7fde1439520e306a03f9bf83677d4a23bfa40d021cd81b65a99cea1b",
+    "worker:work-products/tests/worker-only-boundary.test.mjs": "bfc0fa9f50e90cf8375dab3e8bd6f23ee69178bea4daa21c13a4e29520bb49bf",
+    "worker:work-products/tests/baseline-contract.test.mjs": "502c77aef7113044e7504ef3005f89e9e0b1a424b61b51b4472a41fa9b577ac4"
+  },
+  "patches": {
+    "forward": {
+      "path": "work-products/evidence/section21/receipts/S21-T02.forward.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reverse": {
+      "path": "work-products/evidence/section21/receipts/S21-T02.reverse.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "validation": {
+    "focusedContract": "2/2 GREEN; 9 unrelated task tests skipped",
+    "relatedContracts": "26/26 GREEN",
+    "syntax": "node --check _worker.js GREEN",
+    "planContract": "7/7 GREEN",
+    "taskDiff": "No task-owned byte change in attempt 2; this attempt revalidated and re-signed the existing T02 implementation against the approved plan SHA."
+  },
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}
