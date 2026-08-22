@@ -313,6 +313,9 @@ test('usage cache identity is account and UTC date only', async () => {
 test('usage maps Cloudflare and GraphQL failures without reflecting upstream bodies', async () => {
   const { db } = createAuthD1Stub();
   const cookie = await login(environment(db));
+  const warnings = [];
+  const originalWarn = console.warn;
+  console.warn = (entry) => warnings.push(entry);
   const cases = [
     { name: 'auth', response: () => Response.json({ secret: TOKEN }, { status: 401 }), status: 502, code: 'USAGE_AUTH_FAILED' },
     { name: 'forbidden', response: () => Response.json({ secret: TOKEN }, { status: 403 }), status: 502, code: 'USAGE_FORBIDDEN' },
@@ -321,16 +324,24 @@ test('usage maps Cloudflare and GraphQL failures without reflecting upstream bod
     { name: 'network', response: async () => { throw new Error(TOKEN); }, status: 503, code: 'USAGE_FETCH_FAILED' },
     { name: 'graphql', response: () => Response.json({ errors: [{ message: TOKEN }] }), status: 502, code: 'USAGE_GRAPHQL_ERROR' },
   ];
-  for (const item of cases) {
-    const env = environment(db);
-    await withGlobals({ fetchImpl: item.response }, async () => {
-      const response = await worker.fetch(usageRequest(cookie), env, {});
-      assert.equal(response.status, item.status);
-      const text = await response.text();
-      assert.equal(JSON.parse(text).error.code, item.code);
-      assert.equal(text.includes(TOKEN), false);
-    });
+  try {
+    for (const item of cases) {
+      const env = environment(db);
+      await withGlobals({ fetchImpl: item.response }, async () => {
+        const response = await worker.fetch(usageRequest(cookie), env, {});
+        assert.equal(response.status, item.status);
+        const text = await response.text();
+        assert.equal(JSON.parse(text).error.code, item.code);
+        assert.equal(text.includes(TOKEN), false);
+      });
+    }
+  } finally {
+    console.warn = originalWarn;
   }
+  assert.equal(warnings.length, 1);
+  assert.equal(warnings[0].includes('cloudflare.usage.fetch.failure'), true);
+  assert.equal(warnings[0].includes(TOKEN), false);
+  assert.equal(warnings[0].includes('[redacted]'), true);
 });
 
 test('usage thresholds use controlled integers at exact Workers boundaries', async () => {

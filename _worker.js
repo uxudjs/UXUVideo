@@ -3518,6 +3518,15 @@ class UsageFailure extends Error {
   }
 }
 
+function usageFetchDiagnostic(error) {
+  const name = typeof error?.name === 'string' ? error.name.slice(0, 40) : 'Error';
+  const rawMessage = typeof error?.message === 'string' ? error.message : 'Unknown fetch failure.';
+  return {
+    name,
+    message: rawMessage.replace(/[A-Za-z0-9_-]{16,}/g, '[redacted]').slice(0, 160),
+  };
+}
+
 function usageConfiguration(env) {
   const names = ['CF_ANALYTICS_API_TOKEN', 'CF_ACCOUNT_ID'];
   const missing = names.filter((name) => typeof env?.[name] !== 'string' || env[name].trim().length === 0);
@@ -3728,7 +3737,8 @@ async function fetchUsageData(config, period, observedAt) {
         redirect: 'error',
         signal: controller.signal,
       });
-    } catch {
+    } catch (error) {
+      console.warn(JSON.stringify({ event: 'cloudflare.usage.fetch.failure', ...usageFetchDiagnostic(error) }));
       throw new UsageFailure(controller.signal.aborted ? 'USAGE_FETCH_TIMEOUT' : 'USAGE_FETCH_FAILED', 503);
     }
     if (response.status === 401) throw new UsageFailure('USAGE_AUTH_FAILED', 502);

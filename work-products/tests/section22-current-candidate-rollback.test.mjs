@@ -25,7 +25,7 @@ const artifacts = {
   pagesForward: join(evidenceRoot, "current-candidate-pages.forward.patch"),
   pagesReverse: join(evidenceRoot, "current-candidate-pages.reverse.patch"),
 };
-const candidateId = "s22-production-usage-fix-20260822-02";
+const candidateId = "s22-production-usage-fix-20260822-03";
 
 const workerFiles = new Set(["README.md", "CHANGELOG.md", "_worker.js", "package.json", "package-lock.json"]);
 const pagesFiles = new Set([

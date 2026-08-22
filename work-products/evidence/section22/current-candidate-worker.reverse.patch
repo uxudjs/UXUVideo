@@ -28,7 +28,7 @@ index 0bec84c376f2bc3f3b8e568e35b491f4dfcb99f7..4426e9f5fcb7c89fe193bcab386086a8
  ### 使用限制
  
 diff --git b/_worker.js a/_worker.js
-index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2ab0492236 100644
+index b1ba3aff83a378188675b84dc2f1c27a45324599..b91ce3a523ad58fa8fecc2f762a66e2ab0492236 100644
 --- b/_worker.js
 +++ a/_worker.js
 @@ -3476,16 +3476,20 @@ const USAGE_GRAPHQL_URL = 'https://api.cloudflare.com/client/v4/graphql';
@@ -85,9 +85,19 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
      }
    }
  }`;
-@@ -3519,13 +3535,20 @@ class UsageFailure extends Error {
+@@ -3518,23 +3534,21 @@ class UsageFailure extends Error {
+   }
  }
  
+-function usageFetchDiagnostic(error) {
+-  const name = typeof error?.name === 'string' ? error.name.slice(0, 40) : 'Error';
+-  const rawMessage = typeof error?.message === 'string' ? error.message : 'Unknown fetch failure.';
+-  return {
+-    name,
+-    message: rawMessage.replace(/[A-Za-z0-9_-]{16,}/g, '[redacted]').slice(0, 160),
+-  };
+-}
+-
  function usageConfiguration(env) {
 -  const names = ['CF_ANALYTICS_API_TOKEN', 'CF_ACCOUNT_ID'];
 +  const names = [
@@ -107,7 +117,7 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
    };
  }
  
-@@ -3542,63 +3565,28 @@ function usagePeriod(nowMs) {
+@@ -3551,63 +3565,28 @@ function usagePeriod(nowMs) {
  }
  
  function usageInteger(value) {
@@ -187,7 +197,7 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
  }
  
  function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
-@@ -3610,6 +3598,12 @@ function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
+@@ -3619,6 +3598,12 @@ function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
    return 'normal';
  }
  
@@ -200,7 +210,7 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
  function addUsageWarning(warnings, levels, codePrefix, level) {
    levels.push(level);
    if (level !== 'normal') warnings.push(`${codePrefix}_${level.toUpperCase()}`);
-@@ -3621,34 +3615,32 @@ function highestUsageLevel(levels) {
+@@ -3630,34 +3615,32 @@ function highestUsageLevel(levels) {
    ), 'normal');
  }
  
@@ -253,7 +263,7 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
    };
  
    const warnings = [];
-@@ -3658,6 +3650,9 @@ function buildUsageData(payload, period, observedAt) {
+@@ -3667,6 +3650,9 @@ function buildUsageData(payload, period, observedAt) {
    addUsageWarning(warnings, levels, 'D1_ACCOUNT_READ', usageLevel(d1.accountRowsRead, d1.accountRowsReadLimit, d1Thresholds));
    addUsageWarning(warnings, levels, 'D1_ACCOUNT_WRITE', usageLevel(d1.accountRowsWritten, d1.accountRowsWrittenLimit, d1Thresholds));
    addUsageWarning(warnings, levels, 'D1_ACCOUNT_STORAGE', usageLevel(d1.accountStorageBytes, d1.accountStorageBytesLimit, d1Thresholds));
@@ -263,7 +273,7 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
  
    return {
      configured: true,
-@@ -3674,7 +3669,7 @@ function buildUsageData(payload, period, observedAt) {
+@@ -3683,7 +3669,7 @@ function buildUsageData(payload, period, observedAt) {
  
  async function usageCacheContext(config, period) {
    const fingerprint = bytesToHex(await sha256(new TextEncoder().encode(
@@ -272,7 +282,7 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
    )));
    const request = new Request(`https://uxuv.invalid/.usage-cache/${fingerprint}`);
    return { cache: globalThis.caches?.default ?? null, request };
-@@ -3706,50 +3701,51 @@ async function writeUsageCache(cacheContext, snapshot) {
+@@ -3715,51 +3701,51 @@ async function writeUsageCache(cacheContext, snapshot) {
  async function fetchUsageData(config, period, observedAt) {
    const controller = new AbortController();
    const timeout = setTimeout(() => controller.abort(), 10_000);
@@ -315,7 +325,8 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
 -        redirect: 'error',
 -        signal: controller.signal,
 -      });
--    } catch {
+-    } catch (error) {
+-      console.warn(JSON.stringify({ event: 'cloudflare.usage.fetch.failure', ...usageFetchDiagnostic(error) }));
 -      throw new UsageFailure(controller.signal.aborted ? 'USAGE_FETCH_TIMEOUT' : 'USAGE_FETCH_FAILED', 503);
 -    }
 -    if (response.status === 401) throw new UsageFailure('USAGE_AUTH_FAILED', 502);
@@ -363,7 +374,7 @@ index fe71ff843e721fbbd2f0f1d32136d393b3ed2df3..b91ce3a523ad58fa8fecc2f762a66e2a
  }
  
  function privateUsageResult(result) {
-@@ -3772,10 +3768,6 @@ function usageFailureResult(requestId, failure) {
+@@ -3782,10 +3768,6 @@ function usageFailureResult(requestId, failure) {
      USAGE_AUTH_FAILED: 'Cloudflare analytics authentication failed.',
      USAGE_FORBIDDEN: 'Cloudflare analytics access is forbidden.',
      USAGE_RATE_LIMITED: 'Cloudflare analytics is temporarily rate limited.',
