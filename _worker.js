@@ -3504,7 +3504,7 @@ const USAGE_QUERY = `query Usage(
       d1Storage: d1StorageAdaptiveGroups(
         limit: ${USAGE_D1_GROUP_LIMIT}
         filter: { date_geq: $dateStart, date_leq: $dateEnd }
-      ) { dimensions { databaseId } max { databaseSizeBytes } avg { sampleInterval } }
+      ) { dimensions { databaseId } max { databaseSizeBytes } }
     }
   }
 }`;
@@ -3574,7 +3574,7 @@ function usageStorageSum(groups) {
 }
 
 function usageGroups(account, name, {
-  limit, exactLength = null, groupedByDatabase = false, rejectLimit = false, requireUnsampled = false,
+  limit, exactLength = null, groupedByDatabase = false, rejectLimit = false, requireSampleInterval = false,
 }) {
   const groups = account[name];
   if (!Array.isArray(groups)
@@ -3585,7 +3585,10 @@ function usageGroups(account, name, {
   }
   for (const group of groups) {
     if (!isRecord(group)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
-    if (requireUnsampled && (!isRecord(group.avg) || group.avg.sampleInterval !== 1)) {
+    if (requireSampleInterval
+      && (!isRecord(group.avg)
+        || !Number.isFinite(group.avg.sampleInterval)
+        || group.avg.sampleInterval < 1)) {
       throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
     }
     if (groupedByDatabase
@@ -3625,13 +3628,13 @@ function buildUsageData(payload, period, observedAt) {
   }
   const account = accounts[0];
   const accountWorkers = usageGroups(account, 'accountWorkers', {
-    limit: 1, exactLength: 1, requireUnsampled: true,
+    limit: 1, exactLength: 1, requireSampleInterval: true,
   });
   const d1Usage = usageGroups(account, 'd1Usage', {
-    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireUnsampled: true,
+    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireSampleInterval: true,
   });
   const d1Storage = usageGroups(account, 'd1Storage', {
-    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireUnsampled: true,
+    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true,
   });
 
   const workers = {

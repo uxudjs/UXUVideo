@@ -65,15 +65,12 @@ function graphqlFixture({ workers = {}, d1 = {} } = {}) {
       d1Storage: [
         {
           dimensions: { databaseId }, max: { databaseSizeBytes: d1.databaseStorageBytes ?? 1_024 },
-          avg: { sampleInterval: d1.storageSampleInterval ?? 1 },
         },
         {
           dimensions: { databaseId }, max: { databaseSizeBytes: d1.databaseStorageBytesOlder ?? 512 },
-          avg: { sampleInterval: d1.storageSampleInterval ?? 1 },
         },
         {
           dimensions: { databaseId: 'other-database' }, max: { databaseSizeBytes: d1.otherStorageBytes ?? 2_048 },
-          avg: { sampleInterval: d1.otherStorageSampleInterval ?? 1 },
         },
       ],
     }] } },
@@ -162,10 +159,11 @@ test('usage sends one account-only GraphQL request and returns only complete acc
       fetchImpl: async (input, init) => {
         requests.push({ url: String(input), headers: new Headers(init.headers), body: String(init.body) });
         return Response.json(graphqlFixture({
-          workers: { accountRequests: 85_000, accountErrors: 17 },
+          workers: { accountRequests: 85_000, accountErrors: 17, sampleInterval: 1.5 },
           d1: { databaseRowsRead: 800_000, otherRowsRead: 3_450_000, databaseRowsWritten: 50_000,
             otherRowsWritten: 10_000, databaseStorageBytes: 475_000_000,
-            databaseStorageBytesOlder: 450_000_000, otherStorageBytes: 3_775_000_000 },
+            databaseStorageBytesOlder: 450_000_000, otherStorageBytes: 3_775_000_000,
+            otherSampleInterval: 2 },
         }));
       },
       now: () => Date.parse('2026-08-07T12:34:56.000Z'),
@@ -222,7 +220,11 @@ test('usage sends one account-only GraphQL request and returns only complete acc
   assert.match(payload.query, /workersInvocationsAdaptive/);
   assert.match(payload.query, /d1AnalyticsAdaptiveGroups/);
   assert.match(payload.query, /d1StorageAdaptiveGroups/);
-  assert.equal((payload.query.match(/sampleInterval/g) ?? []).length, 3);
+  assert.equal((payload.query.match(/sampleInterval/g) ?? []).length, 2);
+  assert.doesNotMatch(
+    payload.query.slice(payload.query.indexOf('d1StorageAdaptiveGroups')),
+    /\bavg\s*\{\s*sampleInterval\s*\}/,
+  );
   assert.doesNotMatch(payload.query, /\$(?:scriptName|databaseId)\b/);
   assert.doesNotMatch(payload.query, /filter\s*:\s*\{[^}]*\b(?:scriptName|databaseId)\s*:/);
   assert.doesNotMatch(payload.query, /\b(?:scriptWorkers|databaseD1|databaseStorage)\s*:/);
@@ -375,7 +377,7 @@ test('usage thresholds use exact D1 account boundaries', async () => {
   }
 });
 
-test('usage fails closed for incomplete, malformed, unsafe, sampled, or saturated aggregates', async () => {
+test('usage fails closed for incomplete, malformed, unsafe, invalid-sampling, or saturated aggregates', async () => {
   const { db } = createAuthD1Stub();
   const env = environment(db);
   const cookie = await login(env);
@@ -467,18 +469,8 @@ test('usage fails closed for incomplete, malformed, unsafe, sampled, or saturate
         return payload;
       },
     },
-    {
-      name: 'sampled Workers aggregate',
-      payload: () => graphqlFixture({ workers: { sampleInterval: 1.25 } }),
-    },
-    {
-      name: 'sampled D1 aggregate',
-      payload: () => graphqlFixture({ d1: { otherSampleInterval: 2 } }),
-    },
-    {
-      name: 'sampled D1 storage aggregate',
-      payload: () => graphqlFixture({ d1: { storageSampleInterval: 1.5 } }),
-    },
+    { name: 'invalid Workers sample interval', payload: () => graphqlFixture({ workers: { sampleInterval: 0.5 } }) },
+    { name: 'invalid D1 sample interval', payload: () => graphqlFixture({ d1: { otherSampleInterval: 'invalid' } }) },
     {
       name: 'D1 usage query limit saturation',
       payload: () => {
