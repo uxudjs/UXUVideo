@@ -1,7 +1,7 @@
 {
   "schemaVersion": "section22-current-candidate-rollback/v1",
-  "candidateId": "s22-production-usage-fix-20260822-01",
-  "generatedAt": "2026-08-22T11:03:26.589Z",
+  "candidateId": "s22-production-usage-fix-20260822-02",
+  "generatedAt": "2026-08-22T12:55:40.627Z",
   "repositories": {
     "worker": {
       "baseCommit": "9185950b8c1a5cae4204f244369bf711e0f36b44",
@@ -51,9 +51,9 @@
           },
           "candidate": {
             "mode": "100644",
-            "blobOid": "552549b3248a604cf53467fac576a14b1b07d4f2",
-            "bytes": 168638,
-            "sha256": "d5b21395cc7221fabe2eae3d32408c93a7c86920f9d3af2686ec9f6b0e678943"
+            "blobOid": "fe71ff843e721fbbd2f0f1d32136d393b3ed2df3",
+            "bytes": 169194,
+            "sha256": "3fb9dd973aa1bd6d1d8f3a8a118e3fb00e147eef7c8b2ee4ce7f65ce7d4c479a"
           }
         },
         {
@@ -1308,9 +1308,9 @@
           },
           "candidate": {
             "mode": "100644",
-            "blobOid": "85c5c87e4c8fc25d86af746ab1e7b2170ced5a96",
-            "bytes": 9369,
-            "sha256": "aab37c4fd038b2f5a0cfbaa00d0080425959be5c9d3c00e0c4e8c6f4615178b7"
+            "blobOid": "425ba9bbde2fc1b7377278afbe38afaf6ef7be7e",
+            "bytes": 9385,
+            "sha256": "74f7e0b87177a8dee358e95efe4cf72ee261a0ca8185f383d5a547619e52731c"
           }
         },
         {
@@ -1818,9 +1818,9 @@
           },
           "candidate": {
             "mode": "100644",
-            "blobOid": "243051467b412c1aa9b60ba461f862eb0136e9d5",
-            "bytes": 9312,
-            "sha256": "7e2f414613a290a97c6fbf5f78ee0815266749f760fc120f84bddf0cb848596e"
+            "blobOid": "65e24ef0673f1c1b60f7a936bcefee3bd7fefa25",
+            "bytes": 9842,
+            "sha256": "4dc3d65b4941eb0b5fe7b7bc0f1409fcaaa0545a34e152568bc3d68d5e9a4b15"
           }
         },
         {
@@ -2444,23 +2444,23 @@
   "patches": {
     "workerForward": {
       "path": "work-products/evidence/section22/current-candidate-worker.forward.patch",
-      "bytes": 15271,
-      "sha256": "1c29d96fe658a2df0a4e95a9ed9f664ab15d24f8b843bc1fe8e961d3e3ed77b0"
+      "bytes": 16793,
+      "sha256": "ad5701d36a7a06aa410bd8aa17f6c5e9afabacdf65fd1bf0feaa91348a7143fd"
     },
     "workerReverse": {
       "path": "work-products/evidence/section22/current-candidate-worker.reverse.patch",
-      "bytes": 15255,
-      "sha256": "26b24699cf4d9ce1de6308018d58bee8bdf5b9fddbd835778f9f70c21de6eb3a"
+      "bytes": 16777,
+      "sha256": "70f7af4ff32bcedc1dba32c288060c172a3923f883748837ae4a7be48ba6551a"
     },
     "pagesForward": {
       "path": "work-products/evidence/section22/current-candidate-pages.forward.patch",
-      "bytes": 30426,
-      "sha256": "74f1ebd8f619b30f84e287076c40c03ede546d88485a650381652c66ac8b3d75"
+      "bytes": 31605,
+      "sha256": "5b959a69da6d33b5332d4511331db3938723eff4eb1a92ad5b7dc444f3ffd1ad"
     },
     "pagesReverse": {
       "path": "work-products/evidence/section22/current-candidate-pages.reverse.patch",
-      "bytes": 30426,
-      "sha256": "2d494f310e9db083800c62ae44921fa3d2ca8409e903fa7bf007e77025c52819"
+      "bytes": 31605,
+      "sha256": "f84a69ba8658cdd061eef0622f14753a9b68a795dd4aaa05195c6ac697a657b7"
     }
   },
   "phases": [

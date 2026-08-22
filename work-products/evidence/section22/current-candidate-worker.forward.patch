@@ -28,7 +28,7 @@ index 4426e9f5fcb7c89fe193bcab386086a80e93066e..0bec84c376f2bc3f3b8e568e35b491f4
  ### 使用限制
  
 diff --git a/_worker.js b/_worker.js
-index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b1b07d4f2 100644
+index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..fe71ff843e721fbbd2f0f1d32136d393b3ed2df3 100644
 --- a/_worker.js
 +++ b/_worker.js
 @@ -3476,20 +3476,16 @@ const USAGE_GRAPHQL_URL = 'https://api.cloudflare.com/client/v4/graphql';
@@ -115,7 +115,7 @@ index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b
 -  if (!Number.isFinite(number) || number <= 0) return 0;
 -  return Math.min(Number.MAX_SAFE_INTEGER, Math.round(number));
 +  if (!Number.isSafeInteger(value) || value < 0) {
-+    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +  }
 +  return value;
  }
@@ -125,9 +125,9 @@ index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b
 -    ? groups.reduce((total, group) => total + usageInteger(group?.sum?.[field]), 0)
 -    : 0;
 +  return groups.reduce((total, group) => {
-+    if (!isRecord(group?.sum)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    if (!isRecord(group?.sum)) throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +    const value = usageInteger(group.sum[field]);
-+    if (total > Number.MAX_SAFE_INTEGER - value) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    if (total > Number.MAX_SAFE_INTEGER - value) throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +    return total + value;
 +  }, 0);
  }
@@ -136,26 +136,28 @@ index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b
 -  return Array.isArray(groups)
 -    ? groups.reduce((total, group) => total + usageInteger(group?.max?.databaseSizeBytes), 0)
 -    : 0;
+-}
+-
+-function usageDatabaseGroups(primary, fallback, databaseId) {
+-  if (Array.isArray(primary) && primary.length > 0) return primary;
+-  return Array.isArray(fallback)
+-    ? fallback.filter((group) => group?.dimensions?.databaseId === databaseId)
+-    : [];
 +  const perDatabase = new Map();
 +  for (const group of groups) {
-+    if (!isRecord(group?.max)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    if (!isRecord(group?.max)) throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +    const databaseId = group.dimensions.databaseId;
 +    const value = usageInteger(group.max.databaseSizeBytes);
 +    perDatabase.set(databaseId, Math.max(perDatabase.get(databaseId) ?? 0, value));
 +  }
 +  let total = 0;
 +  for (const value of perDatabase.values()) {
-+    if (total > Number.MAX_SAFE_INTEGER - value) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    if (total > Number.MAX_SAFE_INTEGER - value) throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +    total += value;
 +  }
 +  return total;
- }
- 
--function usageDatabaseGroups(primary, fallback, databaseId) {
--  if (Array.isArray(primary) && primary.length > 0) return primary;
--  return Array.isArray(fallback)
--    ? fallback.filter((group) => group?.dimensions?.databaseId === databaseId)
--    : [];
++}
++
 +function usageGroups(account, name, {
 +  limit, exactLength = null, groupedByDatabase = false, rejectLimit = false, requireSampleInterval = false,
 +}) {
@@ -164,21 +166,21 @@ index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b
 +    || groups.length > limit
 +    || (exactLength !== null && groups.length !== exactLength)
 +    || (rejectLimit && groups.length === limit)) {
-+    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +  }
 +  for (const group of groups) {
-+    if (!isRecord(group)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    if (!isRecord(group)) throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +    if (requireSampleInterval
 +      && (!isRecord(group.avg)
 +        || !Number.isFinite(group.avg.sampleInterval)
 +        || group.avg.sampleInterval < 1)) {
-+      throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++      throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +    }
 +    if (groupedByDatabase
 +      && (!isRecord(group.dimensions)
 +        || typeof group.dimensions.databaseId !== 'string'
 +        || group.dimensions.databaseId.length === 0)) {
-+      throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++      throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +    }
 +  }
 +  return groups;
@@ -208,7 +210,7 @@ index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b
 +function buildUsageData(payload, period, observedAt) {
 +  const accounts = payload?.data?.viewer?.accounts;
 +  if (!Array.isArray(accounts) || accounts.length !== 1 || !isRecord(accounts[0])) {
-+    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++    throw new UsageFailure('USAGE_RESPONSE_INVALID', 502);
 +  }
 +  const account = accounts[0];
 +  const accountWorkers = usageGroups(account, 'accountWorkers', {
@@ -270,44 +272,74 @@ index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b
    )));
    const request = new Request(`https://uxuv.invalid/.usage-cache/${fingerprint}`);
    return { cache: globalThis.caches?.default ?? null, request };
-@@ -3701,9 +3706,8 @@ async function writeUsageCache(cacheContext, snapshot) {
+@@ -3701,51 +3706,50 @@ async function writeUsageCache(cacheContext, snapshot) {
  async function fetchUsageData(config, period, observedAt) {
    const controller = new AbortController();
    const timeout = setTimeout(() => controller.abort(), 10_000);
 -  let response;
    try {
 -    response = await globalThis.fetch(USAGE_GRAPHQL_URL, {
-+    const response = await globalThis.fetch(USAGE_GRAPHQL_URL, {
-       method: 'POST',
-       headers: {
-         Authorization: `Bearer ${config.token}`,
-@@ -3713,8 +3717,6 @@ async function fetchUsageData(config, period, observedAt) {
-         query: USAGE_QUERY,
-         variables: {
-           accountTag: config.accountId,
+-      method: 'POST',
+-      headers: {
+-        Authorization: `Bearer ${config.token}`,
+-        'Content-Type': 'application/json',
+-      },
+-      body: JSON.stringify({
+-        query: USAGE_QUERY,
+-        variables: {
+-          accountTag: config.accountId,
 -          scriptName: config.scriptName,
 -          databaseId: config.databaseId,
-           datetimeStart: period.start,
-           datetimeEnd: period.end,
-           dateStart: period.date,
-@@ -3724,28 +3726,22 @@ async function fetchUsageData(config, period, observedAt) {
-       redirect: 'error',
-       signal: controller.signal,
-     });
+-          datetimeStart: period.start,
+-          datetimeEnd: period.end,
+-          dateStart: period.date,
+-          dateEnd: period.date,
++    let response;
++    try {
++      response = await globalThis.fetch(USAGE_GRAPHQL_URL, {
++        method: 'POST',
++        headers: {
++          Authorization: `Bearer ${config.token}`,
++          'Content-Type': 'application/json',
+         },
+-      }),
+-      redirect: 'error',
+-      signal: controller.signal,
+-    });
 -  } catch {
+-    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++        body: JSON.stringify({
++          query: USAGE_QUERY,
++          variables: {
++            accountTag: config.accountId,
++            datetimeStart: period.start,
++            datetimeEnd: period.end,
++            dateStart: period.date,
++            dateEnd: period.date,
++          },
++        }),
++        redirect: 'error',
++        signal: controller.signal,
++      });
++    } catch {
++      throw new UsageFailure(controller.signal.aborted ? 'USAGE_FETCH_TIMEOUT' : 'USAGE_FETCH_FAILED', 503);
++    }
 +    if (response.status === 401) throw new UsageFailure('USAGE_AUTH_FAILED', 502);
 +    if (response.status === 403) throw new UsageFailure('USAGE_FORBIDDEN', 502);
 +    if (response.status === 429) throw new UsageFailure('USAGE_RATE_LIMITED', 503);
 +    if (!response.ok) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
-+    const bytes = await readLimitedBody(response, USAGE_RESPONSE_MAX_BYTES);
-+    const payload = JSON.parse(new TextDecoder().decode(bytes));
++    let payload;
++    try {
++      const bytes = await readLimitedBody(response, USAGE_RESPONSE_MAX_BYTES);
++      payload = JSON.parse(new TextDecoder().decode(bytes));
++    } catch {
++      throw new UsageFailure(controller.signal.aborted ? 'USAGE_FETCH_TIMEOUT' : 'USAGE_RESPONSE_INVALID',
++        controller.signal.aborted ? 503 : 502);
++    }
 +    if (Array.isArray(payload?.errors) && payload.errors.length > 0) {
-+      throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
++      throw new UsageFailure('USAGE_GRAPHQL_ERROR', 502);
 +    }
 +    return buildUsageData(payload, period, observedAt);
-+  } catch (error) {
-+    if (error instanceof UsageFailure) throw error;
-     throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
    } finally {
      clearTimeout(timeout);
    }
@@ -331,3 +363,14 @@ index b91ce3a523ad58fa8fecc2f762a66e2ab0492236..552549b3248a604cf53467fac576a14b
  }
  
  function privateUsageResult(result) {
+@@ -3768,6 +3772,10 @@ function usageFailureResult(requestId, failure) {
+     USAGE_AUTH_FAILED: 'Cloudflare analytics authentication failed.',
+     USAGE_FORBIDDEN: 'Cloudflare analytics access is forbidden.',
+     USAGE_RATE_LIMITED: 'Cloudflare analytics is temporarily rate limited.',
++    USAGE_FETCH_TIMEOUT: 'Cloudflare analytics request timed out.',
++    USAGE_FETCH_FAILED: 'Cloudflare analytics request failed.',
++    USAGE_GRAPHQL_ERROR: 'Cloudflare analytics query failed.',
++    USAGE_RESPONSE_INVALID: 'Cloudflare analytics returned an invalid response.',
+     USAGE_UPSTREAM_ERROR: 'Cloudflare analytics is temporarily unavailable.',
+   };
+   return privateUsageResult(authFailureResult(

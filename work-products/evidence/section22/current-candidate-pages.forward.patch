@@ -33,7 +33,7 @@ index b9d23326334703de1c384373c5ee5a93ab879422..20e3e1f2e695106e28421140b63b9df9
    return (
      <UsageContext.Provider value={usage}>
 diff --git a/components/settings/CloudflareUsageSettings.tsx b/components/settings/CloudflareUsageSettings.tsx
-index be46f5a40ad1f933cbfbb17128942a92f904989b..85c5c87e4c8fc25d86af746ab1e7b2170ced5a96 100644
+index be46f5a40ad1f933cbfbb17128942a92f904989b..425ba9bbde2fc1b7377278afbe38afaf6ef7be7e 100644
 --- a/components/settings/CloudflareUsageSettings.tsx
 +++ b/components/settings/CloudflareUsageSettings.tsx
 @@ -27,62 +27,54 @@ interface UsageCopy {
@@ -131,7 +131,7 @@ index be46f5a40ad1f933cbfbb17128942a92f904989b..85c5c87e4c8fc25d86af746ab1e7b217
      </li>
    );
  }
-@@ -137,7 +129,7 @@ export function CloudflareUsageSettings() {
+@@ -137,10 +129,10 @@ export function CloudflareUsageSettings() {
  
    return (
      <SettingsSection id="usage" title={copy.title} description={copy.description} summary={
@@ -139,7 +139,11 @@ index be46f5a40ad1f933cbfbb17128942a92f904989b..85c5c87e4c8fc25d86af746ab1e7b217
 +      <button className="usage-refresh" type="button" data-focusable onClick={usage.refresh} disabled={usage.refreshDisabled}>{copy.refresh}</button>
      }>
        {usage.status === "loading" && <p role="status">{copy.loading}</p>}
-       {usage.status === "error" && <p className="form-error" role="alert">{copy.error}</p>}
+-      {usage.status === "error" && <p className="form-error" role="alert">{copy.error}</p>}
++      {usage.status === "error" && <p className="form-error" role="alert">{copy.error} ({usage.error})</p>}
+       {usage.status === "ready" && usage.data && !usage.data.configured && (
+         <div className="usage-empty">
+           <h3>{copy.unconfiguredTitle}</h3>
 @@ -163,13 +155,13 @@ function UsageMetrics({ data, now, copy }: { data: ConfiguredUsage; now: number;
      {data.stale && <p className="usage-stale" role="status">{copy.stale}</p>}
      <ul className="usage-grid">
@@ -160,7 +164,7 @@ index be46f5a40ad1f933cbfbb17128942a92f904989b..85c5c87e4c8fc25d86af746ab1e7b217
      <p className="usage-observed">{copy.observed}: {observed(data.observedAt, copy)}. {copy.observedNote}</p>
    </>;
 diff --git a/lib/hooks/useCloudflareUsage.ts b/lib/hooks/useCloudflareUsage.ts
-index d6f203e43c6eacdf85c2a09df1848cfbde782a10..243051467b412c1aa9b60ba461f862eb0136e9d5 100644
+index d6f203e43c6eacdf85c2a09df1848cfbde782a10..65e24ef0673f1c1b60f7a936bcefee3bd7fefa25 100644
 --- a/lib/hooks/useCloudflareUsage.ts
 +++ b/lib/hooks/useCloudflareUsage.ts
 @@ -8,12 +8,10 @@ export type UsageLevel = "normal" | "notice" | "warning" | "critical" | "exhaust
@@ -179,12 +183,16 @@ index d6f203e43c6eacdf85c2a09df1848cfbde782a10..243051467b412c1aa9b60ba461f862eb
    };
    level: UsageLevel;
    warnings: string[];
-@@ -30,33 +28,103 @@ export interface UnconfiguredUsage {
+@@ -30,33 +28,107 @@ export interface UnconfiguredUsage {
  
  export type CloudflareUsage = ConfiguredUsage | UnconfiguredUsage;
  type UsageState = { status: "idle" | "loading" | "ready" | "error"; data: CloudflareUsage | null; error: string };
 +const LEVELS: UsageLevel[] = ["normal", "notice", "warning", "critical", "exhausted"];
 +const REFRESH_COOLDOWN_MS = 30_000;
++const USAGE_ERROR_CODES = new Set([
++  "USAGE_AUTH_FAILED", "USAGE_FORBIDDEN", "USAGE_RATE_LIMITED", "USAGE_UPSTREAM_ERROR",
++  "USAGE_FETCH_TIMEOUT", "USAGE_FETCH_FAILED", "USAGE_GRAPHQL_ERROR", "USAGE_RESPONSE_INVALID",
++]);
 +const EXPECTED_LIMITS = {
 +  workers: 100_000,
 +  d1Read: 5_000_000,
@@ -295,7 +303,17 @@ index d6f203e43c6eacdf85c2a09df1848cfbde782a10..243051467b412c1aa9b60ba461f862eb
      ? value as unknown as ConfiguredUsage : null;
  }
  
-@@ -69,7 +137,11 @@ export function useCloudflareUsage() {
+@@ -64,12 +136,21 @@ async function readBody(response: Response): Promise<unknown> {
+   try { return await response.json(); } catch { return null; }
+ }
+ 
++function usageErrorCode(value: unknown): string | null {
++  if (!isRecord(value) || !isRecord(value.error) || typeof value.error.code !== "string") return null;
++  return USAGE_ERROR_CODES.has(value.error.code) ? value.error.code : null;
++}
++
+ export function useCloudflareUsage() {
+   const auth = useAuth();
    const enabled = auth?.session.role === "super_admin";
    const accountId = auth?.session.accountId ?? null;
    const markSessionExpiredRef = useRef(auth?.markSessionExpired);
@@ -307,7 +325,7 @@ index d6f203e43c6eacdf85c2a09df1848cfbde782a10..243051467b412c1aa9b60ba461f862eb
    const [state, setState] = useState<UsageState>({ status: "idle", data: null, error: "" });
  
    useEffect(() => {
-@@ -77,9 +149,20 @@ export function useCloudflareUsage() {
+@@ -77,29 +158,70 @@ export function useCloudflareUsage() {
    }, [auth?.markSessionExpired]);
  
    useEffect(() => {
@@ -328,18 +346,23 @@ index d6f203e43c6eacdf85c2a09df1848cfbde782a10..243051467b412c1aa9b60ba461f862eb
 +      if (active) setState((current) => ({ status: "loading", data: retainData ? current.data : null, error: "" }));
 +    });
      const load = async () => {
++      let failureCode = "USAGE_RESPONSE_INVALID";
        try {
          const response = await fetch("/api/admin/usage", {
-@@ -89,17 +172,45 @@ export function useCloudflareUsage() {
+           credentials: "same-origin", cache: "no-store", signal: controller.signal,
+         });
+         const body = await readBody(response);
          if (response.status === 401) markSessionExpiredRef.current?.();
++        failureCode = usageErrorCode(body) ?? failureCode;
          const data = isRecord(body) ? parseUsage(body.data) : null;
          if (!response.ok || !data) throw new Error("usage unavailable");
 -        setState({ status: "ready", data, error: "" });
 +        if (!controller.signal.aborted) setState({ status: "ready", data, error: "" });
        } catch (error) {
 -        if ((error as { name?: string }).name !== "AbortError") {
+-          setState({ status: "error", data: null, error: "无法读取 Cloudflare 用量，请稍后重试。" });
 +        if (!controller.signal.aborted && (error as { name?: string }).name !== "AbortError") {
-           setState({ status: "error", data: null, error: "无法读取 Cloudflare 用量，请稍后重试。" });
++          setState({ status: "error", data: null, error: failureCode });
          }
        }
      };
