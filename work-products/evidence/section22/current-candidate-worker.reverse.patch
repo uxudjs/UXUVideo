@@ -28,7 +28,7 @@ index 0bec84c376f2bc3f3b8e568e35b491f4dfcb99f7..4426e9f5fcb7c89fe193bcab386086a8
  ### 使用限制
  
 diff --git b/_worker.js a/_worker.js
-index b1ba3aff83a378188675b84dc2f1c27a45324599..b91ce3a523ad58fa8fecc2f762a66e2ab0492236 100644
+index 7669f3964feacb602e02768330f782446a6354ae..b91ce3a523ad58fa8fecc2f762a66e2ab0492236 100644
 --- b/_worker.js
 +++ a/_worker.js
 @@ -3476,16 +3476,20 @@ const USAGE_GRAPHQL_URL = 'https://api.cloudflare.com/client/v4/graphql';
@@ -322,7 +322,7 @@ index b1ba3aff83a378188675b84dc2f1c27a45324599..b91ce3a523ad58fa8fecc2f762a66e2a
 -            dateEnd: period.date,
 -          },
 -        }),
--        redirect: 'error',
+-        redirect: 'manual',
 -        signal: controller.signal,
 -      });
 -    } catch (error) {

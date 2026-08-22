@@ -3734,7 +3734,7 @@ async function fetchUsageData(config, period, observedAt) {
             dateEnd: period.date,
           },
         }),
-        redirect: 'error',
+        redirect: 'manual',
         signal: controller.signal,
       });
     } catch (error) {

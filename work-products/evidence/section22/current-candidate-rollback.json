@@ -1,7 +1,7 @@
 {
   "schemaVersion": "section22-current-candidate-rollback/v1",
-  "candidateId": "s22-production-usage-fix-20260822-03",
-  "generatedAt": "2026-08-22T13:26:52.802Z",
+  "candidateId": "s22-production-usage-fix-20260822-04",
+  "generatedAt": "2026-08-22T13:53:08.412Z",
   "repositories": {
     "worker": {
       "baseCommit": "9185950b8c1a5cae4204f244369bf711e0f36b44",
@@ -51,9 +51,9 @@
           },
           "candidate": {
             "mode": "100644",
-            "blobOid": "b1ba3aff83a378188675b84dc2f1c27a45324599",
-            "bytes": 169651,
-            "sha256": "036d19f5f93683196f1a9221fe02883cd8ea9af66363ef95cd68f62edfcfa4b0"
+            "blobOid": "7669f3964feacb602e02768330f782446a6354ae",
+            "bytes": 169652,
+            "sha256": "ae3a69ea38f74155b2511fda2c469f80b1be4441f4fab91588b63cb9d0f86e18"
           }
         },
         {
@@ -2444,13 +2444,13 @@
   "patches": {
     "workerForward": {
       "path": "work-products/evidence/section22/current-candidate-worker.forward.patch",
-      "bytes": 17265,
-      "sha256": "2a86845e850fa76a17b214e81136384bbfaf3ac14a08993bd3eb819874dba5af"
+      "bytes": 17266,
+      "sha256": "6f5bf67be05b664d2c5b9a033b018e7dd3caf179389ea07ce27f9a7baebce960"
     },
     "workerReverse": {
       "path": "work-products/evidence/section22/current-candidate-worker.reverse.patch",
-      "bytes": 17249,
-      "sha256": "6933f901e7a461044ab7482393cb0ba2e36127612d7e97c6b42e8a42b9602a48"
+      "bytes": 17250,
+      "sha256": "36d7adbe56af07059f80e411d71ffb112e9513925c47ab160dd081803fa5eb9e"
     },
     "pagesForward": {
       "path": "work-products/evidence/section22/current-candidate-pages.forward.patch",

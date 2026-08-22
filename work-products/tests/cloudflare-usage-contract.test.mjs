@@ -157,7 +157,9 @@ test('usage sends one account-only GraphQL request and returns only complete acc
   try {
     await withGlobals({
       fetchImpl: async (input, init) => {
-        requests.push({ url: String(input), headers: new Headers(init.headers), body: String(init.body) });
+        requests.push({
+          url: String(input), headers: new Headers(init.headers), body: String(init.body), redirect: init.redirect,
+        });
         return Response.json(graphqlFixture({
           workers: { accountRequests: 85_000, accountErrors: 17, sampleInterval: 1.5 },
           d1: { databaseRowsRead: 800_000, otherRowsRead: 3_450_000, databaseRowsWritten: 50_000,
@@ -207,6 +209,7 @@ test('usage sends one account-only GraphQL request and returns only complete acc
 
   assert.equal(requests.length, 1);
   assert.equal(requests[0].url, GRAPHQL);
+  assert.equal(requests[0].redirect, 'manual');
   assert.equal(requests[0].headers.get('Authorization'), `Bearer ${TOKEN}`);
   assert.equal(requests[0].body.includes(TOKEN), false);
   const payload = JSON.parse(requests[0].body);
