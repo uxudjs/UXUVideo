@@ -269,8 +269,8 @@ test('usage reuses a five-minute snapshot and falls back stale for at most one h
 
     now += 55 * 60 * 1000;
     const expired = await worker.fetch(usageRequest(cookie), env, {});
-    assert.equal(expired.status, 502);
-    assert.equal((await expired.json()).error.code, 'USAGE_UPSTREAM_ERROR');
+    assert.equal(expired.status, 503);
+    assert.equal((await expired.json()).error.code, 'USAGE_FETCH_FAILED');
     assert.equal(fetches, 3);
   });
 });
@@ -317,7 +317,9 @@ test('usage maps Cloudflare and GraphQL failures without reflecting upstream bod
     { name: 'auth', response: () => Response.json({ secret: TOKEN }, { status: 401 }), status: 502, code: 'USAGE_AUTH_FAILED' },
     { name: 'forbidden', response: () => Response.json({ secret: TOKEN }, { status: 403 }), status: 502, code: 'USAGE_FORBIDDEN' },
     { name: 'rate', response: () => Response.json({ secret: TOKEN }, { status: 429 }), status: 503, code: 'USAGE_RATE_LIMITED' },
-    { name: 'graphql', response: () => Response.json({ errors: [{ message: TOKEN }] }), status: 502, code: 'USAGE_UPSTREAM_ERROR' },
+    { name: 'http', response: () => Response.json({ secret: TOKEN }, { status: 500 }), status: 502, code: 'USAGE_UPSTREAM_ERROR' },
+    { name: 'network', response: async () => { throw new Error(TOKEN); }, status: 503, code: 'USAGE_FETCH_FAILED' },
+    { name: 'graphql', response: () => Response.json({ errors: [{ message: TOKEN }] }), status: 502, code: 'USAGE_GRAPHQL_ERROR' },
   ];
   for (const item of cases) {
     const env = environment(db);
@@ -493,7 +495,7 @@ test('usage fails closed for incomplete, malformed, unsafe, invalid-sampling, or
     await withGlobals({ fetchImpl: async () => Response.json(item.payload()) }, async () => {
       const response = await worker.fetch(usageRequest(cookie), env, {});
       assert.equal(response.status, 502, item.name);
-      assert.equal((await response.json()).error.code, 'USAGE_UPSTREAM_ERROR', item.name);
+      assert.equal((await response.json()).error.code, 'USAGE_RESPONSE_INVALID', item.name);
     });
   }
 });
@@ -506,7 +508,7 @@ test('usage accepts exactly 512 KiB and rejects one byte more', async () => {
     await withGlobals({ fetchImpl: async () => sizedGraphqlResponse(size) }, async () => {
       const response = await worker.fetch(usageRequest(cookie), environment(db), {});
       assert.equal(response.status, expectedStatus, `${size} bytes`);
-      if (expectedStatus !== 200) assert.equal((await response.json()).error.code, 'USAGE_UPSTREAM_ERROR');
+      if (expectedStatus !== 200) assert.equal((await response.json()).error.code, 'USAGE_RESPONSE_INVALID');
     });
   }
 });
@@ -540,7 +542,7 @@ test('usage timeout covers a response body that stalls after headers', async (t)
     if (!aborted) bodyController.error(new Error('test cleanup'));
     const response = await responsePromise;
     assert.equal(aborted, true);
-    assert.equal(response.status, 502);
-    assert.equal((await response.json()).error.code, 'USAGE_UPSTREAM_ERROR');
+    assert.equal(response.status, 503);
+    assert.equal((await response.json()).error.code, 'USAGE_FETCH_TIMEOUT');
   });
 });
