@@ -1,0 +1,61 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R16",
+  "attempt_id": "run-20260821-s22-r16-01",
+  "owner": "native-worker:s22_r16",
+  "executor": "main-agent:serial",
+  "status": "completed",
+  "created_at": "2026-08-21T20:05:21.1237940+08:00",
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R16/run-20260821-s22-r16-01/manifest.json",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    { "repository": "worker", "path": "work-products/evidence/section22/worker-validation.md", "state": "created" }
+  ],
+  "validation": [
+    { "command": "node --check _worker.js", "exit_code": 0 },
+    {
+      "command": "node --test work-products/tests/execution-baseline-tool.test.mjs work-products/tests/cloudflare-usage-contract.test.mjs work-products/tests/structured-logging.test.mjs work-products/tests/worker-only-boundary.test.mjs work-products/tests/section22-plan-contract.test.mjs work-products/tests/section22-recovery-plan-contract.test.mjs work-products/tests/section22-baseline-recovery-plan-contract.test.mjs work-products/tests/section22-execution-recovery-plan-contract.test.mjs",
+      "exit_code": 0,
+      "result": "56 pass, 0 fail"
+    },
+    {
+      "command": "npm run check:size",
+      "exit_code": 0,
+      "result": "source 168196 bytes; gzip 40101 of 3145728 bytes"
+    },
+    {
+      "command": "node --test --test-name-pattern candidate-hygiene work-products/tests/candidate-hygiene.test.mjs",
+      "exit_code": 0,
+      "result": "high-confidence secret, machine-path, and binary check passed"
+    },
+    {
+      "check": "active Worker retired-name scan",
+      "exit_code": 0,
+      "result": "zero matching lines"
+    },
+    { "command": "git diff --check", "repository": "worker", "exit_code": 0 }
+  ],
+  "terminal": {
+    "verification": "green",
+    "targets_fingerprint": "7f0a0ccce3e92150e71240544e427a5cd6ea78d0e8e51ee0ba2352041cbfd92f",
+    "generated_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "protected_inputs": "not_applicable",
+    "task_temp": "empty",
+    "test_work": "missing",
+    "subprocess_cleanup": "baseline-tool tests removed their task-owned work directory; no main-agent cleanup was performed"
+  },
+  "scope_exceptions": [],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

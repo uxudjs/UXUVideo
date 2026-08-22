@@ -1,0 +1,210 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R21",
+  "attempt_id": "run-20260822-s22-r21-01",
+  "owner": "native-worker:s22_r21",
+  "executor": "main-agent:serial",
+  "status": "blocked",
+  "created_at": "2026-08-22T14:26:50.9311946+08:00",
+  "worker_launched": true,
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01/manifest.json",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R21/request-run-20260822-s22-r21-01.json",
+      "state": "created_request_retained"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01",
+      "state": "created_baseline_retained"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-completion-recovery-validation.md",
+      "state": "created_blocked_evidence"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/work/section22-r21-temp",
+      "state": "playwright_transform_cache_retained"
+    },
+    {
+      "repository": "pages",
+      "path": ".next",
+      "state": "rebuilt"
+    },
+    {
+      "repository": "pages",
+      "path": "out",
+      "state": "rebuilt"
+    },
+    {
+      "repository": "pages",
+      "path": "release",
+      "state": "rebuilt_current"
+    },
+    {
+      "repository": "pages",
+      "path": "tsconfig.tsbuildinfo",
+      "state": "updated"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/artifacts/playwright",
+      "state": "updated"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/work/section21-candidate-draft",
+      "state": "updated_isolated_draft"
+    }
+  ],
+  "validation": [
+    {
+      "command": "node --test work-products/tests/section22-final-gate-completion-recovery-plan-contract.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "8 pass, 0 fail"
+    },
+    {
+      "command": "node --check _worker.js",
+      "repository": "worker",
+      "exit_code": 0
+    },
+    {
+      "command": "node --test work-products/tests/candidate-hygiene.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "10 pass, 0 fail"
+    },
+    {
+      "command": "npm test",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "237 pass, 0 fail"
+    },
+    {
+      "command": "npm run check:size",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "168196 source bytes; 40101 gzip bytes"
+    },
+    {
+      "command": "git diff --check",
+      "repository": "worker",
+      "exit_code": 0
+    },
+    {
+      "check": "static remote-build dependency scan",
+      "repository": "pages",
+      "exit_code": 0,
+      "result": "zero matching lines"
+    },
+    {
+      "command": "npm run lint",
+      "repository": "pages",
+      "exit_code": 0
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "repository": "pages",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run test:e2e",
+      "repository": "pages",
+      "exit_code": 0,
+      "result": "128 pass, 0 fail"
+    },
+    {
+      "command": "npm run build",
+      "repository": "pages",
+      "exit_code": 0,
+      "result": "8 static entries; 23 chrome83 client assets"
+    },
+    {
+      "command": "npm run release:build",
+      "repository": "pages",
+      "exit_code": 0,
+      "result": "release/current verified"
+    },
+    {
+      "command": "npm test",
+      "repository": "pages",
+      "exit_code": 0,
+      "result": "173 pass, 0 fail"
+    },
+    {
+      "command": "git diff --check",
+      "repository": "pages",
+      "exit_code": 0
+    },
+    {
+      "check": "two-repository secret machine-path and binary hygiene",
+      "exit_code": 0,
+      "result": "10 pass, 0 fail"
+    },
+    {
+      "check": "two-repository identity retired-name and manifest-actual wrapper",
+      "exit_code": 1,
+      "result": "main-agent wrapper rejected the legal root route before completing the scan"
+    }
+  ],
+  "failure": {
+    "classification": "orchestration_audit_wrapper_route_key_mismatch",
+    "gate": "two-repository identity retired-name and manifest-actual scans",
+    "location": "main-agent temporary PowerShell audit wrapper",
+    "error": "route absent from assets: /",
+    "root_cause": "the wrapper treated route value index.html as an assets property key even though the manifest key is /index.html and the file identity is stored in assets[*].path",
+    "product_validation_result": "worker_and_pages_full_local_gates_green",
+    "release_decision": "NO-GO / RELEASE HOLD"
+  },
+  "evidence": {
+    "path": "work-products/evidence/section22/final-gate-completion-recovery-validation.md",
+    "bytes": 4385,
+    "sha256": "0d4c90ede697e8f876c2c283232a91628369e4978198645b92b6b98f7d2041ac"
+  },
+  "unperformed": [
+    "corrected two-repository identity retired-name and manifest-actual scan",
+    "node --test work-products/tests/section21-rollback-drill.test.mjs",
+    "successful final evidence audit",
+    "completed receipt audit",
+    "final ship gate",
+    "GitHub Pages publication",
+    "Cloudflare Worker deployment",
+    "production smoke tests"
+  ],
+  "terminal": {
+    "verification": "green",
+    "targets_fingerprint": "e6f6e523fd126e9bfada3e1f0a143ee05ef5c198654faf3c9fc521470bf2519d",
+    "generated_fingerprint": "faad4fc2d28cdca4271b059ee99960b2c01b315ad2239faeafdc5794cc7e1ee5",
+    "protected_inputs": "unchanged",
+    "ports": "free",
+    "release_transients": "absent",
+    "node_test_work": "missing",
+    "task_temp": "present: playwright-transform-cache",
+    "manual_task_temp_identity": "not_equal_to_initial_empty_directory",
+    "main_agent_post_failure_cleanup": "none"
+  },
+  "scope_exceptions": [],
+  "remaining_work": [
+    "Preserve this attempt, evidence, receipt, targets, and task temp without modification.",
+    "Create and approve a new recovery candidate with a new task ID and attempt.",
+    "Move the post-scan logic into a tested repository script and define an attainable terminal task-temp contract before rerunning the complete gate."
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

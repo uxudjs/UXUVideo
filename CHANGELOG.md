@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Cloudflare 用量可选配置收敛为 `CF_ACCOUNT_ID` 与 Secret `CF_ANALYTICS_API_TOKEN`，面板只展示该账户的 Workers 与 D1 账户级总量；继续使用 Worker `2.0.0`、Pages `0.3.0` 与 API Contract `2`。
+
 ## 2.0.0 - 2026-08-18
 
 - 移除 Worker 的 IPTV 路由、权限与缓存，以及部署环境中的系统预设视频源和弹幕 API；视频源与弹幕配置改由用户在网页账户设置中自行维护。

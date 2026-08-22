@@ -1,0 +1,108 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R19",
+  "attempt_id": "run-20260821-s22-r19-01",
+  "owner": "native-worker:s22_r19",
+  "executor": "main-agent:serial",
+  "status": "blocked",
+  "created_at": "2026-08-22T11:41:14.9189616+08:00",
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R19/run-20260821-s22-r19-01/manifest.json",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-recovery-validation.md",
+      "state": "created_blocked_evidence"
+    }
+  ],
+  "validation": [
+    {
+      "check": "active plan and approval snapshot raw-byte comparison",
+      "exit_code": 0,
+      "result": "31459 bytes identical"
+    },
+    {
+      "check": "R19 request materialization and absolute-path audit",
+      "exit_code": 0,
+      "result": "blueprint exact and machine-path free"
+    },
+    {
+      "command": "node work-products/scripts/execution-baseline.mjs create --request work-products/debug/execution-baselines/S22-R19/request-run-20260821-s22-r19-01.json",
+      "repository": "worker",
+      "exit_code": 0
+    },
+    {
+      "command": "node work-products/scripts/execution-baseline.mjs verify --manifest work-products/debug/execution-baselines/S22-R19/run-20260821-s22-r19-01/manifest.json --phase prewrite",
+      "repository": "worker",
+      "exit_code": 0
+    },
+    {
+      "command": "node work-products/scripts/execution-baseline.mjs verify --manifest work-products/debug/execution-baselines/S22-R19/run-20260821-s22-r19-01/manifest.json --phase inputs",
+      "repository": "worker",
+      "exit_code": 0
+    },
+    {
+      "command": "node --test work-products/tests/section22-final-gate-recovery-plan-contract.test.mjs",
+      "repository": "worker",
+      "exit_code": 1,
+      "result": "5 pass, 1 fail of 6"
+    }
+  ],
+  "failure": {
+    "classification": "workflow_contract_state_mirror",
+    "gate": "R19 execution-state plan contract",
+    "location": "work-products/tests/section22-final-gate-recovery-plan-contract.test.mjs:149",
+    "error": "legal todo state mirrors were rejected as duplicate in_progress occurrences",
+    "root_cause": "the global regular expression forbids the two required in_progress mirrors in the status table and task detail",
+    "product_validation_result": "not_started",
+    "release_decision": "NO-GO / RELEASE HOLD"
+  },
+  "unperformed": [
+    "Worker node --check _worker.js",
+    "Worker node --test work-products/tests/candidate-hygiene.test.mjs",
+    "Worker npm test",
+    "Worker npm run check:size",
+    "Worker git diff --check",
+    "Pages static remote-build dependency scan",
+    "Pages npm run lint",
+    "Pages node node_modules/typescript/bin/tsc --noEmit",
+    "Pages npm run test:e2e",
+    "Pages npm run build",
+    "Pages npm run release:build",
+    "Pages npm test",
+    "Pages git diff --check",
+    "two-repository identity secret path retired-name and manifest-actual scans",
+    "local rollback drill inside generated namespace",
+    "GitHub Pages publication",
+    "Cloudflare Worker deployment",
+    "production smoke tests"
+  ],
+  "terminal": {
+    "verification": "green",
+    "targets_fingerprint": "15b111bdbb9a980c8a40bbebf5ea5dbae77d11a76783ea1ee457c9dcfb2c1793",
+    "generated_fingerprint": "faad4fc2d28cdca4271b059ee99960b2c01b315ad2239faeafdc5794cc7e1ee5",
+    "protected_inputs": "unchanged",
+    "generated_namespace": "terminal none",
+    "ports": "free",
+    "release_transients": "absent",
+    "node_test_work": "missing",
+    "task_temp": "empty",
+    "plan_snapshot": "identical",
+    "evidence_audit": "schema valid and machine-path free",
+    "subprocess_cleanup": "no validation subprocess created cleanup-owned output; no main-agent cleanup was performed"
+  },
+  "scope_exceptions": [],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

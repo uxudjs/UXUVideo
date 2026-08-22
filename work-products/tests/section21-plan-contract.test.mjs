@@ -3,7 +3,11 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const read = (relative) => readFile(new URL(relative, import.meta.url), "utf8");
+const historicalInputs = new Map([
+  ["../plan.md", "../evidence/section21/final-plan.md"],
+  ["../todo.md", "../evidence/section21/final-todo.md"],
+]);
+const read = (relative) => readFile(new URL(historicalInputs.get(relative) ?? relative, import.meta.url), "utf8");
 const section = (plan, start, end) => {
   const from = plan.indexOf(start);
   const to = plan.indexOf(end, from + start.length);

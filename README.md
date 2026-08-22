@@ -61,9 +61,9 @@
 | `VIDEOTOGETHER_ENABLED` | 变量 | ❌ | `true` | 允许账号开启一起看；账号内默认关闭，设为 `false` 或 `0` 可全局禁用 |
 | `VIDEOTOGETHER_SCRIPT_URL` / `VIDEOTOGETHER_SETTING_URL` | 变量 | ❌ | 内置值 | 可选的 HTTPS 自定义入口 |
 | `CF_ANALYTICS_API_TOKEN` | Secret | ❌ | 关闭 | Cloudflare 用量面板的只读 Token |
-| `CF_ACCOUNT_ID` / `CF_WORKER_SCRIPT_NAME` / `CF_D1_DATABASE_ID` | 变量 | ❌ | 空 | 用量面板对应的账号、Worker 和 D1 标识 |
+| `CF_ACCOUNT_ID` | 变量 | ❌ | 空 | 用量面板对应的 Cloudflare 账号标识 |
 
-启用 Cloudflare 用量面板时，最后两行配置需要同时填写；未完整配置时，设置页会显示“未配置”。
+启用 Cloudflare 用量面板时，`CF_ANALYTICS_API_TOKEN` 与 `CF_ACCOUNT_ID` 需要同时填写；面板展示 `CF_ACCOUNT_ID` 对应的 Workers 与 D1 账户级总量。未完整配置时，设置页会显示“未配置”。
 
 ### 使用限制
 

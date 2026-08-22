@@ -1,0 +1,125 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R20",
+  "attempt_id": "run-20260822-s22-r20-01",
+  "owner": "native-worker:s22_r20",
+  "executor": "main-agent:serial",
+  "status": "blocked",
+  "created_at": "2026-08-22T12:56:33.7758217+08:00",
+  "worker_launched": false,
+  "execution_baseline": null,
+  "baseline": {
+    "create_exit_code": 1,
+    "create_error": "inputs contains a duplicate or case alias",
+    "attempt_root": "missing",
+    "staging_root": "missing",
+    "prewrite_exit_code": null,
+    "inputs_exit_code": null,
+    "terminal_exit_code": null,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R20/request-run-20260822-s22-r20-01.json",
+      "state": "created_request_retained"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-completion-validation.md",
+      "state": "created_blocked_evidence"
+    }
+  ],
+  "validation": [
+    {
+      "check": "active plan and approval snapshot raw-byte comparison",
+      "exit_code": 0,
+      "result": "24352 bytes identical"
+    },
+    {
+      "command": "node --test work-products/tests/section22-final-gate-completion-plan-contract.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "5 pass, 0 fail"
+    },
+    {
+      "command": "node --test work-products/tests/candidate-hygiene.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "10 pass, 0 fail"
+    },
+    {
+      "check": "R20 initial prestate",
+      "exit_code": 0,
+      "result": "45 inputs, 5 protected inputs, 7 toolchain entrypoints, offline environment and ports passed"
+    },
+    {
+      "command": "node work-products/scripts/execution-baseline.mjs create --request work-products/debug/execution-baselines/S22-R20/request-run-20260822-s22-r20-01.json",
+      "repository": "worker",
+      "exit_code": 1,
+      "result": "inputs contains a duplicate or case alias"
+    }
+  ],
+  "failure": {
+    "classification": "workflow_request_duplicate_input",
+    "gate": "R20 baseline create",
+    "location": "work-products/plan.md executable request blueprint",
+    "duplicate_input": "worker:work-products/debug/s22-r19-in-progress-mirror-contract.md",
+    "input_sets": [
+      "governance",
+      "prior-validation-evidence"
+    ],
+    "root_cause": "the approved blueprint declares the same immutable input in two input sets, so exact flattening creates an invalid v2 request",
+    "product_validation_result": "not_started",
+    "release_decision": "NO-GO / RELEASE HOLD"
+  },
+  "unperformed": [
+    "baseline verify prewrite",
+    "baseline verify inputs",
+    "baseline verify terminal",
+    "Worker node --check _worker.js",
+    "Worker npm test",
+    "Worker npm run check:size",
+    "Worker git diff --check",
+    "Pages static remote-build dependency scan",
+    "Pages npm run lint",
+    "Pages node node_modules/typescript/bin/tsc --noEmit",
+    "Pages npm run test:e2e",
+    "Pages npm run build",
+    "Pages npm run release:build",
+    "Pages npm test",
+    "Pages git diff --check",
+    "two-repository identity secret path retired-name and manifest-actual scans",
+    "local rollback drill inside generated namespace",
+    "final ship gate",
+    "GitHub Pages publication",
+    "Cloudflare Worker deployment",
+    "production smoke tests"
+  ],
+  "terminal": {
+    "verification": "unavailable_no_manifest",
+    "request": "retained",
+    "attempt_root": "missing",
+    "staging_root": "missing",
+    "task_temp": "empty",
+    "generated_namespace": "initial none",
+    "plan_snapshot": "identical",
+    "evidence_audit": "schema valid and machine-path free",
+    "main_agent_post_failure_cleanup": "none"
+  },
+  "scope_exceptions": [
+    "A separately authorized preflight debug workflow repaired the active todo-state contract before R20 baseline creation."
+  ],
+  "remaining_work": [
+    "Preserve this blocked request, evidence, and receipt without modification.",
+    "Create and approve a new recovery candidate with a new task ID and attempt.",
+    "Add a cross-input-set uniqueness regression before the next baseline create."
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

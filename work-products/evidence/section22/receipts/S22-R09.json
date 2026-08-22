@@ -1,0 +1,52 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R09",
+  "attempt_id": "run-20260821-s22-r09-01",
+  "owner": "native-worker:s22_r09",
+  "status": "completed",
+  "created_at": "2026-08-21T14:50:13.5986406+08:00",
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R09/run-20260821-s22-r09-01/manifest.json",
+  "changed_paths": [
+    {
+      "path": "work-products/scripts/execution-baseline.mjs",
+      "sha256": "b258df9c21ddcacc1ae970d99da577f74daba0651e4d30183c28ffcf3abe861b"
+    },
+    {
+      "path": "work-products/tests/execution-baseline-tool.test.mjs",
+      "sha256": "729d8e81d6cef0a4734ab48b466de8dc933e1f279c1fcad1087df23c364e1bb4"
+    }
+  ],
+  "red": {
+    "command": "node --test work-products/tests/execution-baseline-tool.test.mjs",
+    "exit_code": 1,
+    "result": "CLI missing: ENOENT / MODULE_NOT_FOUND; 3 pass, 6 fail"
+  },
+  "validation": [
+    {
+      "command": "node --test work-products/tests/execution-baseline-tool.test.mjs",
+      "exit_code": 0,
+      "result": "10 pass, 0 fail"
+    },
+    {
+      "command": "node --check work-products/scripts/execution-baseline.mjs",
+      "exit_code": 0
+    },
+    {
+      "command": "GIT_OPTIONAL_LOCKS=0 git diff --check -- work-products/scripts/execution-baseline.mjs work-products/tests/execution-baseline-tool.test.mjs",
+      "exit_code": 0
+    }
+  ],
+  "terminal": {
+    "test_work": "missing",
+    "bootstrap_manifest": "identical",
+    "approved_plan_snapshot": "identical"
+  },
+  "scope_exceptions": [],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

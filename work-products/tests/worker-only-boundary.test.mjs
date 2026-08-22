@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
@@ -73,11 +73,23 @@ test("README keeps user guidance separate from technical release records", () =>
   const readme = read("README.md");
   const changelog = read("CHANGELOG.md");
   const spec = read("work-products/SPEC.md");
+  const activeWorkerTests = readdirSync(join(root, "work-products/tests"), { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".test.mjs"))
+    .map((entry) => read(`work-products/tests/${entry.name}`))
+    .join("\n");
   for (const term of [
     "DB", "ADMIN_PASSWORD", "AUTH_SECRET", "CF_ANALYTICS_API_TOKEN", "CF_ACCOUNT_ID",
-    "CF_WORKER_SCRIPT_NAME", "CF_D1_DATABASE_ID", "https://uxudjs.github.io/UXUV-Pages/app/",
+    "https://uxudjs.github.io/UXUV-Pages/app/",
     "### 主要功能", "### 部署使用", "### 使用方法", "### 环境变量", "### 更新与回滚", "### 免责声明",
   ]) assert.match(readme, new RegExp(term));
+  for (const retiredUsageName of [
+    ["CF", "WORKER", "SCRIPT", "NAME"].join("_"),
+    ["CF", "D1", "DATABASE", "ID"].join("_"),
+  ]) {
+    assert.doesNotMatch(readme, new RegExp(retiredUsageName));
+    assert.doesNotMatch(read("_worker.js"), new RegExp(retiredUsageName));
+    assert.doesNotMatch(activeWorkerTests, new RegExp(retiredUsageName));
+  }
   assert.doesNotMatch(readme, /API Contract|workerRange|pagesVersion|release manifest|GitHub Actions|artifact|fixture|D1 schema|node --check|npm test|check:size|PAGES_GIT_COMMIT|PAGES_MANIFEST_SHA256|资产 SHA-256/);
   assert.match(changelog, /## 1\.0\.0 - 2026-08-07/);
   assert.match(changelog, /单一 `release\/current` 产物/);

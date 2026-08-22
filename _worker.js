@@ -3476,20 +3476,16 @@ const USAGE_GRAPHQL_URL = 'https://api.cloudflare.com/client/v4/graphql';
 const USAGE_CACHE_FRESH_MS = 5 * 60 * 1000;
 const USAGE_CACHE_STALE_MS = 60 * 60 * 1000;
 const USAGE_RESPONSE_MAX_BYTES = 512 * 1024;
+const USAGE_D1_GROUP_LIMIT = 10_000;
 const USAGE_LIMITS = Object.freeze({
   workersAccountRequests: 100_000,
   d1AccountRowsRead: 5_000_000,
   d1AccountRowsWritten: 100_000,
   d1AccountStorageBytes: 5_000_000_000,
-  d1DatabaseStorageBytes: 500_000_000,
-  d1ProjectRowsRead: 1_000_000,
-  d1ProjectRowsWritten: 50_000,
 });
 const USAGE_LEVELS = Object.freeze(['normal', 'notice', 'warning', 'critical', 'exhausted']);
 const USAGE_QUERY = `query Usage(
   $accountTag: string!
-  $scriptName: string!
-  $databaseId: string!
   $datetimeStart: Time!
   $datetimeEnd: Time!
   $dateStart: Date!
@@ -3500,27 +3496,15 @@ const USAGE_QUERY = `query Usage(
       accountWorkers: workersInvocationsAdaptive(
         limit: 1
         filter: { datetime_geq: $datetimeStart, datetime_leq: $datetimeEnd }
-      ) { sum { requests errors } }
-      scriptWorkers: workersInvocationsAdaptive(
-        limit: 1
-        filter: { scriptName: $scriptName, datetime_geq: $datetimeStart, datetime_leq: $datetimeEnd }
-      ) { sum { requests errors } }
+      ) { sum { requests errors } avg { sampleInterval } }
       d1Usage: d1AnalyticsAdaptiveGroups(
-        limit: 10000
+        limit: ${USAGE_D1_GROUP_LIMIT}
         filter: { date_geq: $dateStart, date_leq: $dateEnd }
-      ) { dimensions { databaseId } sum { rowsRead rowsWritten } }
-      databaseD1: d1AnalyticsAdaptiveGroups(
-        limit: 1
-        filter: { databaseId: $databaseId, date_geq: $dateStart, date_leq: $dateEnd }
-      ) { dimensions { databaseId } sum { rowsRead rowsWritten } }
+      ) { dimensions { databaseId } sum { rowsRead rowsWritten } avg { sampleInterval } }
       d1Storage: d1StorageAdaptiveGroups(
-        limit: 10000
+        limit: ${USAGE_D1_GROUP_LIMIT}
         filter: { date_geq: $dateStart, date_leq: $dateEnd }
-      ) { dimensions { databaseId } max { databaseSizeBytes } }
-      databaseStorage: d1StorageAdaptiveGroups(
-        limit: 1
-        filter: { databaseId: $databaseId, date_geq: $dateStart, date_leq: $dateEnd }
-      ) { dimensions { databaseId } max { databaseSizeBytes } }
+      ) { dimensions { databaseId } max { databaseSizeBytes } avg { sampleInterval } }
     }
   }
 }`;
@@ -3535,20 +3519,13 @@ class UsageFailure extends Error {
 }
 
 function usageConfiguration(env) {
-  const names = [
-    'CF_ANALYTICS_API_TOKEN',
-    'CF_ACCOUNT_ID',
-    'CF_WORKER_SCRIPT_NAME',
-    'CF_D1_DATABASE_ID',
-  ];
+  const names = ['CF_ANALYTICS_API_TOKEN', 'CF_ACCOUNT_ID'];
   const missing = names.filter((name) => typeof env?.[name] !== 'string' || env[name].trim().length === 0);
   if (missing.length > 0) return { configured: false, missing };
   return {
     configured: true,
     token: env.CF_ANALYTICS_API_TOKEN.trim(),
     accountId: env.CF_ACCOUNT_ID.trim(),
-    scriptName: env.CF_WORKER_SCRIPT_NAME.trim(),
-    databaseId: env.CF_D1_DATABASE_ID.trim(),
   };
 }
 
@@ -3565,28 +3542,60 @@ function usagePeriod(nowMs) {
 }
 
 function usageInteger(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number) || number <= 0) return 0;
-  return Math.min(Number.MAX_SAFE_INTEGER, Math.round(number));
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+  }
+  return value;
 }
 
 function usageSum(groups, field) {
-  return Array.isArray(groups)
-    ? groups.reduce((total, group) => total + usageInteger(group?.sum?.[field]), 0)
-    : 0;
+  return groups.reduce((total, group) => {
+    if (!isRecord(group?.sum)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    const value = usageInteger(group.sum[field]);
+    if (total > Number.MAX_SAFE_INTEGER - value) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    return total + value;
+  }, 0);
 }
 
 function usageStorageSum(groups) {
-  return Array.isArray(groups)
-    ? groups.reduce((total, group) => total + usageInteger(group?.max?.databaseSizeBytes), 0)
-    : 0;
+  const perDatabase = new Map();
+  for (const group of groups) {
+    if (!isRecord(group?.max)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    const databaseId = group.dimensions.databaseId;
+    const value = usageInteger(group.max.databaseSizeBytes);
+    perDatabase.set(databaseId, Math.max(perDatabase.get(databaseId) ?? 0, value));
+  }
+  let total = 0;
+  for (const value of perDatabase.values()) {
+    if (total > Number.MAX_SAFE_INTEGER - value) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    total += value;
+  }
+  return total;
 }
 
-function usageDatabaseGroups(primary, fallback, databaseId) {
-  if (Array.isArray(primary) && primary.length > 0) return primary;
-  return Array.isArray(fallback)
-    ? fallback.filter((group) => group?.dimensions?.databaseId === databaseId)
-    : [];
+function usageGroups(account, name, {
+  limit, exactLength = null, groupedByDatabase = false, rejectLimit = false, requireUnsampled = false,
+}) {
+  const groups = account[name];
+  if (!Array.isArray(groups)
+    || groups.length > limit
+    || (exactLength !== null && groups.length !== exactLength)
+    || (rejectLimit && groups.length === limit)) {
+    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+  }
+  for (const group of groups) {
+    if (!isRecord(group)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    if (requireUnsampled && (!isRecord(group.avg) || group.avg.sampleInterval !== 1)) {
+      throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    }
+    if (groupedByDatabase
+      && (!isRecord(group.dimensions)
+        || typeof group.dimensions.databaseId !== 'string'
+        || group.dimensions.databaseId.length === 0)) {
+      throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    }
+  }
+  return groups;
 }
 
 function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
@@ -3595,12 +3604,6 @@ function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
   if (ratio >= thresholds[2]) return 'critical';
   if (ratio >= thresholds[1]) return 'warning';
   if (ratio >= thresholds[0]) return 'notice';
-  return 'normal';
-}
-
-function projectUsageLevel(value, limit) {
-  if (value >= limit) return 'warning';
-  if (value >= limit * 0.8) return 'notice';
   return 'normal';
 }
 
@@ -3615,32 +3618,34 @@ function highestUsageLevel(levels) {
   ), 'normal');
 }
 
-function buildUsageData(payload, config, period, observedAt) {
-  const account = payload?.data?.viewer?.accounts?.[0];
-  if (!isRecord(account)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+function buildUsageData(payload, period, observedAt) {
+  const accounts = payload?.data?.viewer?.accounts;
+  if (!Array.isArray(accounts) || accounts.length !== 1 || !isRecord(accounts[0])) {
+    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+  }
+  const account = accounts[0];
+  const accountWorkers = usageGroups(account, 'accountWorkers', {
+    limit: 1, exactLength: 1, requireUnsampled: true,
+  });
+  const d1Usage = usageGroups(account, 'd1Usage', {
+    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireUnsampled: true,
+  });
+  const d1Storage = usageGroups(account, 'd1Storage', {
+    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireUnsampled: true,
+  });
 
-  const databaseUsage = usageDatabaseGroups(account.databaseD1, account.d1Usage, config.databaseId);
-  const databaseStorage = usageDatabaseGroups(account.databaseStorage, account.d1Storage, config.databaseId);
   const workers = {
-    accountRequests: usageSum(account.accountWorkers, 'requests'),
-    scriptRequests: usageSum(account.scriptWorkers, 'requests'),
-    accountErrors: usageSum(account.accountWorkers, 'errors'),
-    scriptErrors: usageSum(account.scriptWorkers, 'errors'),
+    accountRequests: usageSum(accountWorkers, 'requests'),
+    accountErrors: usageSum(accountWorkers, 'errors'),
     accountLimit: USAGE_LIMITS.workersAccountRequests,
   };
   const d1 = {
-    accountRowsRead: usageSum(account.d1Usage, 'rowsRead'),
-    databaseRowsRead: usageSum(databaseUsage, 'rowsRead'),
-    accountRowsWritten: usageSum(account.d1Usage, 'rowsWritten'),
-    databaseRowsWritten: usageSum(databaseUsage, 'rowsWritten'),
-    accountStorageBytes: usageStorageSum(account.d1Storage),
-    databaseStorageBytes: usageStorageSum(databaseStorage),
+    accountRowsRead: usageSum(d1Usage, 'rowsRead'),
+    accountRowsWritten: usageSum(d1Usage, 'rowsWritten'),
+    accountStorageBytes: usageStorageSum(d1Storage),
     accountRowsReadLimit: USAGE_LIMITS.d1AccountRowsRead,
     accountRowsWrittenLimit: USAGE_LIMITS.d1AccountRowsWritten,
     accountStorageBytesLimit: USAGE_LIMITS.d1AccountStorageBytes,
-    databaseStorageBytesLimit: USAGE_LIMITS.d1DatabaseStorageBytes,
-    projectRowsReadGuardrail: USAGE_LIMITS.d1ProjectRowsRead,
-    projectRowsWrittenGuardrail: USAGE_LIMITS.d1ProjectRowsWritten,
   };
 
   const warnings = [];
@@ -3650,9 +3655,6 @@ function buildUsageData(payload, config, period, observedAt) {
   addUsageWarning(warnings, levels, 'D1_ACCOUNT_READ', usageLevel(d1.accountRowsRead, d1.accountRowsReadLimit, d1Thresholds));
   addUsageWarning(warnings, levels, 'D1_ACCOUNT_WRITE', usageLevel(d1.accountRowsWritten, d1.accountRowsWrittenLimit, d1Thresholds));
   addUsageWarning(warnings, levels, 'D1_ACCOUNT_STORAGE', usageLevel(d1.accountStorageBytes, d1.accountStorageBytesLimit, d1Thresholds));
-  addUsageWarning(warnings, levels, 'D1_DATABASE_STORAGE', usageLevel(d1.databaseStorageBytes, d1.databaseStorageBytesLimit, d1Thresholds));
-  addUsageWarning(warnings, levels, 'D1_PROJECT_READ', projectUsageLevel(d1.databaseRowsRead, d1.projectRowsReadGuardrail));
-  addUsageWarning(warnings, levels, 'D1_PROJECT_WRITE', projectUsageLevel(d1.databaseRowsWritten, d1.projectRowsWrittenGuardrail));
 
   return {
     configured: true,
@@ -3669,7 +3671,7 @@ function buildUsageData(payload, config, period, observedAt) {
 
 async function usageCacheContext(config, period) {
   const fingerprint = bytesToHex(await sha256(new TextEncoder().encode(
-    `${config.accountId}\0${config.scriptName}\0${config.databaseId}\0${period.date}`,
+    `${config.accountId}\0${period.date}`,
   )));
   const request = new Request(`https://uxuv.invalid/.usage-cache/${fingerprint}`);
   return { cache: globalThis.caches?.default ?? null, request };
@@ -3701,9 +3703,8 @@ async function writeUsageCache(cacheContext, snapshot) {
 async function fetchUsageData(config, period, observedAt) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
-  let response;
   try {
-    response = await globalThis.fetch(USAGE_GRAPHQL_URL, {
+    const response = await globalThis.fetch(USAGE_GRAPHQL_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${config.token}`,
@@ -3713,8 +3714,6 @@ async function fetchUsageData(config, period, observedAt) {
         query: USAGE_QUERY,
         variables: {
           accountTag: config.accountId,
-          scriptName: config.scriptName,
-          databaseId: config.databaseId,
           datetimeStart: period.start,
           datetimeEnd: period.end,
           dateStart: period.date,
@@ -3724,28 +3723,22 @@ async function fetchUsageData(config, period, observedAt) {
       redirect: 'error',
       signal: controller.signal,
     });
-  } catch {
+    if (response.status === 401) throw new UsageFailure('USAGE_AUTH_FAILED', 502);
+    if (response.status === 403) throw new UsageFailure('USAGE_FORBIDDEN', 502);
+    if (response.status === 429) throw new UsageFailure('USAGE_RATE_LIMITED', 503);
+    if (!response.ok) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    const bytes = await readLimitedBody(response, USAGE_RESPONSE_MAX_BYTES);
+    const payload = JSON.parse(new TextDecoder().decode(bytes));
+    if (Array.isArray(payload?.errors) && payload.errors.length > 0) {
+      throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
+    }
+    return buildUsageData(payload, period, observedAt);
+  } catch (error) {
+    if (error instanceof UsageFailure) throw error;
     throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
   } finally {
     clearTimeout(timeout);
   }
-
-  if (response.status === 401) throw new UsageFailure('USAGE_AUTH_FAILED', 502);
-  if (response.status === 403) throw new UsageFailure('USAGE_FORBIDDEN', 502);
-  if (response.status === 429) throw new UsageFailure('USAGE_RATE_LIMITED', 503);
-  if (!response.ok) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
-
-  let payload;
-  try {
-    const bytes = await readLimitedBody(response, USAGE_RESPONSE_MAX_BYTES);
-    payload = JSON.parse(new TextDecoder().decode(bytes));
-  } catch {
-    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
-  }
-  if (Array.isArray(payload?.errors) && payload.errors.length > 0) {
-    throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
-  }
-  return buildUsageData(payload, config, period, observedAt);
 }
 
 function privateUsageResult(result) {

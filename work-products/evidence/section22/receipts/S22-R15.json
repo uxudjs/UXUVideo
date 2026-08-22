@@ -1,0 +1,86 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R15",
+  "attempt_id": "run-20260821-s22-r15-01",
+  "owner": "native-worker:s22_r15",
+  "executor": "main-agent:serial",
+  "status": "completed",
+  "created_at": "2026-08-21T19:49:59.4548473+08:00",
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R15/run-20260821-s22-r15-01/manifest.json",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    { "repository": "worker", "path": "work-products/tests/cloudflare-usage-contract.test.mjs", "state": "modified" },
+    { "repository": "worker", "path": "work-products/tests/worker-only-boundary.test.mjs", "state": "modified" },
+    { "repository": "pages", "path": "playwright.config.ts", "state": "modified" },
+    { "repository": "pages", "path": "work-products/tests/usage-ui.e2e.spec.ts", "state": "modified" },
+    { "repository": "pages", "path": "work-products/tests/offline-boundary.e2e.spec.ts", "state": "created" },
+    { "repository": "pages", "path": "work-products/tests/offline-reject-proxy.mjs", "state": "created" }
+  ],
+  "red": [
+    {
+      "check": "active retired-name literals",
+      "exit_code": 1,
+      "result": "Worker active tests had 5 matching lines and Pages active tests had 1 matching line before edits"
+    },
+    {
+      "check": "offline reject proxy exists before external fetch",
+      "exit_code": 1,
+      "result": "proxy missing; stopped before any external fetch"
+    }
+  ],
+  "validation": [
+    {
+      "command": "node --test work-products/tests/cloudflare-usage-contract.test.mjs work-products/tests/structured-logging.test.mjs work-products/tests/worker-only-boundary.test.mjs",
+      "exit_code": 0,
+      "result": "17 pass, 0 fail"
+    },
+    { "command": "node --check _worker.js", "exit_code": 0 },
+    {
+      "command": "node node_modules/@playwright/test/cli.js test work-products/tests/offline-boundary.e2e.spec.ts --config playwright.config.ts --workers=1",
+      "exit_code": 0,
+      "result": "1 pass, 0 fail"
+    },
+    {
+      "command": "node node_modules/@playwright/test/cli.js test work-products/tests/offline-boundary.e2e.spec.ts work-products/tests/usage-ui.e2e.spec.ts --config playwright.config.ts --workers=1",
+      "exit_code": 0,
+      "result": "8 pass, 0 fail"
+    },
+    {
+      "check": "two-repository active retired-name scan",
+      "exit_code": 0,
+      "result": "zero matching lines"
+    },
+    { "command": "git diff --check", "repository": "worker", "exit_code": 0 },
+    { "command": "git diff --check", "repository": "pages", "exit_code": 0 }
+  ],
+  "iterations": [
+    {
+      "check": "initial focused offline GREEN attempt",
+      "exit_code": 1,
+      "result": "an HTTP no-cors response was opaque rather than rejected; the assertion was corrected to test normal fetch rejection and both proxy counters"
+    }
+  ],
+  "terminal": {
+    "verification": "green",
+    "targets_fingerprint": "3053f7358768ada18050df2ecbb6232e340129b02da4aa9f03b8a7a539dcedfc",
+    "generated_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "protected_inputs": "unchanged",
+    "ports": "free",
+    "task_temp": "present: playwright-transform-cache",
+    "subprocess_cleanup": "Playwright stopped both loopback web servers and refreshed its task-owned output directory; no main-agent cleanup was performed"
+  },
+  "scope_exceptions": [],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

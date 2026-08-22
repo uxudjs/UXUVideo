@@ -1,0 +1,73 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R17",
+  "attempt_id": "run-20260821-s22-r17-01",
+  "owner": "native-pages:s22_r17",
+  "executor": "main-agent:serial",
+  "status": "completed",
+  "created_at": "2026-08-21T20:24:27.0921679+08:00",
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R17/run-20260821-s22-r17-01/manifest.json",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    { "repository": "pages", "path": "work-products/evidence/section22/pages-validation.md", "state": "created" },
+    { "repository": "pages", "path": ".next", "state": "rebuilt" },
+    { "repository": "pages", "path": "out", "state": "rebuilt" },
+    { "repository": "pages", "path": "release", "state": "rebuilt" },
+    { "repository": "pages", "path": "tsconfig.tsbuildinfo", "state": "updated" },
+    { "repository": "pages", "path": "work-products/tests/artifacts/playwright", "state": "updated" },
+    { "repository": "pages", "path": "work-products/tests/work/section21-candidate-draft", "state": "updated_isolated_draft" },
+    { "repository": "pages", "path": "work-products/tests/work/section22-r17-temp", "state": "created" }
+  ],
+  "validation": [
+    { "command": "npm run lint", "repository": "pages", "exit_code": 0 },
+    { "command": "node node_modules/typescript/bin/tsc --noEmit", "repository": "pages", "exit_code": 0 },
+    { "command": "npm run test:e2e", "repository": "pages", "exit_code": 0, "result": "128 pass, 0 fail" },
+    { "check": "static remote-build dependency scan", "repository": "pages", "exit_code": 0, "result": "zero matching lines" },
+    { "command": "npm run build", "repository": "pages", "exit_code": 0, "result": "static export completed; 23 client JavaScript assets transpiled" },
+    { "command": "npm run release:build", "repository": "pages", "exit_code": 0, "result": "release/current updated" },
+    { "command": "npm test", "repository": "pages", "exit_code": 0, "result": "173 pass, 0 fail" },
+    { "command": "git diff --check", "repository": "pages", "exit_code": 0 },
+    {
+      "check": "release manifest summary",
+      "exit_code": 0,
+      "result": "schema v1; Pages 0.3.0; API Contract 2; Worker >=2.0.0 <3.0.0; 7 routes; 72 assets"
+    }
+  ],
+  "iterations": [
+    {
+      "check": "initial task-temp creation command",
+      "exit_code": 1,
+      "result": "unsupported PowerShell parameter; directory was not created before the corrected command"
+    },
+    {
+      "check": "two initial lint wrappers",
+      "exit_code": 1,
+      "result": "baseline CLI rejected noncanonical manifest paths before lint started; execution moved to Worker cwd without weakening the contract"
+    }
+  ],
+  "terminal": {
+    "verification": "green",
+    "targets_fingerprint": "db7422ab3ddb27fc1e95532051a94222f498dcad8ce0bc1d078331dc00095590",
+    "generated_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "protected_inputs": "unchanged",
+    "ports": "free",
+    "release_transients": "absent",
+    "node_test_work": "missing",
+    "task_temp": "present: playwright-transform-cache",
+    "subprocess_cleanup": "Playwright stopped both loopback web servers; Node tests removed their task-owned work paths; no main-agent cleanup was performed"
+  },
+  "scope_exceptions": [],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

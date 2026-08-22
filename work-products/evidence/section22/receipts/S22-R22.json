@@ -1,0 +1,127 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R22",
+  "attempt_id": "run-20260822-s22-r22-01",
+  "owner": "native-worker:s22_r22",
+  "executor": "main-agent:serial",
+  "status": "completed",
+  "created_at": "2026-08-22T15:02:19.7986427+08:00",
+  "worker_launched": true,
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R22/run-20260822-s22-r22-01/manifest.json",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R22/request-run-20260822-s22-r22-01.json",
+      "state": "created_request_retained"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R22/run-20260822-s22-r22-01",
+      "state": "created_baseline_retained"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-audit-recovery-validation.md",
+      "state": "created_completed_evidence"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/work/section22-r22-temp",
+      "state": "created_empty"
+    }
+  ],
+  "reused_product_validation": {
+    "source_task": "S22-R21",
+    "frozen_integrity": "work-products/evidence/section22/r21-frozen-integrity.json",
+    "result": "Worker 237 pass; Pages E2E 128 pass; Pages Node 173 pass; Worker size and two-repository build diff hygiene green",
+    "product_and_release_identity": "unchanged by R22"
+  },
+  "validation": [
+    {
+      "command": "node --test work-products/tests/section22-final-gate-audit-recovery-plan-contract.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "6 pass, 0 fail"
+    },
+    {
+      "command": "node --test work-products/tests/section22-final-gate-audit.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "3 pass, 0 fail"
+    },
+    {
+      "command": "node --test work-products/tests/candidate-hygiene.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "10 pass, 0 fail; repeated after evidence creation"
+    },
+    {
+      "command": "node work-products/scripts/section22-final-gate-audit.mjs --task-temp work-products/tests/work/section22-r22-temp",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "two runs: versions and API compatible; 7 routes; 72 assets; manifest actual identical; retired names 0; task temp empty"
+    },
+    {
+      "command": "git diff --check",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "line-ending warnings only"
+    },
+    {
+      "command": "git diff --check",
+      "repository": "pages",
+      "exit_code": 0,
+      "result": "line-ending warnings only"
+    },
+    {
+      "command": "node --test work-products/tests/section21-rollback-drill.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "1 pass, 0 fail; isolated v2 to v1 to v2 replay"
+    },
+    {
+      "check": "main-agent evidence audit",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "required fields present; no machine path; candidate hygiene green"
+    }
+  ],
+  "evidence": {
+    "path": "work-products/evidence/section22/final-gate-audit-recovery-validation.md",
+    "bytes": 4750,
+    "sha256": "9293d1e947961acde93923b9eec640cd540a385467b2daaf5ad08883b497405f"
+  },
+  "terminal": {
+    "verification": "green",
+    "targets_fingerprint": "a523904b2cae1023c7ab3c0ede7e4d5b27a5b812f374a0ce535eca6c77633b2e",
+    "generated_fingerprint": "faad4fc2d28cdca4271b059ee99960b2c01b315ad2239faeafdc5794cc7e1ee5",
+    "protected_inputs": "unchanged",
+    "repository_inventories": "unchanged",
+    "release_current": "unchanged",
+    "release_transients": "absent",
+    "generated_namespace": "none",
+    "task_temp": "present: empty",
+    "main_agent_cleanup": "none"
+  },
+  "scope_exceptions": [],
+  "remaining_work": [
+    "Run @uxu-code:review.",
+    "Run @uxu-code:ship and require GO before remote publication.",
+    "Publish GitHub Pages and Cloudflare Workers under the user-approved deployment scope.",
+    "Run production smoke tests and retain remote receipts."
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

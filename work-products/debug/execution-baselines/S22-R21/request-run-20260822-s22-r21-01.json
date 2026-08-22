@@ -1,0 +1,427 @@
+{
+  "schema_version": "s22-execution-baseline-request/v2",
+  "task_id": "S22-R21",
+  "attempt_id": "run-20260822-s22-r21-01",
+  "owner": "native-worker:s22_r21",
+  "no_replace": true,
+  "attempt_root": "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01",
+  "targets": [
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-completion-recovery-validation.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/work/execution-baseline-tool"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/work/section22-r21-temp"
+    },
+    {
+      "repository": "pages",
+      "path": ".next"
+    },
+    {
+      "repository": "pages",
+      "path": "out"
+    },
+    {
+      "repository": "pages",
+      "path": "release"
+    },
+    {
+      "repository": "pages",
+      "path": "tsconfig.tsbuildinfo"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/artifacts/playwright"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/work/kvideo-webview-compatibility"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/work/pwa-release"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/work/release-manifest"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/work/section21-candidate-draft"
+    }
+  ],
+  "inputs": [
+    {
+      "repository": "worker",
+      "path": "work-products/SPEC.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/approval-baselines/s22-account-usage-final-gate-completion-recovery-20260822-10/plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/approval-baselines/s22-account-usage-final-gate-completion-recovery-20260822-09/plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/blocked-r20-todo.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/r20-frozen-integrity.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R20/request-run-20260822-s22-r20-01.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/s22-r20-active-todo-contract.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/s22-r20-duplicate-input-contract.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/scripts/execution-baseline.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/execution-baseline-tool.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-final-gate-completion-plan-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-final-gate-completion-recovery-plan-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "_worker.js"
+    },
+    {
+      "repository": "worker",
+      "path": "README.md"
+    },
+    {
+      "repository": "worker",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "repository": "worker",
+      "path": "package.json"
+    },
+    {
+      "repository": "worker",
+      "path": "package-lock.json"
+    },
+    {
+      "repository": "worker",
+      "path": "scripts/check-worker-size.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/candidate-hygiene.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/cloudflare-usage-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/structured-logging.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/worker-only-boundary.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section21-rollback-drill.test.mjs"
+    },
+    {
+      "repository": "pages",
+      "path": "package-lock.json"
+    },
+    {
+      "repository": "pages",
+      "path": "node_modules/.package-lock.json"
+    },
+    {
+      "repository": "pages",
+      "path": ".env"
+    },
+    {
+      "repository": "pages",
+      "path": ".env.local"
+    },
+    {
+      "repository": "pages",
+      "path": ".env.development"
+    },
+    {
+      "repository": "pages",
+      "path": ".env.development.local"
+    },
+    {
+      "repository": "pages",
+      "path": ".env.production"
+    },
+    {
+      "repository": "pages",
+      "path": ".env.production.local"
+    },
+    {
+      "repository": "pages",
+      "path": "playwright.config.ts"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/usage-ui.e2e.spec.ts"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/offline-boundary.e2e.spec.ts"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/offline-reject-proxy.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R15.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R16.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R17.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R18.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R19.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R20.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/worker-validation.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/pair-validation.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-recovery-validation.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-completion-validation.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/s22-r18-candidate-hygiene-enobufs.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/s22-r19-in-progress-mirror-contract.md"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/evidence/section22/pages-validation.md"
+    }
+  ],
+  "protected_inputs": [
+    {
+      "repository": "pages",
+      "path": "package.json"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/iptv-retirement-contract.test.mjs"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/pages-deployment.test.mjs"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/repository-test-isolation.test.mjs"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate"
+    }
+  ],
+  "orchestration_outputs": [
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R21.json"
+    }
+  ],
+  "repositories": [
+    {
+      "id": "worker",
+      "root": ".",
+      "exclude": [
+        "work-products/todo.md",
+        "work-products/evidence/section22/final-gate-completion-recovery-validation.md",
+        "work-products/evidence/section22/receipts/S22-R21.json",
+        "work-products/debug/execution-baselines/S22-R21",
+        "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01",
+        "work-products/tests/work/execution-baseline-tool",
+        "work-products/tests/work/section22-r21-temp"
+      ]
+    },
+    {
+      "id": "pages",
+      "root": "../UXUV-Pages",
+      "exclude": [
+        ".next",
+        "out",
+        "release",
+        "tsconfig.tsbuildinfo",
+        "work-products/tests/artifacts/playwright",
+        "work-products/tests/work/kvideo-webview-compatibility",
+        "work-products/tests/work/pwa-release",
+        "work-products/tests/work/release-manifest",
+        "work-products/tests/work/section21-candidate-draft"
+      ]
+    }
+  ],
+  "toolchain": {
+    "node_version": "v20.19.2",
+    "entrypoints": [
+      {
+        "repository": "worker",
+        "path": "work-products/scripts/execution-baseline.mjs"
+      },
+      {
+        "repository": "worker",
+        "path": "scripts/check-worker-size.mjs"
+      },
+      {
+        "repository": "pages",
+        "path": "node_modules/@playwright/test/cli.js"
+      },
+      {
+        "repository": "pages",
+        "path": "node_modules/next/dist/bin/next"
+      },
+      {
+        "repository": "pages",
+        "path": "node_modules/esbuild/bin/esbuild"
+      },
+      {
+        "repository": "pages",
+        "path": "node_modules/eslint/bin/eslint.js"
+      },
+      {
+        "repository": "pages",
+        "path": "node_modules/typescript/bin/tsc"
+      }
+    ]
+  },
+  "environment": [
+    {
+      "key": "GIT_OPTIONAL_LOCKS",
+      "state": "present",
+      "sensitive": false,
+      "value": "0"
+    },
+    {
+      "key": "PORT",
+      "state": "present",
+      "sensitive": false,
+      "value": "4173"
+    },
+    {
+      "key": "NEXT_TELEMETRY_DISABLED",
+      "state": "present",
+      "sensitive": false,
+      "value": "1"
+    },
+    {
+      "key": "SECTION21_REVIEW_FIXTURE",
+      "state": "present",
+      "sensitive": false,
+      "value": "0"
+    },
+    {
+      "key": "UXUV_WRITE_VISUAL_CANDIDATE",
+      "state": "present",
+      "sensitive": false,
+      "value": "0"
+    },
+    {
+      "key": "TEMP",
+      "state": "present",
+      "sensitive": true,
+      "sha256": "b002db6df258a5f12a5759b6abe0b54f2c2cac0bf6c9ced1953b81e868cb647c"
+    },
+    {
+      "key": "TMP",
+      "state": "present",
+      "sensitive": true,
+      "sha256": "b002db6df258a5f12a5759b6abe0b54f2c2cac0bf6c9ced1953b81e868cb647c"
+    },
+    {
+      "key": "TMPDIR",
+      "state": "present",
+      "sensitive": true,
+      "sha256": "b002db6df258a5f12a5759b6abe0b54f2c2cac0bf6c9ced1953b81e868cb647c"
+    },
+    {
+      "key": "HTTP_PROXY",
+      "state": "absent",
+      "sensitive": false
+    },
+    {
+      "key": "HTTPS_PROXY",
+      "state": "absent",
+      "sensitive": false
+    },
+    {
+      "key": "ALL_PROXY",
+      "state": "absent",
+      "sensitive": false
+    },
+    {
+      "key": "NO_PROXY",
+      "state": "absent",
+      "sensitive": false
+    }
+  ],
+  "generated_namespaces": [
+    {
+      "repository": "pages",
+      "parent": "work-products/tests/work",
+      "prefix": "section21-rb-",
+      "initial": "none",
+      "terminal": "none"
+    }
+  ]
+}
+

@@ -1,0 +1,261 @@
+{
+  "schema_version": "s22-execution-baseline-request/v2",
+  "task_id": "S22-R22",
+  "attempt_id": "run-20260822-s22-r22-01",
+  "owner": "native-worker:s22_r22",
+  "no_replace": true,
+  "attempt_root": "work-products/debug/execution-baselines/S22-R22/run-20260822-s22-r22-01",
+  "targets": [
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-audit-recovery-validation.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/work/section22-r22-temp"
+    }
+  ],
+  "inputs": [
+    {
+      "repository": "worker",
+      "path": "work-products/SPEC.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/approval-baselines/s22-account-usage-final-gate-audit-recovery-20260822-11/plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/approval-baselines/s22-account-usage-final-gate-completion-recovery-20260822-10/plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/blocked-r21-todo.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/r21-frozen-integrity.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R21/request-run-20260822-s22-r21-01.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01/manifest.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01/manifest.sha256"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/final-gate-completion-recovery-validation.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R21.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/s22-r21-post-scan-wrapper-contract.md"
+    },
+    {
+      "repository": "worker",
+      "path": "package.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/scripts/execution-baseline.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/execution-baseline-tool.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/scripts/section22-final-gate-audit.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-final-gate-audit.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-final-gate-completion-recovery-plan-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-final-gate-audit-recovery-plan-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/candidate-hygiene.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section21-rollback-drill.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/pair-rollback.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/release-runbook.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/worker-v1.reverse.patch"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/pages-v1.reverse.patch"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/worker-v2.forward.patch"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section21/pages-v2.forward.patch"
+    }
+  ],
+  "protected_inputs": [
+    {
+      "repository": "worker",
+      "path": "_worker.js"
+    },
+    {
+      "repository": "pages",
+      "path": "package.json"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/iptv-retirement-contract.test.mjs"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/pages-deployment.test.mjs"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/repository-test-isolation.test.mjs"
+    },
+    {
+      "repository": "pages",
+      "path": "work-products/tests/fixtures/ui-review/section21-candidate"
+    },
+    {
+      "repository": "pages",
+      "path": "release/current"
+    }
+  ],
+  "orchestration_outputs": [
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/receipts/S22-R22.json"
+    }
+  ],
+  "repositories": [
+    {
+      "id": "worker",
+      "root": ".",
+      "exclude": [
+        "work-products/todo.md",
+        "work-products/evidence/section22/final-gate-audit-recovery-validation.md",
+        "work-products/evidence/section22/receipts/S22-R22.json",
+        "work-products/debug/execution-baselines/S22-R22",
+        "work-products/debug/execution-baselines/S22-R22/run-20260822-s22-r22-01",
+        "work-products/tests/work/section22-r22-temp"
+      ]
+    },
+    {
+      "id": "pages",
+      "root": "../UXUV-Pages",
+      "exclude": [
+        ".next",
+        "out",
+        "release",
+        "tsconfig.tsbuildinfo",
+        "work-products/tests/artifacts/playwright",
+        "work-products/tests/work/kvideo-webview-compatibility",
+        "work-products/tests/work/pwa-release",
+        "work-products/tests/work/release-manifest",
+        "work-products/tests/work/section21-candidate-draft"
+      ]
+    }
+  ],
+  "toolchain": {
+    "node_version": "v20.19.2",
+    "entrypoints": [
+      {
+        "repository": "worker",
+        "path": "work-products/scripts/execution-baseline.mjs"
+      },
+      {
+        "repository": "worker",
+        "path": "work-products/scripts/section22-final-gate-audit.mjs"
+      }
+    ]
+  },
+  "environment": [
+    {
+      "key": "GIT_OPTIONAL_LOCKS",
+      "state": "present",
+      "sensitive": false,
+      "value": "0"
+    },
+    {
+      "key": "TEMP",
+      "state": "present",
+      "sensitive": true,
+      "sha256": "30e2b10acdd0e40fc20095606a9528dce45376c9da6d03234f648dbfa5ec3d4a"
+    },
+    {
+      "key": "TMP",
+      "state": "present",
+      "sensitive": true,
+      "sha256": "30e2b10acdd0e40fc20095606a9528dce45376c9da6d03234f648dbfa5ec3d4a"
+    },
+    {
+      "key": "TMPDIR",
+      "state": "present",
+      "sensitive": true,
+      "sha256": "30e2b10acdd0e40fc20095606a9528dce45376c9da6d03234f648dbfa5ec3d4a"
+    },
+    {
+      "key": "HTTP_PROXY",
+      "state": "absent",
+      "sensitive": false
+    },
+    {
+      "key": "HTTPS_PROXY",
+      "state": "absent",
+      "sensitive": false
+    },
+    {
+      "key": "ALL_PROXY",
+      "state": "absent",
+      "sensitive": false
+    },
+    {
+      "key": "NO_PROXY",
+      "state": "absent",
+      "sensitive": false
+    }
+  ],
+  "generated_namespaces": [
+    {
+      "repository": "pages",
+      "parent": "work-products/tests/work",
+      "prefix": "section21-rb-",
+      "initial": "none",
+      "terminal": "none"
+    }
+  ]
+}

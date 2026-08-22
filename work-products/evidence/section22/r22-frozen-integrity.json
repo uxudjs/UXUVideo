@@ -1,0 +1,62 @@
+{
+  "schema_version": "s22-frozen-integrity/v1",
+  "subject": {
+    "task_id": "S22-R22",
+    "attempt_id": "run-20260822-s22-r22-01",
+    "status": "blocked",
+    "receipt_semantic_status": "completed_but_non_authoritative_after_readback_wrapper_failure"
+  },
+  "created_at": "2026-08-22",
+  "files": [
+    {
+      "path": "work-products/debug/approval-baselines/s22-account-usage-final-gate-audit-recovery-20260822-11/plan.md",
+      "bytes": 17421,
+      "sha256": "3bccad7e759c1c076e0a278b1b90c8efdf79b3ee95a217cae4eb799f1fa83e21"
+    },
+    {
+      "path": "work-products/evidence/section22/blocked-r22-todo.md",
+      "bytes": 2577,
+      "sha256": "c1cb81919f14c81684c16f288b1b8c74a986b2cb69574e71a056cdb4731a932c"
+    },
+    {
+      "path": "work-products/debug/execution-baselines/S22-R22/request-run-20260822-s22-r22-01.json",
+      "bytes": 7066,
+      "sha256": "bf046a3f7c974628d2a2a5c2d1b7387ae251cd45d6c4054fb80dd0860782d298"
+    },
+    {
+      "path": "work-products/debug/execution-baselines/S22-R22/run-20260822-s22-r22-01/manifest.json",
+      "bytes": 3917482,
+      "sha256": "33ee14454adc2e15e5937bce3612dab4d73735be5ee01cdb7629e5c874f7a6f3"
+    },
+    {
+      "path": "work-products/debug/execution-baselines/S22-R22/run-20260822-s22-r22-01/manifest.sha256",
+      "bytes": 65,
+      "sha256": "6b8fa32f6119f1e8d4ee16ceb1b02c00487c7bea87eaed767ca82c89a3d9d374"
+    },
+    {
+      "path": "work-products/evidence/section22/final-gate-audit-recovery-validation.md",
+      "bytes": 4750,
+      "sha256": "9293d1e947961acde93923b9eec640cd540a385467b2daaf5ad08883b497405f"
+    },
+    {
+      "path": "work-products/evidence/section22/receipts/S22-R22.json",
+      "bytes": 4429,
+      "sha256": "f35e8d74620fae0112307d3512fdfa718d22414c020aaf91d0b07cf9658d1b86"
+    },
+    {
+      "path": "work-products/debug/execution-baselines/S22-R22/receipt-readback-output-normalization.md",
+      "bytes": 1575,
+      "sha256": "4d8813e80095346da6b215cd7c7e83e6bc209ef9dd7c333604a16ce3caeb713d"
+    }
+  ],
+  "terminal": {
+    "baseline_terminal_verify": "green",
+    "task_temp": "present-empty",
+    "generated_namespace": "none",
+    "release_transients": "absent",
+    "protected_inputs": "unchanged",
+    "repository_inventories": "unchanged",
+    "receipt_file_bytes": "canonical-and-byte-safe-identical",
+    "declared_receipt_readback_wrapper": "failed-output-normalization"
+  }
+}

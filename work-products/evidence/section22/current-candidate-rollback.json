@@ -1,0 +1,2477 @@
+{
+  "schemaVersion": "section22-current-candidate-rollback/v1",
+  "candidateId": "s22-review-remediation-20260822-13",
+  "generatedAt": "2026-08-22T08:24:32.656Z",
+  "repositories": {
+    "worker": {
+      "baseCommit": "9185950b8c1a5cae4204f244369bf711e0f36b44",
+      "changedPaths": [
+        "CHANGELOG.md",
+        "README.md",
+        "_worker.js"
+      ],
+      "entries": [
+        {
+          "path": "CHANGELOG.md",
+          "base": {
+            "mode": "100644",
+            "blobOid": "aad394df877975aa3d6004bff185ba8176ac5382",
+            "bytes": 14461,
+            "sha256": "864be084bd99faa86bccaa530447abf0c0044a14b6c09da42615cd120972908d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "86a4a56096895a0dbf4e68d435552653c1f7d8b3",
+            "bytes": 14686,
+            "sha256": "62ca63361a44dc19d03c8525109e7821e1d83518632a91752269053a50cdcd6e"
+          }
+        },
+        {
+          "path": "README.md",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4426e9f5fcb7c89fe193bcab386086a80e93066e",
+            "bytes": 6143,
+            "sha256": "a02baa0e634806aba40ef4d595cb4f30c56182e94aca63903c5647122e8bd84e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "0bec84c376f2bc3f3b8e568e35b491f4dfcb99f7",
+            "bytes": 6189,
+            "sha256": "0a0bf1b452d39ec2a5c747c332e5af56ea26cd3f4ce2fde904234f8d623b9dd0"
+          }
+        },
+        {
+          "path": "_worker.js",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b91ce3a523ad58fa8fecc2f762a66e2ab0492236",
+            "bytes": 169062,
+            "sha256": "1f712fcb4f6d497a78591aca0597b37e01deffcde1712f3f2a3af49f0ab3c3ab"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "d006cd517aa83819842ca1a9075424647a427473",
+            "bytes": 168599,
+            "sha256": "d7b6bbf17122d7d437488daafc6df3ef330a130901f556e53dd6587e29a3396a"
+          }
+        },
+        {
+          "path": "package-lock.json",
+          "base": {
+            "mode": "100644",
+            "blobOid": "24b790f66378f66df7f776395bfc348d7a3c599f",
+            "bytes": 193,
+            "sha256": "584e39b75d30016f7429f37f669ef247c76686b510ac4eb1d5970ac9d643cca9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "24b790f66378f66df7f776395bfc348d7a3c599f",
+            "bytes": 193,
+            "sha256": "584e39b75d30016f7429f37f669ef247c76686b510ac4eb1d5970ac9d643cca9"
+          }
+        },
+        {
+          "path": "package.json",
+          "base": {
+            "mode": "100644",
+            "blobOid": "fe5a72d4a1089a6509c03cf6fbec93c83cb0f33e",
+            "bytes": 215,
+            "sha256": "6bc3a2ff830c07c667b675db33f3faa1a6cb19c98acf9276055f936d36d6f589"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "fe5a72d4a1089a6509c03cf6fbec93c83cb0f33e",
+            "bytes": 215,
+            "sha256": "6bc3a2ff830c07c667b675db33f3faa1a6cb19c98acf9276055f936d36d6f589"
+          }
+        }
+      ]
+    },
+    "pages": {
+      "baseCommit": "47b6b76b9d2f8b7069ab43e8b036f0724b431586",
+      "changedPaths": [
+        "components/UsageAlertProvider.tsx",
+        "components/settings/CloudflareUsageSettings.tsx",
+        "lib/hooks/useCloudflareUsage.ts",
+        "package.json",
+        "playwright.config.ts"
+      ],
+      "entries": [
+        {
+          "path": ".github/workflows/pages.yml",
+          "base": {
+            "mode": "100644",
+            "blobOid": "3bb94f7b1582826bc72f19fe003cf5efe2740811",
+            "bytes": 2503,
+            "sha256": "622d6b0a156ebecb1771aec46908d9a75d93c1d9af9b8a3afc0aeec7cd6a5b9c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "3bb94f7b1582826bc72f19fe003cf5efe2740811",
+            "bytes": 2503,
+            "sha256": "622d6b0a156ebecb1771aec46908d9a75d93c1d9af9b8a3afc0aeec7cd6a5b9c"
+          }
+        },
+        {
+          "path": "app/favorites/page.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "7077ab21b9d5597240d75692aa1857168585401e",
+            "bytes": 151,
+            "sha256": "f0c4c298c71fb7d1a8f436620d219197bf6a35df7ed1523d624a08c4ba542be7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "7077ab21b9d5597240d75692aa1857168585401e",
+            "bytes": 151,
+            "sha256": "f0c4c298c71fb7d1a8f436620d219197bf6a35df7ed1523d624a08c4ba542be7"
+          }
+        },
+        {
+          "path": "app/globals.css",
+          "base": {
+            "mode": "100644",
+            "blobOid": "d224b724f58c41911316691c06cf0f4859f1713e",
+            "bytes": 126082,
+            "sha256": "7154e432ae6109e462c5df5cd712e47abbfbc8081f2759a990ba974f38213bf4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "d224b724f58c41911316691c06cf0f4859f1713e",
+            "bytes": 126082,
+            "sha256": "7154e432ae6109e462c5df5cd712e47abbfbc8081f2759a990ba974f38213bf4"
+          }
+        },
+        {
+          "path": "app/layout.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8b33ba043b9d00d4e49df7a137f95757ae4f9243",
+            "bytes": 1427,
+            "sha256": "cde864432d14c9bc27725647662c6aec04dead778cc86031f0c4bdb2b96ee380"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8b33ba043b9d00d4e49df7a137f95757ae4f9243",
+            "bytes": 1427,
+            "sha256": "cde864432d14c9bc27725647662c6aec04dead778cc86031f0c4bdb2b96ee380"
+          }
+        },
+        {
+          "path": "app/page.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "db1f9cafbbd5d09c886cbe2760a78ac0d0926b2e",
+            "bytes": 131,
+            "sha256": "f2d826b73e56d5f3f7dad6ed26ed31866626d1233f328277fd64b15a371539a8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "db1f9cafbbd5d09c886cbe2760a78ac0d0926b2e",
+            "bytes": 131,
+            "sha256": "f2d826b73e56d5f3f7dad6ed26ed31866626d1233f328277fd64b15a371539a8"
+          }
+        },
+        {
+          "path": "app/player/page.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "f471093b1babe978407b2a8c203c4ab13ecf5c08",
+            "bytes": 265,
+            "sha256": "4ac088568810496311041b2f31c5eea86dfa7cdc541a51745a43e4fa43326381"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "f471093b1babe978407b2a8c203c4ab13ecf5c08",
+            "bytes": 265,
+            "sha256": "4ac088568810496311041b2f31c5eea86dfa7cdc541a51745a43e4fa43326381"
+          }
+        },
+        {
+          "path": "app/premium/favorites/page.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "e7061c06b4bc64ceb9c9127d9571f30196d7648e",
+            "bytes": 173,
+            "sha256": "22f620c5659974f80a6b20001221db87f111bd4ac70b8fc88f794a78502d552c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "e7061c06b4bc64ceb9c9127d9571f30196d7648e",
+            "bytes": 173,
+            "sha256": "22f620c5659974f80a6b20001221db87f111bd4ac70b8fc88f794a78502d552c"
+          }
+        },
+        {
+          "path": "app/premium/page.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "a51bcb7f163a1e4a727aeae55a89f0fd474b29bb",
+            "bytes": 151,
+            "sha256": "fb8a15830ead0e04c5f521ce363a3da52f95806f31577aa65511f5a9e19de8ff"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "a51bcb7f163a1e4a727aeae55a89f0fd474b29bb",
+            "bytes": 151,
+            "sha256": "fb8a15830ead0e04c5f521ce363a3da52f95806f31577aa65511f5a9e19de8ff"
+          }
+        },
+        {
+          "path": "app/premium/settings/page.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "480968a179f90cb7e9dba0357bb18ae4c997bbae",
+            "bytes": 183,
+            "sha256": "dc5796a03a1c215bbedeef522ba6aa4b28040502e07e816a9df924718cb81665"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "480968a179f90cb7e9dba0357bb18ae4c997bbae",
+            "bytes": 183,
+            "sha256": "dc5796a03a1c215bbedeef522ba6aa4b28040502e07e816a9df924718cb81665"
+          }
+        },
+        {
+          "path": "app/settings/page.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b0b5a9aff95b7a0e099f7d3656b66a2ed3017447",
+            "bytes": 2456,
+            "sha256": "e63cd6d09ca535598bf63723cc849bcca658bd63e098d79bca3af9d9e894ca63"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "b0b5a9aff95b7a0e099f7d3656b66a2ed3017447",
+            "bytes": 2456,
+            "sha256": "e63cd6d09ca535598bf63723cc849bcca658bd63e098d79bca3af9d9e894ca63"
+          }
+        },
+        {
+          "path": "components/AccountPreferenceBridge.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c3a712b8e41832463c660b68640fd0dd03ade599",
+            "bytes": 2237,
+            "sha256": "a4f6ca78843894c0dd9287f852bf5bae72d1f28255c865aca49ea6472ef6ce3d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c3a712b8e41832463c660b68640fd0dd03ade599",
+            "bytes": 2237,
+            "sha256": "a4f6ca78843894c0dd9287f852bf5bae72d1f28255c865aca49ea6472ef6ce3d"
+          }
+        },
+        {
+          "path": "components/AdminGate.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "61c753a5b83f3519324ed25431a2d49d4f98a901",
+            "bytes": 889,
+            "sha256": "b0440a720cdbec495386291805e71b1f3580a6d0be87b189287222a64af59bb9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "61c753a5b83f3519324ed25431a2d49d4f98a901",
+            "bytes": 889,
+            "sha256": "b0440a720cdbec495386291805e71b1f3580a6d0be87b189287222a64af59bb9"
+          }
+        },
+        {
+          "path": "components/AppUpdateControl.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "0a855e737a7f883005448628e1771879253c8586",
+            "bytes": 11100,
+            "sha256": "87ca051dd13e0c6b3c170f0e3b691a750595de7d5306331b8d927e135fb12032"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "0a855e737a7f883005448628e1771879253c8586",
+            "bytes": 11100,
+            "sha256": "87ca051dd13e0c6b3c170f0e3b691a750595de7d5306331b8d927e135fb12032"
+          }
+        },
+        {
+          "path": "components/ContentNavigation.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8e1a87670d4c826d7629b2e6447e827eb0483d02",
+            "bytes": 2321,
+            "sha256": "3c1270f3ce0998e4ec41175cda36c9d8423484208da863076151b5bb72689b2a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8e1a87670d4c826d7629b2e6447e827eb0483d02",
+            "bytes": 2321,
+            "sha256": "3c1270f3ce0998e4ec41175cda36c9d8423484208da863076151b5bb72689b2a"
+          }
+        },
+        {
+          "path": "components/FavoritesExperience.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9f4701958b3424efa1bb5e68a9324c830cd9913e",
+            "bytes": 10679,
+            "sha256": "f7b0a5afaa5d6d405ac4adc595d0a46260d54f6bfab5850e41d18b7ac8427425"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9f4701958b3424efa1bb5e68a9324c830cd9913e",
+            "bytes": 10679,
+            "sha256": "f7b0a5afaa5d6d405ac4adc595d0a46260d54f6bfab5850e41d18b7ac8427425"
+          }
+        },
+        {
+          "path": "components/HomeExperience.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "fd0473a00bd4dbae4a86f4b3f96b4d3522002605",
+            "bytes": 26543,
+            "sha256": "76808c3a78dc92ab865fcc65e7fe4632480520085691e4cf5bf9c882dd62c083"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "fd0473a00bd4dbae4a86f4b3f96b4d3522002605",
+            "bytes": 26543,
+            "sha256": "76808c3a78dc92ab865fcc65e7fe4632480520085691e4cf5bf9c882dd62c083"
+          }
+        },
+        {
+          "path": "components/LocaleProvider.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "ad2d155f4b722a256542525cd4cb0fe8f15f4ad1",
+            "bytes": 3803,
+            "sha256": "38cb0e5eddfa6a1d9bd1829757687dd262e8673919b477f6e2b1390a1aeb4f7b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "ad2d155f4b722a256542525cd4cb0fe8f15f4ad1",
+            "bytes": 3803,
+            "sha256": "38cb0e5eddfa6a1d9bd1829757687dd262e8673919b477f6e2b1390a1aeb4f7b"
+          }
+        },
+        {
+          "path": "components/PasswordGate.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "ff140ac030e22b7545152c817ac089fd4ef32788",
+            "bytes": 11023,
+            "sha256": "75a6bf9d044feaae4dd0a14c43bc0c94abe48c316131f2d0b958d777971907f6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "ff140ac030e22b7545152c817ac089fd4ef32788",
+            "bytes": 11023,
+            "sha256": "75a6bf9d044feaae4dd0a14c43bc0c94abe48c316131f2d0b958d777971907f6"
+          }
+        },
+        {
+          "path": "components/PlayerExperience.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "d14b95af5d29a0760c2afd28e1a999c612438ea3",
+            "bytes": 27347,
+            "sha256": "f6cd1766bd7f77d7715e9d9d3d474eb1f679f724f19a56fab77bb1ab2a321af1"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "d14b95af5d29a0760c2afd28e1a999c612438ea3",
+            "bytes": 27347,
+            "sha256": "f6cd1766bd7f77d7715e9d9d3d474eb1f679f724f19a56fab77bb1ab2a321af1"
+          }
+        },
+        {
+          "path": "components/PublicPage.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "29ffd94e18d9fb6999e351376b66117178dad7c7",
+            "bytes": 1332,
+            "sha256": "61060ec9427dd3e649a7deea20a2f7fd859021a218beb68086b9f1f9e4d906ea"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "29ffd94e18d9fb6999e351376b66117178dad7c7",
+            "bytes": 1332,
+            "sha256": "61060ec9427dd3e649a7deea20a2f7fd859021a218beb68086b9f1f9e4d906ea"
+          }
+        },
+        {
+          "path": "components/ResolutionProbeButton.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "e1942597237412b528efb9b010bcbc491b0c4f85",
+            "bytes": 2076,
+            "sha256": "bef5afb9171c353a01d088e5b7224aaf44412b6c910482d39d721dfa8d7823d3"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "e1942597237412b528efb9b010bcbc491b0c4f85",
+            "bytes": 2076,
+            "sha256": "bef5afb9171c353a01d088e5b7224aaf44412b6c910482d39d721dfa8d7823d3"
+          }
+        },
+        {
+          "path": "components/RuntimeConfigProvider.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5001019915975787bf9f60c2ead476ed2ab141ed",
+            "bytes": 5091,
+            "sha256": "9bd85e679525a596d18c54c290eb1a1353f72efa29c70216e01caaea1526c0b3"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "5001019915975787bf9f60c2ead476ed2ab141ed",
+            "bytes": 5091,
+            "sha256": "9bd85e679525a596d18c54c290eb1a1353f72efa29c70216e01caaea1526c0b3"
+          }
+        },
+        {
+          "path": "components/ScrollPositionManager.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "24b1f95a7584c7fcf02c4ad119219493550dccac",
+            "bytes": 1748,
+            "sha256": "8ca7a3781933c3fb693c1f4afe504a0406e8a6b269267f3d9069df433cb81dbe"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "24b1f95a7584c7fcf02c4ad119219493550dccac",
+            "bytes": 1748,
+            "sha256": "8ca7a3781933c3fb693c1f4afe504a0406e8a6b269267f3d9069df433cb81dbe"
+          }
+        },
+        {
+          "path": "components/ServiceWorkerRegister.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4b24e26de17455d0911b38f397463748e4f82f94",
+            "bytes": 677,
+            "sha256": "7cb963125fc452c94baab8c96739d247075e09759e1048e3bb1306de4d261955"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "4b24e26de17455d0911b38f397463748e4f82f94",
+            "bytes": 677,
+            "sha256": "7cb963125fc452c94baab8c96739d247075e09759e1048e3bb1306de4d261955"
+          }
+        },
+        {
+          "path": "components/SiteIconProvider.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8a3db30310446978986a4880582b62d370fecd0e",
+            "bytes": 899,
+            "sha256": "7519fe458623ed6852c22f77d3da63d34d2df5776c685d71bfdd9874bd2f0b76"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8a3db30310446978986a4880582b62d370fecd0e",
+            "bytes": 899,
+            "sha256": "7519fe458623ed6852c22f77d3da63d34d2df5776c685d71bfdd9874bd2f0b76"
+          }
+        },
+        {
+          "path": "components/SyncProvider.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "573784e9970d060fc45f32e6593b429ce96cfa52",
+            "bytes": 9975,
+            "sha256": "f660a7f6f9b53ebf34517dab03785e39485a0c2e18a7f81e4d8edb3edd1cdf83"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "573784e9970d060fc45f32e6593b429ce96cfa52",
+            "bytes": 9975,
+            "sha256": "f660a7f6f9b53ebf34517dab03785e39485a0c2e18a7f81e4d8edb3edd1cdf83"
+          }
+        },
+        {
+          "path": "components/SyncStatus.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c1c67991a47e133f5c39086587b9093d7192f06a",
+            "bytes": 3812,
+            "sha256": "5c9ac179718a485e469994bc8309af308bf0570adce5d56a1e01b24475ff3887"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c1c67991a47e133f5c39086587b9093d7192f06a",
+            "bytes": 3812,
+            "sha256": "5c9ac179718a485e469994bc8309af308bf0570adce5d56a1e01b24475ff3887"
+          }
+        },
+        {
+          "path": "components/TVNavigationInitializer.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "31ab2bcc45ec253e9c8c714f2ec780b872007ab3",
+            "bytes": 842,
+            "sha256": "ddc690299066b57dda6d70fdc34eb479bd56f4882b568f5694c7815582569dc5"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "31ab2bcc45ec253e9c8c714f2ec780b872007ab3",
+            "bytes": 842,
+            "sha256": "ddc690299066b57dda6d70fdc34eb479bd56f4882b568f5694c7815582569dc5"
+          }
+        },
+        {
+          "path": "components/ThemeProvider.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "e86580b0c75974f0082fbe105aad369305a7b41f",
+            "bytes": 3976,
+            "sha256": "a92451a29b32cc4322ef00b8c7b048525410076fb5f44fcc381f397f8d4a8f54"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "e86580b0c75974f0082fbe105aad369305a7b41f",
+            "bytes": 3976,
+            "sha256": "a92451a29b32cc4322ef00b8c7b048525410076fb5f44fcc381f397f8d4a8f54"
+          }
+        },
+        {
+          "path": "components/ThemeSwitcher.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "59c68dc0ea7f4a0a92a21105e60d38b9a0d7a682",
+            "bytes": 1402,
+            "sha256": "8cc086303ee1b301ab1a276bf163a22851b884a4d1c3e57c3c377f92f6c1d167"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "59c68dc0ea7f4a0a92a21105e60d38b9a0d7a682",
+            "bytes": 1402,
+            "sha256": "8cc086303ee1b301ab1a276bf163a22851b884a4d1c3e57c3c377f92f6c1d167"
+          }
+        },
+        {
+          "path": "components/UsageAlertProvider.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b9d23326334703de1c384373c5ee5a93ab879422",
+            "bytes": 2446,
+            "sha256": "6a1bb6ccaded0387e92cfff04069bb3ee93877da0b27d32dfa33a865257d101f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "20e3e1f2e695106e28421140b63b9df9d1e76d2b",
+            "bytes": 2409,
+            "sha256": "0d4ff318290c2528b0cfa1a6fa227f32b1fd9785085042f11a4464cbc227405a"
+          }
+        },
+        {
+          "path": "components/VideoCard.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "67e97a54d21091444d0bfb7aa3bdc703707c6e0e",
+            "bytes": 2765,
+            "sha256": "ebb245164e07191235597d36e78d8ed71a9936de71cfb38aa1ce353c98be4fa8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "67e97a54d21091444d0bfb7aa3bdc703707c6e0e",
+            "bytes": 2765,
+            "sha256": "ebb245164e07191235597d36e78d8ed71a9936de71cfb38aa1ce353c98be4fa8"
+          }
+        },
+        {
+          "path": "components/VideoTogetherController.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9f2a826eb83e4cc2dbd8523eda78718bf34fde6a",
+            "bytes": 12106,
+            "sha256": "3337929dc3ad366fefb42046a1226b24e92413da63176e167a610080615bb7d0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9f2a826eb83e4cc2dbd8523eda78718bf34fde6a",
+            "bytes": 12106,
+            "sha256": "3337929dc3ad366fefb42046a1226b24e92413da63176e167a610080615bb7d0"
+          }
+        },
+        {
+          "path": "components/favorites/FavoritesSidebar.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9a5f6837c782d9f5f51d00a91e6a8631dc5498c9",
+            "bytes": 6672,
+            "sha256": "b2da820ee9c72d69fd80027f0cc2a6842fc01f89c4aaa1341e19de729a4d2cb7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9a5f6837c782d9f5f51d00a91e6a8631dc5498c9",
+            "bytes": 6672,
+            "sha256": "b2da820ee9c72d69fd80027f0cc2a6842fc01f89c4aaa1341e19de729a4d2cb7"
+          }
+        },
+        {
+          "path": "components/history/WatchHistorySidebar.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5d4fbe4cf3ffe386045d70a83e31ec0d387a65db",
+            "bytes": 7876,
+            "sha256": "b9679bba0bf4fb6896863e2557a4c0f258b1d86d7b5914a244aea07d9866bae2"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "5d4fbe4cf3ffe386045d70a83e31ec0d387a65db",
+            "bytes": 7876,
+            "sha256": "b9679bba0bf4fb6896863e2557a4c0f258b1d86d7b5914a244aea07d9866bae2"
+          }
+        },
+        {
+          "path": "components/home/DiscoverControls.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "32f491685b879c14d922e5922a661993681a4b2d",
+            "bytes": 2074,
+            "sha256": "921ce48769b3aeb807c52282d8ab02db59b102658f3cb5c819b3ae6ac4c49190"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "32f491685b879c14d922e5922a661993681a4b2d",
+            "bytes": 2074,
+            "sha256": "921ce48769b3aeb807c52282d8ab02db59b102658f3cb5c819b3ae6ac4c49190"
+          }
+        },
+        {
+          "path": "components/home/MovieCard.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "7e7f03f038825e81644931d082bfa1b978940a49",
+            "bytes": 1964,
+            "sha256": "57585677be5840ae079ad3eb061b38098288d33d3f8f62b0b85c357c37e23573"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "7e7f03f038825e81644931d082bfa1b978940a49",
+            "bytes": 1964,
+            "sha256": "57585677be5840ae079ad3eb061b38098288d33d3f8f62b0b85c357c37e23573"
+          }
+        },
+        {
+          "path": "components/home/MovieGrid.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "cfaef3620f715e5946761317fa431f00fc0ed54c",
+            "bytes": 2257,
+            "sha256": "1cc900e42ba70ee3608e8fcd98e442b83e041459492fdb3b14b754014004ac42"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "cfaef3620f715e5946761317fa431f00fc0ed54c",
+            "bytes": 2257,
+            "sha256": "1cc900e42ba70ee3608e8fcd98e442b83e041459492fdb3b14b754014004ac42"
+          }
+        },
+        {
+          "path": "components/home/TagManager.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "db764397420186a17f98700992d306de97b38222",
+            "bytes": 5300,
+            "sha256": "512389c7692b6764bda79b7eed98d35534d425f9399f19c31166f3561839b6d1"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "db764397420186a17f98700992d306de97b38222",
+            "bytes": 5300,
+            "sha256": "512389c7692b6764bda79b7eed98d35534d425f9399f19c31166f3561839b6d1"
+          }
+        },
+        {
+          "path": "components/home/hooks/usePersonalizedRecommendations.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "11ef443c4f692952825f99851389d5ffe74ee1ba",
+            "bytes": 5514,
+            "sha256": "c26bdcb6af0f5107a87c130269bee76dbffabef6e85c14198e7dccd1a0828241"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "11ef443c4f692952825f99851389d5ffe74ee1ba",
+            "bytes": 5514,
+            "sha256": "c26bdcb6af0f5107a87c130269bee76dbffabef6e85c14198e7dccd1a0828241"
+          }
+        },
+        {
+          "path": "components/home/hooks/useTagManager.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "69844c6f2cde39ef7aa6545f79831ebb9d06757d",
+            "bytes": 2997,
+            "sha256": "b592174c36175dcc45c9daaa1e3979da187bf14156dbd1eecc5d5eb2ebd36ec4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "69844c6f2cde39ef7aa6545f79831ebb9d06757d",
+            "bytes": 2997,
+            "sha256": "b592174c36175dcc45c9daaa1e3979da187bf14156dbd1eecc5d5eb2ebd36ec4"
+          }
+        },
+        {
+          "path": "components/media/MediaPlayer.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "7e005b5aebaf1e45378c1079c63823825e9d7ce9",
+            "bytes": 19582,
+            "sha256": "cbe332f1d6888243ecc48b24b32efbaf81b8de58d31644f0c0bfc900fcdf1334"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "7e005b5aebaf1e45378c1079c63823825e9d7ce9",
+            "bytes": 19582,
+            "sha256": "cbe332f1d6888243ecc48b24b32efbaf81b8de58d31644f0c0bfc900fcdf1334"
+          }
+        },
+        {
+          "path": "components/player/DanmakuCanvas.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "2f9502dbbbf31dfcb6c059646f64bbdd5bcbfe03",
+            "bytes": 8805,
+            "sha256": "b02a6e034faed5636d1ac2af304fcd91ec647d248493a233ce400475f30efc9b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "2f9502dbbbf31dfcb6c059646f64bbdd5bcbfe03",
+            "bytes": 8805,
+            "sha256": "b02a6e034faed5636d1ac2af304fcd91ec647d248493a233ce400475f30efc9b"
+          }
+        },
+        {
+          "path": "components/player/EpisodeList.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "f81b1cdcc50f82cb1396ec4b616c252a41d17405",
+            "bytes": 11142,
+            "sha256": "fcb6a1ca6b9387b60d74de5c566de5b97ed3e7c0871930445b1e691d8bade0bc"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "f81b1cdcc50f82cb1396ec4b616c252a41d17405",
+            "bytes": 11142,
+            "sha256": "fcb6a1ca6b9387b60d74de5c566de5b97ed3e7c0871930445b1e691d8bade0bc"
+          }
+        },
+        {
+          "path": "components/player/PlayerFavoriteButton.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "ea528d01f1f8c393f0366eedebdfbf9825e5fac2",
+            "bytes": 1946,
+            "sha256": "6cd10e0c95503789b9e6fd0743db5291d5f59e628c2d75b1b4426c2b1843130a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "ea528d01f1f8c393f0366eedebdfbf9825e5fac2",
+            "bytes": 1946,
+            "sha256": "6cd10e0c95503789b9e6fd0743db5291d5f59e628c2d75b1b4426c2b1843130a"
+          }
+        },
+        {
+          "path": "components/player/PlayerNavbar.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9ec97cfc8aa029e468b7b865218fd53b5f3a9113",
+            "bytes": 2548,
+            "sha256": "f09d96144dede219cbe196c61ac8dcee56b46c3d52fd0c66382a9e26c8cea615"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9ec97cfc8aa029e468b7b865218fd53b5f3a9113",
+            "bytes": 2548,
+            "sha256": "f09d96144dede219cbe196c61ac8dcee56b46c3d52fd0c66382a9e26c8cea615"
+          }
+        },
+        {
+          "path": "components/player/VideoMetadata.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8ce7b419b4bf18efb6a3e9428ede45011806c1dd",
+            "bytes": 2738,
+            "sha256": "bb6e12ad95f1e2308f782a78d4c8c5d62ed07d339e8d354617a769925e308b1e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8ce7b419b4bf18efb6a3e9428ede45011806c1dd",
+            "bytes": 2738,
+            "sha256": "bb6e12ad95f1e2308f782a78d4c8c5d62ed07d339e8d354617a769925e308b1e"
+          }
+        },
+        {
+          "path": "components/player/desktop/DesktopAdFilterMenu.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "40ee85274c87c864a739d8eb070f6e75623f4674",
+            "bytes": 1565,
+            "sha256": "1279e42cc8e788c9c6ea2cb0507478dd351e8688a47777577436d756a8ca0564"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "40ee85274c87c864a739d8eb070f6e75623f4674",
+            "bytes": 1565,
+            "sha256": "1279e42cc8e788c9c6ea2cb0507478dd351e8688a47777577436d756a8ca0564"
+          }
+        },
+        {
+          "path": "components/player/desktop/DesktopControls.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b89f3677f5d086532ee641f6c97d8aa80db351f9",
+            "bytes": 4444,
+            "sha256": "6652558b776474c20ded95e92b9f3061fac28befe980778ca57e8d2ed3889468"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "b89f3677f5d086532ee641f6c97d8aa80db351f9",
+            "bytes": 4444,
+            "sha256": "6652558b776474c20ded95e92b9f3061fac28befe980778ca57e8d2ed3889468"
+          }
+        },
+        {
+          "path": "components/player/desktop/DesktopDeviceControls.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "ef849d2df1db7c6bba20641423503ecbfcdd8fde",
+            "bytes": 3804,
+            "sha256": "56d14e8e099aa3a9c0f1753e7ee99c560a7693a7b943729e7a8da44b69774a0f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "ef849d2df1db7c6bba20641423503ecbfcdd8fde",
+            "bytes": 3804,
+            "sha256": "56d14e8e099aa3a9c0f1753e7ee99c560a7693a7b943729e7a8da44b69774a0f"
+          }
+        },
+        {
+          "path": "components/player/desktop/DesktopLeftControls.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "69723cf7efd7803c14ff53aa802ab56a0c67904d",
+            "bytes": 2243,
+            "sha256": "f11863e93ffb6770297654f1f32f022363650d71bad3071673d2204233ebcee4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "69723cf7efd7803c14ff53aa802ab56a0c67904d",
+            "bytes": 2243,
+            "sha256": "f11863e93ffb6770297654f1f32f022363650d71bad3071673d2204233ebcee4"
+          }
+        },
+        {
+          "path": "components/player/desktop/DesktopProgressBar.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8ac7ef6cf2096c1bce51f861197fa0657b961084",
+            "bytes": 1012,
+            "sha256": "c635c967241e8549789062c3dc6458437b4df8fa3e1106344aab0d868956556f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8ac7ef6cf2096c1bce51f861197fa0657b961084",
+            "bytes": 1012,
+            "sha256": "c635c967241e8549789062c3dc6458437b4df8fa3e1106344aab0d868956556f"
+          }
+        },
+        {
+          "path": "components/player/desktop/DesktopSpeedMenu.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "e81bb0b93b93054cda35f00ae40a270d55b4c319",
+            "bytes": 919,
+            "sha256": "4eccfd88adb4f538cae784f5a420aa9a28836c75601aadfb3ffb3cf11acb69d5"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "e81bb0b93b93054cda35f00ae40a270d55b4c319",
+            "bytes": 919,
+            "sha256": "4eccfd88adb4f538cae784f5a420aa9a28836c75601aadfb3ffb3cf11acb69d5"
+          }
+        },
+        {
+          "path": "components/player/desktop/DesktopVolumeControl.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "0292ebc61cc696882b146668283a10e684498913",
+            "bytes": 2222,
+            "sha256": "2954e945f505df162e5167065985c5a634930e10c877f5097accb2e58f6c51a7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "0292ebc61cc696882b146668283a10e684498913",
+            "bytes": 2222,
+            "sha256": "2954e945f505df162e5167065985c5a634930e10c877f5097accb2e58f6c51a7"
+          }
+        },
+        {
+          "path": "components/player/hooks/desktop/android-pip-utils.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "6b40c2eefcf70004536192e4f11917b64e379750",
+            "bytes": 1085,
+            "sha256": "3b5f08ab6ae2c0f4037111a3360aba7d9533211a06d1a111d94637623d0cd6af"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "6b40c2eefcf70004536192e4f11917b64e379750",
+            "bytes": 1085,
+            "sha256": "3b5f08ab6ae2c0f4037111a3360aba7d9533211a06d1a111d94637623d0cd6af"
+          }
+        },
+        {
+          "path": "components/player/hooks/useAutoSkip.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "e9ccb5adcfeab59a51c8ef5794e2cd5bab321950",
+            "bytes": 2742,
+            "sha256": "831b92331ca8b374dbe73e0e6f90d1be46884198d9a14b39e8d6554aa62c02e9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "e9ccb5adcfeab59a51c8ef5794e2cd5bab321950",
+            "bytes": 2742,
+            "sha256": "831b92331ca8b374dbe73e0e6f90d1be46884198d9a14b39e8d6554aa62c02e9"
+          }
+        },
+        {
+          "path": "components/player/hooks/useCastControls.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "19375a57503352cbce2cfee4ef8e5a05b1ee267f",
+            "bytes": 3736,
+            "sha256": "b5168edf15d7c4e869e00aa77807556f593e47989ef3d2857b544ff5d4bd4197"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "19375a57503352cbce2cfee4ef8e5a05b1ee267f",
+            "bytes": 3736,
+            "sha256": "b5168edf15d7c4e869e00aa77807556f593e47989ef3d2857b544ff5d4bd4197"
+          }
+        },
+        {
+          "path": "components/player/hooks/useControlsVisibility.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "51725386b9d3a3dc0374602e58c8bb77a3b1b407",
+            "bytes": 2183,
+            "sha256": "2398d5d71d9c95651f652752eb321782b1967ab15482d44737767ddebd0ca68b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "51725386b9d3a3dc0374602e58c8bb77a3b1b407",
+            "bytes": 2183,
+            "sha256": "2398d5d71d9c95651f652752eb321782b1967ab15482d44737767ddebd0ca68b"
+          }
+        },
+        {
+          "path": "components/player/hooks/useDanmaku.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b55a2e47ac0ef042ccf69870169f1ba60327a60b",
+            "bytes": 3235,
+            "sha256": "3997a1f2fc7cbfa4aae3ebdce2c4d40487c3d5fa5ec4b99e4f43d75c01fe1929"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "b55a2e47ac0ef042ccf69870169f1ba60327a60b",
+            "bytes": 3235,
+            "sha256": "3997a1f2fc7cbfa4aae3ebdce2c4d40487c3d5fa5ec4b99e4f43d75c01fe1929"
+          }
+        },
+        {
+          "path": "components/player/hooks/useDesktopShortcuts.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c5756dd9a49187fc0eb27c59304957eba2a7d5e9",
+            "bytes": 2449,
+            "sha256": "cfef4a64ff4938cc6f30199a3a04fa2fda9cd2e77c3cac475aa2d548f6d4a066"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c5756dd9a49187fc0eb27c59304957eba2a7d5e9",
+            "bytes": 2449,
+            "sha256": "cfef4a64ff4938cc6f30199a3a04fa2fda9cd2e77c3cac475aa2d548f6d4a066"
+          }
+        },
+        {
+          "path": "components/player/hooks/useFullscreenControls.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "21ca57fdaadd6ee1bd231f5a3ff0e48606d02b06",
+            "bytes": 3249,
+            "sha256": "fa04daf2ca594103501d16e2d856cae1c1d9e440db56c8eb510d65416ae08fdd"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "21ca57fdaadd6ee1bd231f5a3ff0e48606d02b06",
+            "bytes": 3249,
+            "sha256": "fa04daf2ca594103501d16e2d856cae1c1d9e440db56c8eb510d65416ae08fdd"
+          }
+        },
+        {
+          "path": "components/player/hooks/useHlsPlayer.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4f595397128be9fd96e29079d6b486acc679e2a4",
+            "bytes": 6922,
+            "sha256": "24254c7c1489184d0790d57c695fd0bb2a05c4635fc36d8be21cf8f4e7ea2aaf"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "4f595397128be9fd96e29079d6b486acc679e2a4",
+            "bytes": 6922,
+            "sha256": "24254c7c1489184d0790d57c695fd0bb2a05c4635fc36d8be21cf8f4e7ea2aaf"
+          }
+        },
+        {
+          "path": "components/player/hooks/usePictureInPicture.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b657526b6e8d617cb6d9b2fea7b31ffec07a1d24",
+            "bytes": 2340,
+            "sha256": "7b8fc7f750c2a9325470667fc8323e78053f02660b0498c742a6b2637cf5d003"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "b657526b6e8d617cb6d9b2fea7b31ffec07a1d24",
+            "bytes": 2340,
+            "sha256": "7b8fc7f750c2a9325470667fc8323e78053f02660b0498c742a6b2637cf5d003"
+          }
+        },
+        {
+          "path": "components/player/hooks/usePlaybackHistory.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c82138181154f3118e2cb142a38175244c4d6814",
+            "bytes": 3376,
+            "sha256": "b11a158f09f2672fa0fe02967664885c6f220399a2cc695501da61b167bdf990"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c82138181154f3118e2cb142a38175244c4d6814",
+            "bytes": 3376,
+            "sha256": "b11a158f09f2672fa0fe02967664885c6f220399a2cc695501da61b167bdf990"
+          }
+        },
+        {
+          "path": "components/player/hooks/useSkipControls.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "73e83ddf8a6383ca036e25bc81c7538b0818e844",
+            "bytes": 700,
+            "sha256": "7344a03aed162860c9bd4e6cbc181954b4c92e304078fc65a4571d26dd432a5e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "73e83ddf8a6383ca036e25bc81c7538b0818e844",
+            "bytes": 700,
+            "sha256": "7344a03aed162860c9bd4e6cbc181954b4c92e304078fc65a4571d26dd432a5e"
+          }
+        },
+        {
+          "path": "components/player/hooks/useSourceResolutionProbe.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "95bab532c00dea1cb6cbaf145d0b2e7813d8a0e7",
+            "bytes": 2865,
+            "sha256": "d9fb114c53ca66a6bda98a1b4c08705408edbba5e6cff1dcbd628e2166ad9b46"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "95bab532c00dea1cb6cbaf145d0b2e7813d8a0e7",
+            "bytes": 2865,
+            "sha256": "d9fb114c53ca66a6bda98a1b4c08705408edbba5e6cff1dcbd628e2166ad9b46"
+          }
+        },
+        {
+          "path": "components/player/hooks/useStallDetection.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "709f9ee9c0011cd39db3fc1e671f13c87c955db2",
+            "bytes": 1368,
+            "sha256": "9dfb6686d7c0e6ee1bf6bd31bf4dbd63757a48f6c48d63fbc65e299db546a9e6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "709f9ee9c0011cd39db3fc1e671f13c87c955db2",
+            "bytes": 1368,
+            "sha256": "9dfb6686d7c0e6ee1bf6bd31bf4dbd63757a48f6c48d63fbc65e299db546a9e6"
+          }
+        },
+        {
+          "path": "components/player/hooks/useVideoResolution.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "dd2e77e39b90be4d04135e6f1f579c7b35c44b5e",
+            "bytes": 1438,
+            "sha256": "1434b71a4d2b4fff881ffe83c5a3b2073ac77657beb9d8f6ddfa143bb5585624"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "dd2e77e39b90be4d04135e6f1f579c7b35c44b5e",
+            "bytes": 1438,
+            "sha256": "1434b71a4d2b4fff881ffe83c5a3b2073ac77657beb9d8f6ddfa143bb5585624"
+          }
+        },
+        {
+          "path": "components/premium/PremiumExperience.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "6725cecdad2e6b7f8c5e512021e44282b7b544ee",
+            "bytes": 20674,
+            "sha256": "0cdc53d913bcf52b56dea91933c635dd3fc1bf9da45cb52429a7a8cdc204cdaa"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "6725cecdad2e6b7f8c5e512021e44282b7b544ee",
+            "bytes": 20674,
+            "sha256": "0cdc53d913bcf52b56dea91933c635dd3fc1bf9da45cb52429a7a8cdc204cdaa"
+          }
+        },
+        {
+          "path": "components/premium/PremiumSettingsExperience.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "377a04fe2d95ef27fb15035c4b2ccd45bc4e99e5",
+            "bytes": 6609,
+            "sha256": "60a25ae0fd55a03f0d1bb3a6470dbfda03e5eb79edfdfca873f5fc543b72c465"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "377a04fe2d95ef27fb15035c4b2ccd45bc4e99e5",
+            "bytes": 6609,
+            "sha256": "60a25ae0fd55a03f0d1bb3a6470dbfda03e5eb79edfdfca873f5fc543b72c465"
+          }
+        },
+        {
+          "path": "components/search/SearchBox.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "6873f3b220c0bd25f9b6e70451f3b695fcf1d94e",
+            "bytes": 4020,
+            "sha256": "b98a8c4d07ae635e86765950f4697508cf7a9495da033ffd8d54cfec7c6d7927"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "6873f3b220c0bd25f9b6e70451f3b695fcf1d94e",
+            "bytes": 4020,
+            "sha256": "b98a8c4d07ae635e86765950f4697508cf7a9495da033ffd8d54cfec7c6d7927"
+          }
+        },
+        {
+          "path": "components/search/SearchForm.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c966825d3cd9dfa14c21698644a72507efd01b5c",
+            "bytes": 1070,
+            "sha256": "2521a8a6151d3f1fcefedf5dc2652afdc6f2e13c4a69a7b0dfe10919ad07b6ce"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c966825d3cd9dfa14c21698644a72507efd01b5c",
+            "bytes": 1070,
+            "sha256": "2521a8a6151d3f1fcefedf5dc2652afdc6f2e13c4a69a7b0dfe10919ad07b6ce"
+          }
+        },
+        {
+          "path": "components/search/SearchHistoryDropdown.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "6bcaab6976afdb1e96b5fa0fcd1eedd7bd5db6e2",
+            "bytes": 2682,
+            "sha256": "7a9966e7dcdfe97f095e01a9bdf7330d8ccc680efe734738e40c9464ac644a4e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "6bcaab6976afdb1e96b5fa0fcd1eedd7bd5db6e2",
+            "bytes": 2682,
+            "sha256": "7a9966e7dcdfe97f095e01a9bdf7330d8ccc680efe734738e40c9464ac644a4e"
+          }
+        },
+        {
+          "path": "components/search/SearchResultCard.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "054c82a51ff3730525bea3182aae32046b0c954d",
+            "bytes": 3391,
+            "sha256": "e8fd7618b5f360eb585b3d90f3102894822c8f6e2f83d6b39c8c07e3dd1091f2"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "054c82a51ff3730525bea3182aae32046b0c954d",
+            "bytes": 3391,
+            "sha256": "e8fd7618b5f360eb585b3d90f3102894822c8f6e2f83d6b39c8c07e3dd1091f2"
+          }
+        },
+        {
+          "path": "components/search/SearchResultControls.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9ff2026953ea6a3c9cfceaa72a4586daaa1baf37",
+            "bytes": 5111,
+            "sha256": "a2553fec49b4846ecfdf939743186141f660dbd0217460e30fe3336612f23d73"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9ff2026953ea6a3c9cfceaa72a4586daaa1baf37",
+            "bytes": 5111,
+            "sha256": "a2553fec49b4846ecfdf939743186141f660dbd0217460e30fe3336612f23d73"
+          }
+        },
+        {
+          "path": "components/search/SearchResults.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "87d8dd343d043cf35e619fdcf2f5104ab127532d",
+            "bytes": 5354,
+            "sha256": "39a3a9f5edb69dcb4fcafd8f5757025f571a7b6daead6d3c53c34c030e55dad2"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "87d8dd343d043cf35e619fdcf2f5104ab127532d",
+            "bytes": 5354,
+            "sha256": "39a3a9f5edb69dcb4fcafd8f5757025f571a7b6daead6d3c53c34c030e55dad2"
+          }
+        },
+        {
+          "path": "components/search/VideoGrid.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5d18abdae38eb9e6f2dcf9d35edb2dc72870e82a",
+            "bytes": 2290,
+            "sha256": "4114285cf86ae7a13652dec5c61bbf20bb1ceeb1e4dc8c3af850ca8c182ec6cd"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "5d18abdae38eb9e6f2dcf9d35edb2dc72870e82a",
+            "bytes": 2290,
+            "sha256": "4114285cf86ae7a13652dec5c61bbf20bb1ceeb1e4dc8c3af850ca8c182ec6cd"
+          }
+        },
+        {
+          "path": "components/search/VideoGroupCard.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "bc9d560f82f768f11d8391be5bf3920c4eddd3b7",
+            "bytes": 4379,
+            "sha256": "73fc801ff2d4d23ec498824f3c28be418e828265119ec69439d69d7522369ee5"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "bc9d560f82f768f11d8391be5bf3920c4eddd3b7",
+            "bytes": 4379,
+            "sha256": "73fc801ff2d4d23ec498824f3c28be418e828265119ec69439d69d7522369ee5"
+          }
+        },
+        {
+          "path": "components/settings/AccountSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5279206f8be213950d2020329f9a60b0d9a4d08b",
+            "bytes": 10194,
+            "sha256": "cbf777b1b78ef0e5116e1318a931b5a86aba677c95a36b9ca7f7651b1cfcebd5"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "5279206f8be213950d2020329f9a60b0d9a4d08b",
+            "bytes": 10194,
+            "sha256": "cbf777b1b78ef0e5116e1318a931b5a86aba677c95a36b9ca7f7651b1cfcebd5"
+          }
+        },
+        {
+          "path": "components/settings/AddSourceModal.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "7273c4761684847d39a3d3a525c204695b5c006c",
+            "bytes": 5393,
+            "sha256": "8b8d93b50fb9ef9dd6465a6fd49fa631b68643a5365e402208eddf23f6b565a4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "7273c4761684847d39a3d3a525c204695b5c006c",
+            "bytes": 5393,
+            "sha256": "8b8d93b50fb9ef9dd6465a6fd49fa631b68643a5365e402208eddf23f6b565a4"
+          }
+        },
+        {
+          "path": "components/settings/CloudflareUsageSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "be46f5a40ad1f933cbfbb17128942a92f904989b",
+            "bytes": 10458,
+            "sha256": "99d4fcf0b7440ca316c3c3101fbb3233cf6d5c4b3258df4fec84705d2d989d8f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "85c5c87e4c8fc25d86af746ab1e7b2170ced5a96",
+            "bytes": 9369,
+            "sha256": "aab37c4fd038b2f5a0cfbaa00d0080425959be5c9d3c00e0c4e8c6f4615178b7"
+          }
+        },
+        {
+          "path": "components/settings/DataSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "65395874c7345914e90f511e89c798f8249036a6",
+            "bytes": 11098,
+            "sha256": "c2f4bcafe0329a6ea44a35d5efd010bd8c50718d0fa4e91cddf8dce453ac318d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "65395874c7345914e90f511e89c798f8249036a6",
+            "bytes": 11098,
+            "sha256": "c2f4bcafe0329a6ea44a35d5efd010bd8c50718d0fa4e91cddf8dce453ac318d"
+          }
+        },
+        {
+          "path": "components/settings/DisplaySettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9230a990b9f04a150ff2543eaa2838dc76580a25",
+            "bytes": 7141,
+            "sha256": "9c3d4015013b4c304cce9e9ed19013293d53224087b396dab38f8d2ac0aa0ba6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9230a990b9f04a150ff2543eaa2838dc76580a25",
+            "bytes": 7141,
+            "sha256": "9c3d4015013b4c304cce9e9ed19013293d53224087b396dab38f8d2ac0aa0ba6"
+          }
+        },
+        {
+          "path": "components/settings/ExportModal.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "27093e94ba3d46fa9dc70b6d0af2bd1e22cf9650",
+            "bytes": 4896,
+            "sha256": "d3345f55ac3c1d97effc0449f3d856b389db232a9505d03d9ccad96595859e9d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "27093e94ba3d46fa9dc70b6d0af2bd1e22cf9650",
+            "bytes": 4896,
+            "sha256": "d3345f55ac3c1d97effc0449f3d856b389db232a9505d03d9ccad96595859e9d"
+          }
+        },
+        {
+          "path": "components/settings/ImportModal.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "00d39f8528e718ab687844e825dba8c95537a80d",
+            "bytes": 16577,
+            "sha256": "4dfbef132c0f3478b39a547fe08f72cc0c7b60a4506477dd907c63bf9e62f3d1"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "00d39f8528e718ab687844e825dba8c95537a80d",
+            "bytes": 16577,
+            "sha256": "4dfbef132c0f3478b39a547fe08f72cc0c7b60a4506477dd907c63bf9e62f3d1"
+          }
+        },
+        {
+          "path": "components/settings/PlayerSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8c67553b86176019a55e140727137013f1a986d2",
+            "bytes": 17736,
+            "sha256": "6a7d71a4829773600673266fb396416c8d2c65a460bdd624b6ef5d0d00d3986a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8c67553b86176019a55e140727137013f1a986d2",
+            "bytes": 17736,
+            "sha256": "6a7d71a4829773600673266fb396416c8d2c65a460bdd624b6ef5d0d00d3986a"
+          }
+        },
+        {
+          "path": "components/settings/SettingsImportModal.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "99cf358825e96e86cb9e99618317042c2a3c704a",
+            "bytes": 7814,
+            "sha256": "20f8d7199c6e5357957ebdd9e420483be4fe392fc563661b4cbb8fdb542415da"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "99cf358825e96e86cb9e99618317042c2a3c704a",
+            "bytes": 7814,
+            "sha256": "20f8d7199c6e5357957ebdd9e420483be4fe392fc563661b4cbb8fdb542415da"
+          }
+        },
+        {
+          "path": "components/settings/SettingsPageHeading.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5d60dcff1e8752a52f4fff7451feaa48cd0ecbb7",
+            "bytes": 3115,
+            "sha256": "2464f25a931db8ccc41685065e94a2005711557d5e91779ca5bb71bfa23bf530"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "5d60dcff1e8752a52f4fff7451feaa48cd0ecbb7",
+            "bytes": 3115,
+            "sha256": "2464f25a931db8ccc41685065e94a2005711557d5e91779ca5bb71bfa23bf530"
+          }
+        },
+        {
+          "path": "components/settings/SettingsSection.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b3b3effc6dc5a4ad33095868bd2de40d5e92a355",
+            "bytes": 586,
+            "sha256": "c32cd8a489f3caf5d9f4f2b58ac09c1b2de76b0cdf296e2dd495dfae56763e9e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "b3b3effc6dc5a4ad33095868bd2de40d5e92a355",
+            "bytes": 586,
+            "sha256": "c32cd8a489f3caf5d9f4f2b58ac09c1b2de76b0cdf296e2dd495dfae56763e9e"
+          }
+        },
+        {
+          "path": "components/settings/SortSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "a82ecf624ebe0bc832857e105e4d1dda52b010fa",
+            "bytes": 2583,
+            "sha256": "9a73face60badef3ae8c05edfcab803cde68c79794b4dbfbf69728d416baf6c6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "a82ecf624ebe0bc832857e105e4d1dda52b010fa",
+            "bytes": 2583,
+            "sha256": "9a73face60badef3ae8c05edfcab803cde68c79794b4dbfbf69728d416baf6c6"
+          }
+        },
+        {
+          "path": "components/settings/SourceManager.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "be08c487143acf146260fab4d0172f5aac624dd8",
+            "bytes": 4924,
+            "sha256": "d54c547e89500c170297e185327c1f33c97e4f3158c948568251c7ad98f76aa0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "be08c487143acf146260fab4d0172f5aac624dd8",
+            "bytes": 4924,
+            "sha256": "d54c547e89500c170297e185327c1f33c97e4f3158c948568251c7ad98f76aa0"
+          }
+        },
+        {
+          "path": "components/settings/SourceSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "a98449f3769a751ef1528bb04f50d112b02288f0",
+            "bytes": 11682,
+            "sha256": "e480d361046e4ffff88f2ecf05f233deccf24200a48190678108fcc630585f65"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "a98449f3769a751ef1528bb04f50d112b02288f0",
+            "bytes": 11682,
+            "sha256": "e480d361046e4ffff88f2ecf05f233deccf24200a48190678108fcc630585f65"
+          }
+        },
+        {
+          "path": "components/settings/SyncSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "144fc22e6619c3165e10dbbe8290445262dbf298",
+            "bytes": 2371,
+            "sha256": "18bb35cb825c49cc8518c69966cb66416ba304a5766dc947fed5353b73876dc5"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "144fc22e6619c3165e10dbbe8290445262dbf298",
+            "bytes": 2371,
+            "sha256": "18bb35cb825c49cc8518c69966cb66416ba304a5766dc947fed5353b73876dc5"
+          }
+        },
+        {
+          "path": "components/settings/UserDanmakuSettings.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "83b0864c1672c880f30ada13bac718b07d95640a",
+            "bytes": 5774,
+            "sha256": "1703bcd5557a47261f839b1be184dc05e850e38080923501e888567c3bb63436"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "83b0864c1672c880f30ada13bac718b07d95640a",
+            "bytes": 5774,
+            "sha256": "1703bcd5557a47261f839b1be184dc05e850e38080923501e888567c3bb63436"
+          }
+        },
+        {
+          "path": "components/ui/BackToTop.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "f8e888833d20ed1c302e9586fc89d6752cca4eda",
+            "bytes": 1572,
+            "sha256": "e35eb1230a1d4915217b18edf3cfd8ea599ead25992fa551a960f75a9e8a307e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "f8e888833d20ed1c302e9586fc89d6752cca4eda",
+            "bytes": 1572,
+            "sha256": "e35eb1230a1d4915217b18edf3cfd8ea599ead25992fa551a960f75a9e8a307e"
+          }
+        },
+        {
+          "path": "components/ui/Button.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "412348b2e1e560a1727991401797585b71bfc10d",
+            "bytes": 323,
+            "sha256": "cbbc6a07dcc04a3d350bd48155ce58587e9d1f69b5b4d3bfd9a883beb49f2028"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "412348b2e1e560a1727991401797585b71bfc10d",
+            "bytes": 323,
+            "sha256": "cbbc6a07dcc04a3d350bd48155ce58587e9d1f69b5b4d3bfd9a883beb49f2028"
+          }
+        },
+        {
+          "path": "components/ui/Card.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c589191ea7184ee37c2abf07d9c7bbbadef144e4",
+            "bytes": 305,
+            "sha256": "fa758395efa830a033f894f2986a6b067b0c8cfcb60bdff87ab5eaf7cab939f4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c589191ea7184ee37c2abf07d9c7bbbadef144e4",
+            "bytes": 305,
+            "sha256": "fa758395efa830a033f894f2986a6b067b0c8cfcb60bdff87ab5eaf7cab939f4"
+          }
+        },
+        {
+          "path": "components/ui/Icon.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "e49dc84c3aed44e841756bf4e1b85570f384309b",
+            "bytes": 277,
+            "sha256": "fc82549c416bc971fca9fc814fa4fed35617a49b1289960360aff2b150a0578e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "e49dc84c3aed44e841756bf4e1b85570f384309b",
+            "bytes": 277,
+            "sha256": "fc82549c416bc971fca9fc814fa4fed35617a49b1289960360aff2b150a0578e"
+          }
+        },
+        {
+          "path": "components/ui/Input.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4095ce601e42e2b493dc14e58709e3ce78be1ea3",
+            "bytes": 892,
+            "sha256": "fd97976ce0c6138926854f363bdb1564bcdb40c014d5e7fde003e4f38060c7cb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "4095ce601e42e2b493dc14e58709e3ce78be1ea3",
+            "bytes": 892,
+            "sha256": "fd97976ce0c6138926854f363bdb1564bcdb40c014d5e7fde003e4f38060c7cb"
+          }
+        },
+        {
+          "path": "components/ui/Switch.tsx",
+          "base": {
+            "mode": "100644",
+            "blobOid": "04f351eab70d50ff916bf3f5b4079bded39d1076",
+            "bytes": 451,
+            "sha256": "39725bd7281a4734d4533029cad0516b5de5b16eebff511b4e0761b5b3a1c9ca"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "04f351eab70d50ff916bf3f5b4079bded39d1076",
+            "bytes": 451,
+            "sha256": "39725bd7281a4734d4533029cad0516b5de5b16eebff511b4e0761b5b3a1c9ca"
+          }
+        },
+        {
+          "path": "lib/content/api-client.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4bbeba890094c5625be5e2714ae14f37d8759ff0",
+            "bytes": 3837,
+            "sha256": "fe90b77ede87002feadf3e3c89329dfe2bf51ecd75b7a33e3fb5ecfc549940d5"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "4bbeba890094c5625be5e2714ae14f37d8759ff0",
+            "bytes": 3837,
+            "sha256": "fe90b77ede87002feadf3e3c89329dfe2bf51ecd75b7a33e3fb5ecfc549940d5"
+          }
+        },
+        {
+          "path": "lib/content/favorites-policy.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "1fa7b1395870c95d47b2e985b6804955268da80f",
+            "bytes": 526,
+            "sha256": "c1d997006c32bcbc837f879b7baf859d9c17750347a7ff2bfaa57a2e7fcd429b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "1fa7b1395870c95d47b2e985b6804955268da80f",
+            "bytes": 526,
+            "sha256": "c1d997006c32bcbc837f879b7baf859d9c17750347a7ff2bfaa57a2e7fcd429b"
+          }
+        },
+        {
+          "path": "lib/content/history-policy.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "af3e2859eb96ff3a11c3ea9f21891885cd2cb180",
+            "bytes": 816,
+            "sha256": "d4d825c14fca1e0ace0b59206c8c1c3cda3b634731a8b093ed2e14856284e435"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "af3e2859eb96ff3a11c3ea9f21891885cd2cb180",
+            "bytes": 816,
+            "sha256": "d4d825c14fca1e0ace0b59206c8c1c3cda3b634731a8b093ed2e14856284e435"
+          }
+        },
+        {
+          "path": "lib/content/library-isolation.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8cb10414591ca3cf905e84def682ecc48d727c1d",
+            "bytes": 370,
+            "sha256": "30d59941cc3480e6290abf459fdf413e2714b8ca9b251dccad639bf494a97948"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8cb10414591ca3cf905e84def682ecc48d727c1d",
+            "bytes": 370,
+            "sha256": "30d59941cc3480e6290abf459fdf413e2714b8ca9b251dccad639bf494a97948"
+          }
+        },
+        {
+          "path": "lib/content/premium-client.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "a3212d376b34807192ce3d9fe5079ea213685e72",
+            "bytes": 2877,
+            "sha256": "c63be5845bd402a4e0db3add2bd2548585d3b5c279b152a9f76418d4a411a894"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "a3212d376b34807192ce3d9fe5079ea213685e72",
+            "bytes": 2877,
+            "sha256": "c63be5845bd402a4e0db3add2bd2548585d3b5c279b152a9f76418d4a411a894"
+          }
+        },
+        {
+          "path": "lib/content/premium-home-policy.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "65d1edef1a6b50b08ec42fb59a096f8f45fe56c2",
+            "bytes": 959,
+            "sha256": "acda31c10b6153d212bb0015a17decbb2a7cc30bedff18641885151cadeb52c6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "65d1edef1a6b50b08ec42fb59a096f8f45fe56c2",
+            "bytes": 959,
+            "sha256": "acda31c10b6153d212bb0015a17decbb2a7cc30bedff18641885151cadeb52c6"
+          }
+        },
+        {
+          "path": "lib/content/probe-client.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "655617464602a6dae724f1bacc6787ec5e136d9f",
+            "bytes": 3132,
+            "sha256": "3573384cf4ef16515c8a255c9aa38931a5d2d8e58f0ac8b9db4d684b4621feb3"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "655617464602a6dae724f1bacc6787ec5e136d9f",
+            "bytes": 3132,
+            "sha256": "3573384cf4ef16515c8a255c9aa38931a5d2d8e58f0ac8b9db4d684b4621feb3"
+          }
+        },
+        {
+          "path": "lib/content/search-client.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "bca03cd2cc870e50bc73deb6591cf35606e89b7d",
+            "bytes": 3318,
+            "sha256": "2e1f967be0cbcd3211316a90235d66e70a8c8cd169f661ae42b9a20af47213ef"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "bca03cd2cc870e50bc73deb6591cf35606e89b7d",
+            "bytes": 3318,
+            "sha256": "2e1f967be0cbcd3211316a90235d66e70a8c8cd169f661ae42b9a20af47213ef"
+          }
+        },
+        {
+          "path": "lib/content/source-import.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "785a4a76b0545ec4bfd04877f9390a2cbeee1a3a",
+            "bytes": 4150,
+            "sha256": "967e15527117dc4cce25e4fa3b344dc870c0572f89ab3d1caa56271ad481ab21"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "785a4a76b0545ec4bfd04877f9390a2cbeee1a3a",
+            "bytes": 4150,
+            "sha256": "967e15527117dc4cce25e4fa3b344dc870c0572f89ab3d1caa56271ad481ab21"
+          }
+        },
+        {
+          "path": "lib/content/source-settings-policy.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "fab299299e96f90fe3e20dd3edb0c23ebd377440",
+            "bytes": 4928,
+            "sha256": "f19cc2b9be1e86940bb1b762035234e0a4cab2e588dbee818cc14f4b6e6cba69"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "fab299299e96f90fe3e20dd3edb0c23ebd377440",
+            "bytes": 4928,
+            "sha256": "f19cc2b9be1e86940bb1b762035234e0a4cab2e588dbee818cc14f4b6e6cba69"
+          }
+        },
+        {
+          "path": "lib/content/types.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b1ceacd731590590dfca6fd1ceb56af401c43251",
+            "bytes": 4471,
+            "sha256": "19df06e1748f0382433695f9dfcfdfca40a4958db8d2c75fca0a918a585b44b0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "b1ceacd731590590dfca6fd1ceb56af401c43251",
+            "bytes": 4471,
+            "sha256": "19df06e1748f0382433695f9dfcfdfca40a4958db8d2c75fca0a918a585b44b0"
+          }
+        },
+        {
+          "path": "lib/data/settings-transfer.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "8ee21833123f56677ead6c3f4c4bf80a84268950",
+            "bytes": 18851,
+            "sha256": "d9dc13a5ac89f669a4c3716a2cf54a04d83aacb0b3204d319ffa01c5208a0bf2"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "8ee21833123f56677ead6c3f4c4bf80a84268950",
+            "bytes": 18851,
+            "sha256": "d9dc13a5ac89f669a4c3716a2cf54a04d83aacb0b3204d319ffa01c5208a0bf2"
+          }
+        },
+        {
+          "path": "lib/hooks/mobile/useDoubleTap.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "d9431511a4f2db6106d2d1da704b2f961bf73a05",
+            "bytes": 1586,
+            "sha256": "c4402dc1355ade506aea20d9070f9fb7e2d7e1024c39885b706fc596822594d9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "d9431511a4f2db6106d2d1da704b2f961bf73a05",
+            "bytes": 1586,
+            "sha256": "c4402dc1355ade506aea20d9070f9fb7e2d7e1024c39885b706fc596822594d9"
+          }
+        },
+        {
+          "path": "lib/hooks/mobile/useScreenOrientation.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "03a1c6032f5251ab5b6b7161659f78c6ebc3caf4",
+            "bytes": 743,
+            "sha256": "14efc87399e1bf77304431887ce8a2625517dce68146a43026eaf38a0a273a84"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "03a1c6032f5251ab5b6b7161659f78c6ebc3caf4",
+            "bytes": 743,
+            "sha256": "14efc87399e1bf77304431887ce8a2625517dce68146a43026eaf38a0a273a84"
+          }
+        },
+        {
+          "path": "lib/hooks/useCloudflareUsage.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "d6f203e43c6eacdf85c2a09df1848cfbde782a10",
+            "bytes": 4804,
+            "sha256": "8d01c633f5c494f895fe55c603c6bb82a8f7276165bea01fa5e4a08e42f179b9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "243051467b412c1aa9b60ba461f862eb0136e9d5",
+            "bytes": 9312,
+            "sha256": "7e2f414613a290a97c6fbf5f78ee0815266749f760fc120f84bddf0cb848596e"
+          }
+        },
+        {
+          "path": "lib/hooks/useDialogFocusTrap.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4dc2df586a2aebdc1f2dcd38a2c2394de190785d",
+            "bytes": 2234,
+            "sha256": "7fbe9539dc568a46dd0e1e9678c12e226ab7a6d335c82a717c0cf9de89c11c7b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "4dc2df586a2aebdc1f2dcd38a2c2394de190785d",
+            "bytes": 2234,
+            "sha256": "7fbe9539dc568a46dd0e1e9678c12e226ab7a6d335c82a717c0cf9de89c11c7b"
+          }
+        },
+        {
+          "path": "lib/hooks/useFloatingButtonPosition.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "aef1e74ff6ed57f56a7ec6f305675a5723d5d140",
+            "bytes": 5499,
+            "sha256": "516f4a9797362917f79cd6de1b947cc985d5adc5ab859e3f5d2c7a56d55fc445"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "aef1e74ff6ed57f56a7ec6f305675a5723d5d140",
+            "bytes": 5499,
+            "sha256": "516f4a9797362917f79cd6de1b947cc985d5adc5ab859e3f5d2c7a56d55fc445"
+          }
+        },
+        {
+          "path": "lib/hooks/useInfiniteScroll.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c04aa3fa9460ed8962420275bd06b4b177a17235",
+            "bytes": 672,
+            "sha256": "9e9b068adec08fca2375171931aa8aaf1129008ccc71d7880b2313b2e6031281"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c04aa3fa9460ed8962420275bd06b4b177a17235",
+            "bytes": 672,
+            "sha256": "9e9b068adec08fca2375171931aa8aaf1129008ccc71d7880b2313b2e6031281"
+          }
+        },
+        {
+          "path": "lib/hooks/useLatencyPing.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "031e3d8c772712896e39254c4b5378b7599b2439",
+            "bytes": 2659,
+            "sha256": "1b533af0993fcea65885e5eebae5fd547be9d7bac00c85afed3a4b70198964fc"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "031e3d8c772712896e39254c4b5378b7599b2439",
+            "bytes": 2659,
+            "sha256": "1b533af0993fcea65885e5eebae5fd547be9d7bac00c85afed3a4b70198964fc"
+          }
+        },
+        {
+          "path": "lib/hooks/useMobilePlayer.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "32110c556f086bcb79257c0183744003ddf9e3ab",
+            "bytes": 690,
+            "sha256": "b4bdcc2f23668198e2118937b845ddaee7c33d804d090f18163f2a152d8f4cc0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "32110c556f086bcb79257c0183744003ddf9e3ab",
+            "bytes": 690,
+            "sha256": "b4bdcc2f23668198e2118937b845ddaee7c33d804d090f18163f2a152d8f4cc0"
+          }
+        },
+        {
+          "path": "lib/hooks/usePlayerSettings.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "353d960bc3ee9926a595d5ea658f2978e2f2954a",
+            "bytes": 2338,
+            "sha256": "b98bf9a391f72d20789e0db0071430de9da073991118c51e28a87cd4ef7765bd"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "353d960bc3ee9926a595d5ea658f2978e2f2954a",
+            "bytes": 2338,
+            "sha256": "b98bf9a391f72d20789e0db0071430de9da073991118c51e28a87cd4ef7765bd"
+          }
+        },
+        {
+          "path": "lib/hooks/useSearchDisplayMode.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "73272e002d52ae0d8f0494018f0b5a853eec5e74",
+            "bytes": 1661,
+            "sha256": "91bc36c977f7ad36cb8de2f10200953d7183c9a8b5ac5880589b8e7b4ee9f075"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "73272e002d52ae0d8f0494018f0b5a853eec5e74",
+            "bytes": 1661,
+            "sha256": "91bc36c977f7ad36cb8de2f10200953d7183c9a8b5ac5880589b8e7b4ee9f075"
+          }
+        },
+        {
+          "path": "lib/hooks/useSearchHistory.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4f005d78523e7cf94e6744fc41b1238409710ec3",
+            "bytes": 4304,
+            "sha256": "1c367b8e8ba379c66ce0f3ca7c5e48388c327e6cbfda4837288b67e9ebd80960"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "4f005d78523e7cf94e6744fc41b1238409710ec3",
+            "bytes": 4304,
+            "sha256": "1c367b8e8ba379c66ce0f3ca7c5e48388c327e6cbfda4837288b67e9ebd80960"
+          }
+        },
+        {
+          "path": "lib/hooks/useSearchResultPreferences.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "029e2eaa4ffaf87f43e2c840311f0d5795b92290",
+            "bytes": 3052,
+            "sha256": "2d8a9886794d63b11a9c17bfd1d2ae16e057ef420273644156a1f6bf310970f1"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "029e2eaa4ffaf87f43e2c840311f0d5795b92290",
+            "bytes": 3052,
+            "sha256": "2d8a9886794d63b11a9c17bfd1d2ae16e057ef420273644156a1f6bf310970f1"
+          }
+        },
+        {
+          "path": "lib/hooks/useSpatialNavigation.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "39d5c754d26a421bdcc0df0fa3542492eba1d6e1",
+            "bytes": 2633,
+            "sha256": "12804f8419f1405de27bdf4c2f75a188b6de3915db5002d78cbf89630bb3677b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "39d5c754d26a421bdcc0df0fa3542492eba1d6e1",
+            "bytes": 2633,
+            "sha256": "12804f8419f1405de27bdf4c2f75a188b6de3915db5002d78cbf89630bb3677b"
+          }
+        },
+        {
+          "path": "lib/media/grouped-sources-cache.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "479bd6216fedfc031100435e5ed2e90a468ff4ff",
+            "bytes": 3293,
+            "sha256": "cf3133f99c915c495e1e3e1335c269c85723901a9e0f7db47716f994b4a8da2b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "479bd6216fedfc031100435e5ed2e90a468ff4ff",
+            "bytes": 3293,
+            "sha256": "cf3133f99c915c495e1e3e1335c269c85723901a9e0f7db47716f994b4a8da2b"
+          }
+        },
+        {
+          "path": "lib/media/media-client.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "85fa8f422fa1bf53a0e65f1c7453710e4b2c8e0a",
+            "bytes": 2837,
+            "sha256": "2ac75222ffbe2f78e546f6224a2e4d4ce735aad567804d7884e0dbb3784e54dc"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "85fa8f422fa1bf53a0e65f1c7453710e4b2c8e0a",
+            "bytes": 2837,
+            "sha256": "2ac75222ffbe2f78e546f6224a2e4d4ce735aad567804d7884e0dbb3784e54dc"
+          }
+        },
+        {
+          "path": "lib/media/playback-routing.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "39f09addb60919475ac0ca93f00419ba2bb102cf",
+            "bytes": 949,
+            "sha256": "9dd0c9fe3607aa71ac6124b44b738cf202e8612fc1581b41ec738e07f2513c73"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "39f09addb60919475ac0ca93f00419ba2bb102cf",
+            "bytes": 949,
+            "sha256": "9dd0c9fe3607aa71ac6124b44b738cf202e8612fc1581b41ec738e07f2513c73"
+          }
+        },
+        {
+          "path": "lib/player/auto-skip.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "4ca280f12a9f46182c179e76ac924d81f637af7f",
+            "bytes": 5349,
+            "sha256": "96e7b93be08d89e1f8ac3f3a400153bb8ae1c3174d0cd50963bf5fc9b3437425"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "4ca280f12a9f46182c179e76ac924d81f637af7f",
+            "bytes": 5349,
+            "sha256": "96e7b93be08d89e1f8ac3f3a400153bb8ae1c3174d0cd50963bf5fc9b3437425"
+          }
+        },
+        {
+          "path": "lib/player/cursor-visibility.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "6241f124a6d5ebe9d463f1c05f426adaf8903f66",
+            "bytes": 351,
+            "sha256": "6c299ebe36bb1a925e329a67c4a6a39f122d7243a527d0068e6cde730c4fd5b7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "6241f124a6d5ebe9d463f1c05f426adaf8903f66",
+            "bytes": 351,
+            "sha256": "6c299ebe36bb1a925e329a67c4a6a39f122d7243a527d0068e6cde730c4fd5b7"
+          }
+        },
+        {
+          "path": "lib/player/danmaku-canvas-utils.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "05f7dbdd8f75d9c45bdca63cf4cbd98fc917c79c",
+            "bytes": 2723,
+            "sha256": "51760b2550a7f2c5b4c93faf9430383dcf5492e2cf43cb032c46e7b096b7dd3c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "05f7dbdd8f75d9c45bdca63cf4cbd98fc917c79c",
+            "bytes": 2723,
+            "sha256": "51760b2550a7f2c5b4c93faf9430383dcf5492e2cf43cb032c46e7b096b7dd3c"
+          }
+        },
+        {
+          "path": "lib/player/danmaku-utils.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "41663140d0e46f5c3696e8dd426ab2b25cfa5aed",
+            "bytes": 6003,
+            "sha256": "1fee0a430662615eae3959c5441c16eda723071bce81a10b208883db8de00dff"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "41663140d0e46f5c3696e8dd426ab2b25cfa5aed",
+            "bytes": 6003,
+            "sha256": "1fee0a430662615eae3959c5441c16eda723071bce81a10b208883db8de00dff"
+          }
+        },
+        {
+          "path": "lib/player/hls-compatibility.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "ed6ea8682c4d38459c30c05cf7c161c24dbae8ae",
+            "bytes": 891,
+            "sha256": "29c8e1e3aa574aa8508e7e312460774fb411f467fafd6c2e4c2ea8c6989fe811"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "ed6ea8682c4d38459c30c05cf7c161c24dbae8ae",
+            "bytes": 891,
+            "sha256": "29c8e1e3aa574aa8508e7e312460774fb411f467fafd6c2e4c2ea8c6989fe811"
+          }
+        },
+        {
+          "path": "lib/player/player-settings.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "bc565f00c9b55faf2093e4288ee3a756534ba358",
+            "bytes": 6782,
+            "sha256": "077ac950705acd7d6777bfa2c86fa630f33cfb72a3e30ba311665501028617bc"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "bc565f00c9b55faf2093e4288ee3a756534ba358",
+            "bytes": 6782,
+            "sha256": "077ac950705acd7d6777bfa2c86fa630f33cfb72a3e30ba311665501028617bc"
+          }
+        },
+        {
+          "path": "lib/player/resolution-cache.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "14f6ebde2e86c8ad50639c37b9000e4366db7875",
+            "bytes": 1684,
+            "sha256": "53615556b2da28c518d3055024612ea5864dbfb584b3dfbaf353eeadd345e203"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "14f6ebde2e86c8ad50639c37b9000e4366db7875",
+            "bytes": 1684,
+            "sha256": "53615556b2da28c518d3055024612ea5864dbfb584b3dfbaf353eeadd345e203"
+          }
+        },
+        {
+          "path": "lib/store/auth-store.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "bdcff7b50e3fe71884c04717d1d2aa0d0b694849",
+            "bytes": 756,
+            "sha256": "9c791df04a89ca29427dd3a9abc6822439bbaf214a5774466b4b926187bb51a1"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "bdcff7b50e3fe71884c04717d1d2aa0d0b694849",
+            "bytes": 756,
+            "sha256": "9c791df04a89ca29427dd3a9abc6822439bbaf214a5774466b4b926187bb51a1"
+          }
+        },
+        {
+          "path": "lib/sync/document-client.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "64aacf22389707d9091330a9b3af643ccf1c8ce7",
+            "bytes": 2736,
+            "sha256": "330580458d7b87b2971d0653b68b08e464a98fb3f5fdb793a0a63fc274ea73fa"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "64aacf22389707d9091330a9b3af643ccf1c8ce7",
+            "bytes": 2736,
+            "sha256": "330580458d7b87b2971d0653b68b08e464a98fb3f5fdb793a0a63fc274ea73fa"
+          }
+        },
+        {
+          "path": "lib/sync/document-merge.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "c3add1cd67743272fc9fd2387c4bd7738c9f0f45",
+            "bytes": 7639,
+            "sha256": "85510ec6003a95c02dc9991299cd092eade314c50f6f8ce45eded7cd35a6947b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c3add1cd67743272fc9fd2387c4bd7738c9f0f45",
+            "bytes": 7639,
+            "sha256": "85510ec6003a95c02dc9991299cd092eade314c50f6f8ce45eded7cd35a6947b"
+          }
+        },
+        {
+          "path": "lib/sync/document-store.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5edc3227bb667769f1181780d1c95943d2a72c86",
+            "bytes": 1313,
+            "sha256": "c0d2503def933d45a628b1924267efb315710a4b48d78187d68a287b2bc185c0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "5edc3227bb667769f1181780d1c95943d2a72c86",
+            "bytes": 1313,
+            "sha256": "c0d2503def933d45a628b1924267efb315710a4b48d78187d68a287b2bc185c0"
+          }
+        },
+        {
+          "path": "lib/sync/document-types.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "2d0dedf2f32f0353eff756edb3c1e3052d2e84b4",
+            "bytes": 1430,
+            "sha256": "8e07a90c3a4cb34b314532fed28305f463a0e58c4ecab20e28cdcc241733252a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "2d0dedf2f32f0353eff756edb3c1e3052d2e84b4",
+            "bytes": 1430,
+            "sha256": "8e07a90c3a4cb34b314532fed28305f463a0e58c4ecab20e28cdcc241733252a"
+          }
+        },
+        {
+          "path": "lib/sync/sync-engine.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "e48e744c8213a94f8ff34733b96877cc226166b8",
+            "bytes": 1912,
+            "sha256": "2967cd566e71ca2c2bb21a7c425f5999f841daaabeee36f8940172775b6451a0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "e48e744c8213a94f8ff34733b96877cc226166b8",
+            "bytes": 1912,
+            "sha256": "2967cd566e71ca2c2bb21a7c425f5999f841daaabeee36f8940172775b6451a0"
+          }
+        },
+        {
+          "path": "lib/utils/chinese-convert.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "cb6c1f951096d7d71e4eda9a03e87694c6acd4a6",
+            "bytes": 323,
+            "sha256": "91a05e48d1ff26797f359ed48547a21095bec82696e6e7143a0dab8f8f034e3c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "cb6c1f951096d7d71e4eda9a03e87694c6acd4a6",
+            "bytes": 323,
+            "sha256": "91a05e48d1ff26797f359ed48547a21095bec82696e6e7143a0dab8f8f034e3c"
+          }
+        },
+        {
+          "path": "lib/utils/display-initial.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "b0473e0d7d141b7e38c67fa71845db61678a9fb0",
+            "bytes": 211,
+            "sha256": "f47ed437bcafa8ec994909931ff234d5c3a00fb3c9710e6114ceef721fb41761"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "b0473e0d7d141b7e38c67fa71845db61678a9fb0",
+            "bytes": 211,
+            "sha256": "f47ed437bcafa8ec994909931ff234d5c3a00fb3c9710e6114ceef721fb41761"
+          }
+        },
+        {
+          "path": "lib/utils/floating-button-position.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "6c0886e46000267846eb42ddb7895f8c814482b8",
+            "bytes": 2411,
+            "sha256": "5c0cc4b28022fc451413ad8a1e8a5eff4ab78b0197e1a9415a52fbff82e1009f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "6c0886e46000267846eb42ddb7895f8c814482b8",
+            "bytes": 2411,
+            "sha256": "5c0cc4b28022fc451413ad8a1e8a5eff4ab78b0197e1a9415a52fbff82e1009f"
+          }
+        },
+        {
+          "path": "lib/utils/search-result-policy.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9cc3a9b29a14d6deb5cf3b8e5831b2efa4067e73",
+            "bytes": 5485,
+            "sha256": "a444b052912efecc9710e85bdebb5773c9fe3fcf6b21f53a6edebc78fc3ad1be"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9cc3a9b29a14d6deb5cf3b8e5831b2efa4067e73",
+            "bytes": 5485,
+            "sha256": "a444b052912efecc9710e85bdebb5773c9fe3fcf6b21f53a6edebc78fc3ad1be"
+          }
+        },
+        {
+          "path": "next.config.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "9e871872779b87de5d2954ca7ac5354f5123024e",
+            "bytes": 361,
+            "sha256": "ad2329a283050c803dda1626c6be3b025bc22991ba7426e3d2e89a4b490ef2a5"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "9e871872779b87de5d2954ca7ac5354f5123024e",
+            "bytes": 361,
+            "sha256": "ad2329a283050c803dda1626c6be3b025bc22991ba7426e3d2e89a4b490ef2a5"
+          }
+        },
+        {
+          "path": "package-lock.json",
+          "base": {
+            "mode": "100644",
+            "blobOid": "7dccc9eca4ddb87e0e46113de84b790a61dc669d",
+            "bytes": 236055,
+            "sha256": "a18b5b12f18b370ad745c8b9ff79bcf871a9000282b19ce0f00d84df0be41fde"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "7dccc9eca4ddb87e0e46113de84b790a61dc669d",
+            "bytes": 236055,
+            "sha256": "a18b5b12f18b370ad745c8b9ff79bcf871a9000282b19ce0f00d84df0be41fde"
+          }
+        },
+        {
+          "path": "package.json",
+          "base": {
+            "mode": "100644",
+            "blobOid": "477ccd714e13a06fbdfd661acc71003f1efda2c3",
+            "bytes": 3288,
+            "sha256": "fc97494237638279a8854a6ad25c05c7090bfe27dbd858889029f6eaad085336"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "f3f67b967f23c49d11cc307c84bdc3e6332bf27a",
+            "bytes": 3343,
+            "sha256": "568da14e836f548913e5d6c6e45f61eb48f6e8f8840da7cdf10f8234b4a4454b"
+          }
+        },
+        {
+          "path": "playwright.config.ts",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5c04f9df4b361e9dce7e00b5d7982f93e5d5234f",
+            "bytes": 713,
+            "sha256": "e2d237393287e8c7e6b87260d9fcad8f9bbf4625948240f28669bc9de5532b67"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "c05620551f5598335436e565009dc004af3741b9",
+            "bytes": 1021,
+            "sha256": "f2a268b5b63c1d0b9b788fdf3be60d5ad58d30940163c84ab015b9380c2fa4e5"
+          }
+        },
+        {
+          "path": "public/github-pages.html",
+          "base": {
+            "mode": "100644",
+            "blobOid": "52255205ceae3fc6cf55717ab30066e79ac0770f",
+            "bytes": 2095,
+            "sha256": "9d26513150ed0c50226434b4c288831cf5cf57a452ebc5b6748d79e82c04db8a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "52255205ceae3fc6cf55717ab30066e79ac0770f",
+            "bytes": 2095,
+            "sha256": "9d26513150ed0c50226434b4c288831cf5cf57a452ebc5b6748d79e82c04db8a"
+          }
+        },
+        {
+          "path": "public/icon.png",
+          "base": {
+            "mode": "100644",
+            "blobOid": "31dea027fbee910293533090f2fe89cbb28208c1",
+            "bytes": 22124,
+            "sha256": "853e99eb22093ee759d30a05e18a33de86cb4deb5cbe8c094afa391a3251b91d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "31dea027fbee910293533090f2fe89cbb28208c1",
+            "bytes": 22124,
+            "sha256": "853e99eb22093ee759d30a05e18a33de86cb4deb5cbe8c094afa391a3251b91d"
+          }
+        },
+        {
+          "path": "public/manifest.json",
+          "base": {
+            "mode": "100644",
+            "blobOid": "5cc130a5a268ee1c99df76a7d4ea88665e3843f9",
+            "bytes": 537,
+            "sha256": "0cef34da7533eaf05fe935f6218863f352378c19c5e075d536ce803d346540e0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "5cc130a5a268ee1c99df76a7d4ea88665e3843f9",
+            "bytes": 537,
+            "sha256": "0cef34da7533eaf05fe935f6218863f352378c19c5e075d536ce803d346540e0"
+          }
+        },
+        {
+          "path": "public/placeholder-poster.svg",
+          "base": {
+            "mode": "100644",
+            "blobOid": "3b2a8ae9b72245cdc366cd2bbc93833ed7eb7276",
+            "bytes": 1681,
+            "sha256": "3741721f3f5961f24bbead854cf465fcf0a457dda0c68a4a8d9365416a3d003d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "3b2a8ae9b72245cdc366cd2bbc93833ed7eb7276",
+            "bytes": 1681,
+            "sha256": "3741721f3f5961f24bbead854cf465fcf0a457dda0c68a4a8d9365416a3d003d"
+          }
+        },
+        {
+          "path": "public/sw.js",
+          "base": {
+            "mode": "100644",
+            "blobOid": "61cdeb6e68808341065e5472ca3a7d1e87c71a45",
+            "bytes": 2561,
+            "sha256": "2ee90d3be5ababd500d70cccf69a2596660966aedadf46864d579bb5d93490ec"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "61cdeb6e68808341065e5472ca3a7d1e87c71a45",
+            "bytes": 2561,
+            "sha256": "2ee90d3be5ababd500d70cccf69a2596660966aedadf46864d579bb5d93490ec"
+          }
+        },
+        {
+          "path": "scripts/build-release.mjs",
+          "base": {
+            "mode": "100644",
+            "blobOid": "811b28282046424beee1110421ba307979027fa5",
+            "bytes": 7042,
+            "sha256": "92fb719f8a8440c5ec97e0c8b952ceff203a6a710f2623534188230bb96295b2"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "811b28282046424beee1110421ba307979027fa5",
+            "bytes": 7042,
+            "sha256": "92fb719f8a8440c5ec97e0c8b952ceff203a6a710f2623534188230bb96295b2"
+          }
+        },
+        {
+          "path": "scripts/transpile-client-assets.mjs",
+          "base": {
+            "mode": "100644",
+            "blobOid": "afd78b12a0d1062427916008a28f4bd4e3ddbfeb",
+            "bytes": 2144,
+            "sha256": "dce55bdbf10dcf44818fb6114fa2a156624f1a96a4efdaf52258e33bb6e7b9a7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blobOid": "afd78b12a0d1062427916008a28f4bd4e3ddbfeb",
+            "bytes": 2144,
+            "sha256": "dce55bdbf10dcf44818fb6114fa2a156624f1a96a4efdaf52258e33bb6e7b9a7"
+          }
+        }
+      ]
+    }
+  },
+  "patches": {
+    "workerForward": {
+      "path": "work-products/evidence/section22/current-candidate-worker.forward.patch",
+      "bytes": 15294,
+      "sha256": "28665c491d655b5ba865a5ac26522954068445f30f58b50f4e6e197d6711cb9c"
+    },
+    "workerReverse": {
+      "path": "work-products/evidence/section22/current-candidate-worker.reverse.patch",
+      "bytes": 15278,
+      "sha256": "b27d0fdadbfff41f2bc9bfdcc1c3dd6b79bfb0365eb94d8bc6aaf572d8fe015d"
+    },
+    "pagesForward": {
+      "path": "work-products/evidence/section22/current-candidate-pages.forward.patch",
+      "bytes": 30426,
+      "sha256": "74f1ebd8f619b30f84e287076c40c03ede546d88485a650381652c66ac8b3d75"
+    },
+    "pagesReverse": {
+      "path": "work-products/evidence/section22/current-candidate-pages.reverse.patch",
+      "bytes": 30426,
+      "sha256": "2d494f310e9db083800c62ae44921fa3d2ca8409e903fa7bf007e77025c52819"
+    }
+  },
+  "phases": [
+    "forward-current-candidate",
+    "reverse-current-head-pair",
+    "forward-restore-current-candidate"
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "remoteChanges": false
+  }
+}

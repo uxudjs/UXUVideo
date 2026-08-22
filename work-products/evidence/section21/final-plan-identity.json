@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "section": 21,
+  "source": {
+    "repository": "worker",
+    "revision": "HEAD at freeze time",
+    "commitObjectId": "9185950b8c1a5cae4204f244369bf711e0f36b44"
+  },
+  "files": [
+    {
+      "sourcePath": "work-products/plan.md",
+      "frozenPath": "work-products/evidence/section21/final-plan.md",
+      "blobObjectId": "4d0e814ba20ef7042b11731eb2a1bb77e5f2bdcd",
+      "bytes": 90201,
+      "sha256": "cbbc27518ec5db9579a80373ecdcb989d102f25addd6e5e7329beffe3e4d95ff"
+    },
+    {
+      "sourcePath": "work-products/todo.md",
+      "frozenPath": "work-products/evidence/section21/final-todo.md",
+      "blobObjectId": "846e05b23ceba9a13b9bff8b3b8566ab4fec3d85",
+      "bytes": 6803,
+      "sha256": "83405ce04e83775b6acda6bbf277dc277c093ec09b8eecf74d7917360ca82909"
+    }
+  ]
+}

@@ -9,11 +9,11 @@ import { inflateRawSync } from 'node:zlib';
 import {
   INVENTORIES, classifyInventoryRow, decodeText,
 } from './section21-inventory.mjs';
-import { pagesReleaseIdentity } from './t15-candidate-identity.mjs';
 
 const workerRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const pagesRoot = resolve(workerRoot, '..', 'UXUV-Pages');
 const evidenceRoot = join(workerRoot, 'work-products', 'evidence', 'section21');
+const GIT_FILE_LIST_MAX_BUFFER = 128 * 1024 * 1024;
 const baselinePlanSha256 = '6ef4a9515b3929695b04b0886b3fca64680dce765b0a7f5f16dd6ceba64cd91a';
 const binaryMime = new Map([
   ['.gif', 'image/gif'], ['.ico', 'image/x-icon'], ['.jpeg', 'image/jpeg'], ['.jpg', 'image/jpeg'],
@@ -25,8 +25,11 @@ function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function gitFiles(root) {
-  return execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], { cwd: root })
+function gitFiles(root, execute = execFileSync) {
+  return execute('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], {
+    cwd: root,
+    maxBuffer: GIT_FILE_LIST_MAX_BUFFER,
+  })
     .toString('utf8').split('\0').filter(Boolean);
 }
 
@@ -48,6 +51,12 @@ function generatedFiles(root, relativeRoot) {
 }
 
 function candidateFiles(repository) {
+  const processArtifact = (path) => path === 'work-products/plan.md'
+    || path === 'work-products/todo.md'
+    || path === 'work-products/SPEC.md'
+    || path.startsWith('work-products/debug/')
+    || path.startsWith('work-products/evidence/section22/')
+    || path.startsWith('work-products/tests/work/');
   const extras = repository.name === 'pages'
     ? [
       ...generatedFiles(repository.root, 'out'),
@@ -55,7 +64,9 @@ function candidateFiles(repository) {
       ...generatedFiles(repository.root, 'work-products/tests/fixtures/ui-review/section21-candidate'),
     ]
     : generatedFiles(repository.root, 'work-products/evidence/section21');
-  return [...new Set([...gitFiles(repository.root), ...extras])].sort();
+  return [...new Set([...gitFiles(repository.root), ...extras])]
+    .filter((path) => !processArtifact(path))
+    .sort();
 }
 
 function syntheticSecret(value) {
@@ -298,17 +309,33 @@ test('S21-T01 hygiene recursively scans textual ZIP members', () => {
   assert.match(zipTextFindings(archive, 'fixture.zip').join('\n'), /fixture\.zip!test\.trace\/0-trace\.stacks:.*C:\\Code/);
 });
 
-test('S21-T15 candidate evidence binds the current Worker and Pages manifest bytes', () => {
-  const evidence = JSON.parse(readFileSync(join(evidenceRoot, 't15-candidate-evidence.json'), 'utf8'));
-  const identities = [
-    ['worker:_worker.js', evidence.repositories.worker.runtime.sha256, sha256(readFileSync(join(workerRoot, evidence.repositories.worker.runtime.path)))],
-    ['pages:package.json', evidence.repositories.pages.packageSha256, sha256(readFileSync(join(pagesRoot, 'package.json')))],
-    ['pages:package-lock.json', evidence.repositories.pages.packageLockSha256, sha256(readFileSync(join(pagesRoot, 'package-lock.json')))],
-    ['pages:next-env.d.ts', evidence.repositories.pages.nextEnvSha256, sha256(readFileSync(join(pagesRoot, 'next-env.d.ts')))],
-  ];
-  assert.deepEqual(identities.filter(([, expected, actual]) => expected !== actual)
-    .map(([path, expected, actual]) => ({ path, expected, actual })), []);
-  assert.deepEqual(evidence.repositories.pages.releaseScope, pagesReleaseIdentity(pagesRoot));
+test('S21-T15 candidate evidence remains internally bound after active repositories advance', () => {
+  const evidencePath = join(evidenceRoot, 't15-candidate-evidence.json');
+  const evidenceBytes = readFileSync(evidencePath);
+  const evidence = JSON.parse(evidenceBytes);
+  const approval = JSON.parse(readFileSync(join(evidenceRoot, 't15-visual-approval.json'), 'utf8'));
+  const rollback = JSON.parse(readFileSync(join(evidenceRoot, 'pair-rollback.json'), 'utf8'));
+  assert.equal(resolve(workerRoot, approval.preapprovalEvidence.path), resolve(evidencePath));
+  assert.equal(approval.preapprovalEvidence.sha256, sha256(evidenceBytes));
+  assert.equal(evidence.repositories.worker.head, rollback.drillBase.worker.commit);
+  assert.equal(evidence.repositories.pages.head, rollback.drillBase.pages.commit);
+  assert.equal(evidence.repositories.worker.version, rollback.identities.v2.workerVersion);
+  assert.equal(evidence.repositories.worker.apiContract, rollback.identities.v2.workerApiContract);
+  assert.equal(evidence.repositories.pages.version, rollback.identities.v2.pagesVersion);
+  assert.equal(evidence.repositories.pages.apiContract, rollback.identities.v2.pagesApiContract);
+  assert.equal(evidence.repositories.pages.workerRange, rollback.identities.v2.workerRange);
+  for (const digest of [
+    evidence.repositories.worker.runtime.sha256,
+    evidence.repositories.worker.candidateManifestSha256,
+    evidence.repositories.pages.candidateManifestSha256,
+    evidence.repositories.pages.packageSha256,
+    evidence.repositories.pages.packageLockSha256,
+    evidence.repositories.pages.nextEnvSha256,
+    evidence.repositories.pages.releaseScope.sha256,
+  ]) assert.match(digest, /^[a-f0-9]{64}$/u);
+  assert.ok(evidence.repositories.worker.runtime.bytes > 0);
+  assert.ok(evidence.repositories.worker.runtime.gzipBytes < evidence.repositories.worker.runtime.gzipLimitBytes);
+  assert.ok(evidence.repositories.pages.releaseScope.fileCount > 0);
 });
 
 test('S21-T15 final matrix binds the active candidate and visual decision', () => {
@@ -339,7 +366,7 @@ test('S21-T15 machine-readable visual decision is chained to the current evidenc
   const approvalBytes = readFileSync(join(evidenceRoot, 't15-visual-approval.json'));
   const approval = JSON.parse(approvalBytes);
   const taskReceipt = JSON.parse(readFileSync(join(evidenceRoot, 'receipts', 'S21-T15.json'), 'utf8'));
-  const todo = readFileSync(join(workerRoot, 'work-products', 'todo.md'), 'utf8');
+  const todo = readFileSync(join(evidenceRoot, 'final-todo.md'), 'utf8');
   assert.equal(approval.schemaVersion, 2);
   assert.equal(approval.receiptKind, 'visual_approval');
   assert.ok(['NOT_READY', 'PENDING', 'APPROVED', 'REJECTED'].includes(approval.decision));
@@ -461,6 +488,22 @@ test('S21-T15 rejected visual archives fail closed when attempt-specific preview
       assert.deepEqual(archivedTask.verification.remaining, ['user visual decision for candidate 12']);
     }
   }
+});
+
+test('S21-T01 Git file enumeration budgets output above the Node default buffer', () => {
+  const output = Buffer.from(`${'a'.repeat(1024 * 1024 + 1)}\0`);
+  let observedOptions;
+  const files = gitFiles(workerRoot, (file, arguments_, options) => {
+    assert.equal(file, 'git');
+    assert.deepEqual(arguments_, ['ls-files', '--cached', '--others', '--exclude-standard', '-z']);
+    observedOptions = options;
+    return output;
+  });
+  assert.ok(
+    observedOptions.maxBuffer >= output.byteLength,
+    `maxBuffer ${observedOptions.maxBuffer ?? 'missing'} cannot hold ${output.byteLength} bytes`,
+  );
+  assert.equal(files.length, 1);
 });
 
 test('S21-T01 candidate contains no machine path, unreviewed binary, or credible secret material', () => {

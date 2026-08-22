@@ -1,0 +1,54 @@
+{
+  "schema_version": "s22-frozen-integrity/v1",
+  "subject": {
+    "task_id": "S22-R21",
+    "attempt_id": "run-20260822-s22-r21-01",
+    "status": "blocked"
+  },
+  "created_at": "2026-08-22",
+  "files": [
+    {
+      "path": "work-products/debug/approval-baselines/s22-account-usage-final-gate-completion-recovery-20260822-10/plan.md",
+      "bytes": 25612,
+      "sha256": "99ab945d1e28652b90b06e1a51900c06ec2438af66868a3f01f8129dc8741acd"
+    },
+    {
+      "path": "work-products/evidence/section22/blocked-r21-todo.md",
+      "bytes": 3288,
+      "sha256": "dca2292f2cd4ab116cc1a33ffae220d3e2beed3e5e567ea3da3851b06def2977"
+    },
+    {
+      "path": "work-products/debug/execution-baselines/S22-R21/request-run-20260822-s22-r21-01.json",
+      "bytes": 10713,
+      "sha256": "f6ff16574f3f27efeddf7a252a8f9bf0d48ead18ea3e837ec83684826047b1df"
+    },
+    {
+      "path": "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01/manifest.json",
+      "bytes": 4561928,
+      "sha256": "2d93225828bde026b4aa64f06b5aa324733a0dac06918b48b49c5fa8f760f446"
+    },
+    {
+      "path": "work-products/debug/execution-baselines/S22-R21/run-20260822-s22-r21-01/manifest.sha256",
+      "bytes": 65,
+      "sha256": "5cf8b3222e267126f12734afea5e8b0963c328e11ad3047a7a7bb9468e7b4e75"
+    },
+    {
+      "path": "work-products/evidence/section22/final-gate-completion-recovery-validation.md",
+      "bytes": 4385,
+      "sha256": "0d4c90ede697e8f876c2c283232a91628369e4978198645b92b6b98f7d2041ac"
+    },
+    {
+      "path": "work-products/evidence/section22/receipts/S22-R21.json",
+      "bytes": 6505,
+      "sha256": "2141e8d991ca0c65084c64e1ce4ebfb43a4fd21b53e0ddcee0ee18a42103c8d2"
+    }
+  ],
+  "terminal": {
+    "attempt_root": "present",
+    "staging_root": "missing",
+    "task_temp": "present-playwright-transform-cache",
+    "generated_namespace": "none",
+    "ports": "free",
+    "baseline_terminal_verify": "green"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "task_id": "S22-R18",
+  "attempt_id": "run-20260821-s22-r18-01",
+  "owner": "native-worker:s22_r18",
+  "executor": "main-agent:serial",
+  "status": "blocked",
+  "created_at": "2026-08-21T20:46:33.3577511+08:00",
+  "execution_baseline": "work-products/debug/execution-baselines/S22-R18/run-20260821-s22-r18-01/manifest.json",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "changed_paths": [
+    { "repository": "worker", "path": "work-products/evidence/section22/pair-validation.md", "state": "created_blocked_evidence" }
+  ],
+  "validation": [
+    { "command": "node --check _worker.js", "repository": "worker", "exit_code": 0 },
+    {
+      "command": "npm test",
+      "repository": "worker",
+      "exit_code": 1,
+      "result": "214 pass, 1 fail of 215"
+    },
+    {
+      "command": "node --test work-products/tests/candidate-hygiene.test.mjs",
+      "repository": "worker",
+      "exit_code": 1,
+      "result": "8 pass, 1 fail; spawnSync git ENOBUFS"
+    },
+    {
+      "check": "git path-list capacity diagnosis",
+      "exit_code": 0,
+      "result": "worker 1255045 bytes and 8843 paths; pages 30522 bytes and 525 paths"
+    }
+  ],
+  "failure": {
+    "classification": "test_infrastructure_capacity",
+    "gate": "Worker npm test",
+    "location": "work-products/tests/candidate-hygiene.test.mjs:27",
+    "error": "spawnSync git ENOBUFS",
+    "root_cause": "gitFiles reads the complete cached and untracked path list with execFileSync but does not set an explicit maxBuffer",
+    "candidate_hygiene_result": "unproven",
+    "release_decision": "NO-GO / RELEASE HOLD"
+  },
+  "unperformed": [
+    "Worker npm run check:size",
+    "Worker git diff --check",
+    "Pages npm run lint",
+    "Pages node node_modules/typescript/bin/tsc --noEmit",
+    "Pages npm run test:e2e",
+    "Pages npm run build",
+    "Pages npm run release:build",
+    "Pages npm test",
+    "Pages git diff --check",
+    "two-repository identity evidence and manifest scans",
+    "local rollback drill inside generated namespace"
+  ],
+  "terminal": {
+    "verification": "green",
+    "targets_fingerprint": "8b17b811ad82eb5ebf45ba280776c7e88a80246b450678064ac44125fd8524a8",
+    "generated_fingerprint": "faad4fc2d28cdca4271b059ee99960b2c01b315ad2239faeafdc5794cc7e1ee5",
+    "protected_inputs": "unchanged",
+    "generated_namespace": "terminal none",
+    "ports": "free",
+    "release_transients": "absent",
+    "node_test_work": "missing",
+    "task_temp": "empty",
+    "subprocess_cleanup": "baseline-tool tests removed their task-owned work directory; no main-agent cleanup was performed"
+  },
+  "scope_exceptions": [],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

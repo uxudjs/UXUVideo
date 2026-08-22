@@ -1,8 +1,8 @@
 # UXUVideo Worker / UXUV-Pages 分仓迁移与 KVideo 4.9.19 完整复刻规范
 
-状态：**第 1—20 节为已完成历史基线；第 21 节已于 2026-08-17 获用户批准，可进入规划，仍未授权实现、提交或部署**
-日期：2026-08-17（保留 2026-08-11 已完成基线，新增第 21 节界面、来源与 IPTV 退役修订）
-目标版本：历史基线为 Worker API Contract v1；第 21 节拟升级为 Worker API Contract v2，Worker/Pages 语义版本在批准后的计划中同步确定
+状态：**第 1—20 节为已完成历史基线；第 21 节保留已批准历史；第 22 节已于 2026-08-21 获用户批准，仅授权进入 `@uxu-code:plan`，仍未授权实现、提交或部署**
+日期：2026-08-20（保留既有基线，新增第 22 节 Cloudflare 账户级用量配置收敛）
+目标版本：历史基线为 Worker API Contract v1；第 21—22 节共同形成修订后的 Worker API Contract v2 候选，Worker/Pages 语义版本在批准后的计划中同步确定
 
 > 2026-08-08 验收纠偏：已发布的 UXUV-Pages `0.1.2` 只覆盖了简化页面和部分功能，未满足本规范原有“迁移不是视觉重设计”和“功能类别完整”的要求。本次重开把 KVideo 4.9.19 的完整 UI 与用户可见行为升级为硬性发布门；此前 `work-products/plan.md`、`work-products/todo.md` 中关于 UI 已全面接管的结论失效，须在本规范获批后重新规划。
 
@@ -10,9 +10,11 @@
 
 > 2026-08-17 修订规则：若第 21 节获批，它只在明确冲突处覆盖第 1—20 节，包括 `/UXUV-Pages` 兼容路径、IPTV、系统预设视频源/弹幕 API、全局片头片尾设置、主页继续观看和旧视觉边界；未被点名的认证、D1、同步、代理、安全、Free 预算、不可变 Pages 发布、更新复制与证据分层合同继续有效。
 
+> 2026-08-20 修订规则：第 22 节只覆盖 Cloudflare 用量的配置、聚合口径、`/api/admin/usage` 响应和对应 Pages 文案/展示；它把“账户 + 本项目”改为“仅账户总额”。第 21 节其他已批准行为不变。该实质修订使现有计划、todo 与本地候选的用量部分失去继续执行资格；历史证据保留但不能证明第 22 节。
+
 ## 1. 决策摘要
 
-| 事项 | 已批准决策 |
+| 事项 | 当前规格决策（审批状态见各修订节） |
 | --- | --- |
 | 仓库职责 | `UXUVideo` 最终只交付单文件模块 Worker `_worker.js`；新增公共 `UXUV-Pages` 保存并发布静态前端 |
 | 前端交付 | Next.js 使用 `output: 'export'` 与 `images.unoptimized: true`；公共 Pages 不运行 API、认证或用户数据逻辑 |
@@ -26,7 +28,7 @@
 | Free 套餐 | **已确认：** 支持完整功能类别，但采用保守上限；媒体代理、IPTV 和长流为尽力而为，不承诺无限时长或生产 SLA |
 | 安全基线 | 默认必须配置认证；同源 API、严格 Cookie/CSRF、SSRF 防护、无通配 CORS、CSP、安全日志和应用级限流 |
 | 兼容发布 | Worker 只校验 Pages 版本、API Contract、Worker 兼容范围和清单结构；不固定 Git commit 或资源 SHA，不兼容时失败关闭 |
-| 用量与提醒 | 主设置页向 `super_admin` 显示 Workers 账户/本脚本及 D1 账户/本数据库用量；项目警戒线、官方额度和 UTC 重置时间分开标识，接近官方上限时显示全局提醒 |
+| 用量与提醒 | 第 22 节候选仅向 `super_admin` 显示 Workers 与 D1 的 Cloudflare 账户总额；只需 `CF_ACCOUNT_ID` 与 `CF_ANALYTICS_API_TOKEN`，不再显示本脚本、本数据库或项目警戒线 |
 
 本规范选择“兼容版本的公共静态发布 + 用户私有 API Worker”，而不是把完整前后端一起复制到每个 Cloudflare 账户。它保留单文件部署体验，允许 Pages 小步更新而无需用户重发 Worker，也避免公共 Pages 接触密码、Cookie、D1 或用户同步数据。
 
@@ -1574,3 +1576,218 @@ git diff --check
 - **Never：** 提交 Secret/来源/真实账户；静默兼容 `/UXUV-Pages`；重新引入 IPTV 或系统默认源；把本地测试说成生产证明；玻璃层覆盖每个内容卡；未经授权修改 Cloudflare/D1。
 
 **当前审批门：** 用户批准本节后只授权进入 `@uxu-code:plan`，不授权业务代码、测试代码、版本更新、commit、push、GitHub Pages 发布、Cloudflare Worker 部署、真实 D1/Secret/变量修改。若用户不接受 21.3 任一解释，应先给出修订意见。
+
+## 22. Cloudflare 账户级用量配置收敛（已于 2026-08-21 批准）
+
+### 22.1 目标、用户与覆盖关系
+
+为自托管部署者减少两项无必要的资源标识配置，并让 Cloudflare 用量卡只回答一个问题：**当前 Cloudflare 账户距离账户级额度还有多远**。
+
+目标用户仍是已登录的 `super_admin`。本节覆盖此前所有下列表述：
+
+- “Workers 账户 + 本脚本”；
+- “D1 账户 + 本数据库”；
+- “本项目用量/项目警戒线”；
+- 用量面板需要一个 Token 和三个普通 `CF_*` 标识。
+
+第 1—21 节其余认证、D1 业务绑定、同源、CSRF、缓存、错误脱敏、Free 预算、Pages 兼容发布和回滚合同保持不变。`DB` 仍是应用账号、会话与同步数据的必需 D1 binding；删除 `CF_D1_DATABASE_ID` 只影响 Analytics 查询，不删除或替代 `DB`。
+
+### 22.2 已确认解释与版本边界
+
+1. “整个账户的额度”指 `CF_ACCOUNT_ID` 下所有 Workers 脚本的请求合计，以及该账户内所有 D1 数据库的行读、行写与存储合计；不再归因到 UXUVideo 单个 Worker 或其绑定数据库。
+2. 用量面板的完整可选配置精确为：`CF_ACCOUNT_ID` 普通变量 + `CF_ANALYTICS_API_TOKEN` Secret。
+3. `CF_WORKER_SCRIPT_NAME` 与 `CF_D1_DATABASE_ID` 从运行时读取、缺失列表、GraphQL 变量、缓存身份、README、Pages 提示和活动测试合同中移除。部署环境即使暂时残留这两个旧变量，Worker 也必须忽略；本修订不授权远程删除变量。
+4. 以当前仓库候选仍未获生产发布授权为前提，本修订继续归入 API Contract v2，不另建 v3。现有 Worker/Pages v2 用量候选及其精确身份、计划绑定和验证证据失效，必须按本节重新成对规划、RED/GREEN 和验证。
+5. 若发现旧 v2 已在任何生产环境发布，或存在仓库外消费者依赖旧响应字段，必须停止并重新决定版本/迁移合同，不得直接按本节删除字段。
+
+### 22.3 配置与安全合同
+
+| 名称 | 类型 | 必填 | 用途 |
+| --- | --- | --- | --- |
+| `CF_ACCOUNT_ID` | 普通变量 | 用量面板可选 | GraphQL `accountTag`，限定唯一 Cloudflare 账户 |
+| `CF_ANALYTICS_API_TOKEN` | Secret | 用量面板可选 | 固定 GraphQL 端点的 Bearer Token；权限仅为目标账户 `Account Analytics: Read` |
+
+配置判定：
+
+- 两项均为非空字符串时，`configured: true`。
+- 任一缺失时不发网络请求，返回 `configured: false`；`missing` 只允许包含 `CF_ANALYTICS_API_TOKEN`、`CF_ACCOUNT_ID`，顺序固定为 Token 后 Account ID。
+- 旧变量存在与否不得影响 `configured`、错误码或缓存命中。
+- Token 不得进入 URL、GraphQL body、响应、D1、Cache 数据、Pages、日志或测试快照；仍只通过 `Authorization: Bearer` 发往固定 `https://api.cloudflare.com/client/v4/graphql`。
+- 不采用 Global API Key，不扩大权限，不把用量发送到 Cloudflare 之外。
+
+### 22.4 账户级 GraphQL 聚合合同
+
+时间范围仍为当前 UTC 日，`resetsAt` 仍为下一次 UTC 00:00。一次固定 GraphQL 请求只传：
+
+```json
+{
+  "accountTag": "<CF_ACCOUNT_ID>",
+  "datetimeStart": "<UTC ISO>",
+  "datetimeEnd": "<UTC ISO>",
+  "dateStart": "<YYYY-MM-DD>",
+  "dateEnd": "<YYYY-MM-DD>"
+}
+```
+
+查询合同：
+
+- `workersInvocationsAdaptive` 不带 `scriptName` 过滤，返回账户请求与错误总量。
+- `d1AnalyticsAdaptiveGroups` 不带 `$databaseId` 过滤，汇总账户内全部数据库的 `rowsRead` 与 `rowsWritten`。
+- `d1StorageAdaptiveGroups` 不带 `$databaseId` 过滤；允许读取 `dimensions.databaseId` 以按数据库取得各自最大存储快照后求和，但不得要求用户提供数据库 ID。
+- GraphQL 变量声明和请求 variables 中不得再出现 `scriptName` 或 `databaseId`；不得保留 `scriptWorkers`、`databaseD1`、`databaseStorage` 等项目级别名。
+- 第三方响应继续按不可信输入处理：512 KiB 响应上限、10 秒超时、受控非负安全整数、固定错误映射与正文不反射合同不变。
+- 账户合计必须完整。若 GraphQL 节点/分页上限、抽样或响应结构无法证明覆盖整个账户，返回既有安全的不可用状态，不得把截断或部分数据标成账户总额。Free profile 按当前官方最多 10 个 D1 数据库验证单次聚合完整性；其他 profile 也必须满足完整性检查才能展示。
+
+成功缓存身份只由 `CF_ACCOUNT_ID` 与 UTC 日期构成，不得再包含脚本名或数据库 ID。5 分钟 fresh、最多 1 小时 stale fallback、浏览器 `private, no-store` 与 `USAGE_DATA_STALE` 语义保持不变。
+
+### 22.5 `/api/admin/usage` 响应合同
+
+路由、方法、`super_admin` 权限与同源要求不变。配置完整时成功数据精确包含账户级字段：
+
+```json
+{
+  "configured": true,
+  "period": {
+    "start": "UTC ISO",
+    "end": "UTC ISO",
+    "resetsAt": "UTC ISO"
+  },
+  "workers": {
+    "accountRequests": 0,
+    "accountErrors": 0,
+    "accountLimit": 100000
+  },
+  "d1": {
+    "accountRowsRead": 0,
+    "accountRowsWritten": 0,
+    "accountStorageBytes": 0,
+    "accountRowsReadLimit": 5000000,
+    "accountRowsWrittenLimit": 100000,
+    "accountStorageBytesLimit": 5000000000
+  },
+  "level": "normal",
+  "warnings": [],
+  "observedAt": "UTC ISO",
+  "stale": false,
+  "source": "cloudflare-graphql"
+}
+```
+
+必须删除的旧成功字段：
+
+- `workers.scriptRequests`、`workers.scriptErrors`；
+- `d1.databaseRowsRead`、`d1.databaseRowsWritten`、`d1.databaseStorageBytes`；
+- `d1.databaseStorageBytesLimit`、`d1.projectRowsReadGuardrail`、`d1.projectRowsWrittenGuardrail`；
+- 任何同义的本脚本、本数据库或项目字段。
+
+`level` 和全局告警只能由账户指标产生。允许的业务告警前缀为 `WORKERS_ACCOUNT`、`D1_ACCOUNT_READ`、`D1_ACCOUNT_WRITE`、`D1_ACCOUNT_STORAGE`；删除 `D1_DATABASE_STORAGE` 与 `D1_PROJECT_READ/WRITE`。既有 `USAGE_DATA_STALE` 可继续附加。
+
+阈值保持既有账户级合同：Workers 为 70/85/95/100%；D1 行读、行写和账户存储为 85/95/100%。静态数值只代表 Free profile 的当前项目基线，README 继续声明实际额度与计费以 Cloudflare 当前规则为准。
+
+### 22.6 Pages 展示合同
+
+`CloudflareUsageSettings` 只显示四个账户级进度项：
+
+1. Workers 账户请求；
+2. D1 账户行读取；
+3. D1 账户行写入；
+4. D1 账户存储。
+
+Workers 账户错误数可作为不参与额度计算的辅助文字展示。Pages 不再显示或提及：
+
+- 本脚本请求/错误；
+- 本数据库读、写、存储或 500 MB 单库上限；
+- 本项目用量、项目警戒线或项目级预警；
+- “Token 与三个项目标识”等旧配置说明。
+
+未配置提示只说明需配置一个只读 Analytics Token 与 Account ID，并只列出两项缺失名称。根级提醒改为“检查设置页中的账户总量”，不得再声称能够定位本项目。三语、四断点、文字状态、可访问标签、刷新、观测时间、UTC 重置倒计时和 stale 状态保持。
+
+### 22.7 文档与兼容迁移
+
+- README 环境变量表分别列出 `CF_ANALYTICS_API_TOKEN` 与 `CF_ACCOUNT_ID`，并明确两者需同时配置。
+- README 活动内容与活动测试不得再要求或指导配置 `CF_WORKER_SCRIPT_NAME`、`CF_D1_DATABASE_ID`。
+- 历史 CHANGELOG、失效补丁、receipt 和 fixture 可以保留旧名称作为不可变证据；面向当前用户的文档、活动源代码、活动测试和新证据不得把它们当作现行配置。
+- 不自动迁移或删除 Cloudflare Dashboard 中的旧变量。新 Worker 忽略旧变量，因此回滚到旧 Worker 时它们仍可继续使用；是否远程清理必须另行授权。
+- Worker 与 Pages 必须作为一个兼容候选验证和发布；不得只更新一侧后宣称接口兼容。
+
+### 22.8 测试策略与命令
+
+规格阶段不创建测试或业务代码。批准并重新规划后，先建立可归因 RED，再做最小 GREEN。
+
+`UXUVideo`：
+
+- 更新 `work-products/tests/cloudflare-usage-contract.test.mjs`：只提供两项新配置即可 `configured: true`；缺失列表精确为两项；旧变量存在/缺失均不改变结果。
+- 断言 GraphQL query/variables 无 `$scriptName`、`$databaseId` 及对应过滤器，账户级 Workers/D1 多资源 fixture 正确求和。
+- 断言成功响应和 warning 无项目级字段/前缀；70/85/95/100、缓存、stale、错误映射、超限响应与 Token 零泄漏回归保持。
+- 更新 `work-products/tests/worker-only-boundary.test.mjs`，从 README 现行配置要求中移除两个旧名称，并明确拒绝活动配置文案重新引入。
+
+`UXUV-Pages`：
+
+- 更新 `lib/hooks/useCloudflareUsage.ts` 的边界解析合同，只要求第 22.5 节账户字段；外部响应仍严格验证。
+- 更新 `components/settings/CloudflareUsageSettings.tsx`、`components/UsageAlertProvider.tsx` 的三语字段与活动 UI 合同。
+- 在 `work-products/tests/` 内覆盖四个账户指标、两项未配置提示、项目文案零命中、响应字段缺失失败和告警行为；测试从最终目录以仓库相对路径引用文件。
+
+最低本地验证：
+
+```powershell
+# UXUVideo
+node --check _worker.js
+npm test
+npm run check:size
+git diff --check
+
+# UXUV-Pages
+npm test
+npm run lint
+npx tsc --noEmit
+npm run build
+npm run test:e2e
+npm run release:build
+git diff --check
+```
+
+另需运行两仓既有 secret、机器路径、发布清单与成对兼容检查。涉及外部官方口径的断言在实施/发布门重新核对 Cloudflare 官方 Workers limits、D1 pricing/limits、D1 Analytics 与 Analytics Token 权限文档。
+
+本节于 2026-08-20 核对的官方依据：
+
+- [Workers 平台限制](https://developers.cloudflare.com/workers/platform/limits/)：Free 请求额度按账户统计并在 UTC 00:00 重置；
+- [D1 定价](https://developers.cloudflare.com/d1/platform/pricing/)与 [D1 平台限制](https://developers.cloudflare.com/d1/platform/limits/)：Free 行读、行写、账户存储、单库容量和数据库数量边界；
+- [D1 Metrics and analytics](https://developers.cloudflare.com/d1/observability/metrics-analytics/)：GraphQL 支持账户内全部数据库或单数据库口径；
+- [Analytics API Token](https://developers.cloudflare.com/analytics/graphql-api/getting-started/authentication/api-token-auth/)：使用 Account / Account Analytics / Read 权限。
+
+### 22.9 可测验收清单
+
+- [ ] 用量面板只配置 `CF_ACCOUNT_ID` 与 `CF_ANALYTICS_API_TOKEN`；只给这两项时能查询，任一缺失时零网络并精确报告缺失项。
+- [ ] 活动 Worker、Pages、README 与活动测试不再读取、要求或展示 `CF_WORKER_SCRIPT_NAME`、`CF_D1_DATABASE_ID`。
+- [ ] GraphQL 请求不含脚本名或数据库 ID 变量/过滤器；Workers 与 D1 数值覆盖整个 `CF_ACCOUNT_ID` 账户。
+- [ ] `/api/admin/usage` 只返回第 22.5 节账户字段，无任何本脚本、本数据库或项目警戒线字段/告警。
+- [ ] Pages 精确显示四个账户指标，三语均不再出现“本项目”“本脚本”“本数据库”或“三个项目标识”。
+- [ ] 账户级阈值、UTC 重置、fresh/stale 缓存、固定错误码、`super_admin` 同源限制和 Token 零泄漏全部回归通过。
+- [ ] 无法证明完整账户聚合时安全失败，不展示部分合计。
+- [ ] `DB` 业务 binding、D1 数据、账号/会话/同步、其余 20 条 API、Pages 静态发布与普通媒体行为无变化。
+- [ ] 两仓完整本地门与成对兼容门全绿；证据只证明当前本地候选，不冒充 Cloudflare 生产状态。
+
+### 22.10 非目标、风险与回滚
+
+非目标：
+
+- 不新增项目级 Analytics 替代接口、可选筛选器或兼容开关。
+- 不修改 D1 schema、数据、binding 或业务查询预算。
+- 不创建/轮换 Token，不扩大 Token 权限，不远程删除变量，不 commit、push、发布或部署。
+- 不把静态 Free profile 数值宣传为所有 Cloudflare 套餐的通用额度。
+
+主要风险与缓解：
+
+| 风险 | 后果 | 缓解 / 停止条件 |
+| --- | --- | --- |
+| 账户含多个项目 | 数值高于 UXUVideo 自身消耗 | UI 明确标“账户总量”，不再暗示项目归因 |
+| D1 分组被节点上限截断 | 部分数据冒充账户总额 | 完整性不可证明即不可用；禁止静默截断 |
+| Analytics 延迟或抽样 | 数值不是实时计费账本 | 保留 `observedAt`、stale 标识与官方 Dashboard/规则优先说明 |
+| 只更新 Worker 或 Pages | 旧解析器因字段删除失败 | 成对版本/manifest/workerRange 门；单侧候选 NO-GO |
+| 删除远程旧变量后回滚 | 旧 Worker 无法查询项目级指标 | 本修订不删除远程变量；清理须另行授权并先确认回滚方案 |
+
+回滚恢复上一对兼容 Worker/Pages 字节；不修改 D1 数据。旧变量若仍在 Dashboard 可被旧 Worker 重新使用，新 Worker 始终忽略。
+
+### 22.11 审批门
+
+**审批记录：** 用户已于 2026-08-21 批准当前第 22 节候选。该批准仅授权进入 `@uxu-code:plan`，以替换/修订现有计划与 todo；不授权修改 `_worker.js`、测试、Pages、README、版本、真实 Cloudflare 配置，也不授权 commit、push、发布或部署。任何后续实质修改都会使本节重新变为待批准。

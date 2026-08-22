@@ -1,0 +1,93 @@
+{
+  "schema_version": "s22-task-receipt/v1",
+  "audit_profile": "section22-release-finalization/v1",
+  "task_id": "S22-R25",
+  "attempt_id": "run-20260822-s22-r25-01",
+  "owner": "native-worker:s22_r25",
+  "executor": "main-agent:serial",
+  "status": "completed",
+  "created_at": "2026-08-22T16:37:51.4798424+08:00",
+  "baseline": {
+    "create_exit_code": 0,
+    "prewrite_exit_code": 0,
+    "inputs_exit_code": 0,
+    "terminal_exit_code": 0,
+    "approved_plan_snapshot": "identical"
+  },
+  "validation": [
+    {
+      "id": "worker-full-gate",
+      "command": "node --check _worker.js; npm test; npm run check:size; git diff --check",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "green"
+    },
+    {
+      "id": "pages-full-gate",
+      "command": "npm test; npm run lint; node node_modules/typescript/bin/tsc --noEmit; npm run build; npm run test:e2e; npm run release:build; git diff --check",
+      "repository": "pages",
+      "exit_code": 0,
+      "result": "green"
+    },
+    {
+      "id": "paired-final-gate",
+      "command": "node --test work-products/tests/section22-final-gate-audit.test.mjs; node work-products/scripts/section22-final-gate-audit.mjs --task-temp work-products/tests/work/section22-r25-temp",
+      "repository": "worker+pages",
+      "exit_code": 0,
+      "result": "green"
+    },
+    {
+      "id": "section22-rollback",
+      "command": "node --test work-products/tests/section22-current-candidate-rollback.test.mjs",
+      "repository": "worker+pages",
+      "exit_code": 0,
+      "result": "green"
+    },
+    {
+      "id": "candidate-hygiene",
+      "command": "node --test work-products/tests/candidate-hygiene.test.mjs",
+      "repository": "worker+pages",
+      "exit_code": 0,
+      "result": "green"
+    },
+    {
+      "id": "evidence-audit",
+      "command": "node --test work-products/tests/section22-receipt-readback-audit.test.mjs",
+      "repository": "worker",
+      "exit_code": 0,
+      "result": "green"
+    },
+    {
+      "id": "terminal-verify",
+      "command": "verify approved snapshot, release transients, rollback namespace, task temp, and paired final gate",
+      "repository": "worker+pages",
+      "exit_code": 0,
+      "result": "green"
+    }
+  ],
+  "evidence": {
+    "path": "work-products/evidence/section22/review-remediation-release-finalization-validation.md",
+    "bytes": 3177,
+    "sha256": "e567ea583abd84410e0449d61b4367b189d9bb7f9c24b056631e7a09e316ab6b"
+  },
+  "terminal": {
+    "verification": "green",
+    "approved_plan_snapshot": "identical",
+    "release_current": "identical",
+    "release_transients": "absent",
+    "rollback_namespace": "absent",
+    "task_temp": "present: empty"
+  },
+  "remaining_work": [
+    "Run @uxu-code:ship and require GO before remote publication.",
+    "Publish GitHub Pages and Cloudflare Workers under the user-approved deployment scope.",
+    "Run production smoke tests and retain remote receipts."
+  ],
+  "authorization": {
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "network": false,
+    "remote_changes": false
+  }
+}

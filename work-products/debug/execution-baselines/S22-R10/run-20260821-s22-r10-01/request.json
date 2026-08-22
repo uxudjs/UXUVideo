@@ -1,0 +1,95 @@
+{
+  "schema_version": "s22-execution-baseline-request/v1",
+  "task_id": "S22-R10",
+  "attempt_id": "run-20260821-s22-r10-01",
+  "owner": "native-worker:s22_r10",
+  "no_replace": true,
+  "attempt_root": "work-products/debug/execution-baselines/S22-R10/run-20260821-s22-r10-01",
+  "targets": [
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-recovery-plan-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-baseline-recovery-plan-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/work/execution-baseline-tool"
+    }
+  ],
+  "inputs": [
+    {
+      "repository": "worker",
+      "path": "package.json"
+    },
+    {
+      "repository": "worker",
+      "path": "package-lock.json"
+    },
+    {
+      "repository": "worker",
+      "path": "node_modules/.package-lock.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/scripts/execution-baseline.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/blocked-r01-plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/evidence/section22/blocked-r01-todo.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/execution-baselines/S22-R01/run-20260821-s22-r01-01/manifest.json"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/tests/section22-plan-contract.test.mjs"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/debug/approval-baselines/s22-account-usage-baseline-recovery-20260821-01/plan.md"
+    },
+    {
+      "repository": "worker",
+      "path": "work-products/plan.md"
+    }
+  ],
+  "protected_inputs": [],
+  "repositories": [
+    {
+      "id": "worker",
+      "root": ".",
+      "exclude": [
+        "work-products/debug/execution-baselines/S22-R10",
+        "work-products/tests/section22-baseline-recovery-plan-contract.test.mjs",
+        "work-products/tests/section22-recovery-plan-contract.test.mjs",
+        "work-products/tests/work/execution-baseline-tool"
+      ]
+    }
+  ],
+  "toolchain": {
+    "node_version": "v20.19.2",
+    "entrypoints": [
+      {
+        "repository": "worker",
+        "path": "work-products/scripts/execution-baseline.mjs"
+      }
+    ]
+  },
+  "environment": [
+    {
+      "key": "GIT_OPTIONAL_LOCKS",
+      "state": "present",
+      "sensitive": false,
+      "value": "0"
+    }
+  ],
+  "generated_namespaces": []
+}
