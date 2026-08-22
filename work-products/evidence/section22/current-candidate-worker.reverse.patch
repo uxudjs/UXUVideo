@@ -28,7 +28,7 @@ index 0bec84c376f2bc3f3b8e568e35b491f4dfcb99f7..4426e9f5fcb7c89fe193bcab386086a8
  ### 使用限制
  
 diff --git b/_worker.js a/_worker.js
-index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2ab0492236 100644
+index 552549b3248a604cf53467fac576a14b1b07d4f2..b91ce3a523ad58fa8fecc2f762a66e2ab0492236 100644
 --- b/_worker.js
 +++ a/_worker.js
 @@ -3476,16 +3476,20 @@ const USAGE_GRAPHQL_URL = 'https://api.cloudflare.com/client/v4/graphql';
@@ -77,8 +77,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
 -        limit: ${USAGE_D1_GROUP_LIMIT}
 +        limit: 10000
          filter: { date_geq: $dateStart, date_leq: $dateEnd }
--      ) { dimensions { databaseId } max { databaseSizeBytes } avg { sampleInterval } }
-+      ) { dimensions { databaseId } max { databaseSizeBytes } }
+       ) { dimensions { databaseId } max { databaseSizeBytes } }
 +      databaseStorage: d1StorageAdaptiveGroups(
 +        limit: 1
 +        filter: { databaseId: $databaseId, date_geq: $dateStart, date_leq: $dateEnd }
@@ -108,7 +107,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
    };
  }
  
-@@ -3542,60 +3565,28 @@ function usagePeriod(nowMs) {
+@@ -3542,63 +3565,28 @@ function usagePeriod(nowMs) {
  }
  
  function usageInteger(value) {
@@ -153,7 +152,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
  }
  
 -function usageGroups(account, name, {
--  limit, exactLength = null, groupedByDatabase = false, rejectLimit = false, requireUnsampled = false,
+-  limit, exactLength = null, groupedByDatabase = false, rejectLimit = false, requireSampleInterval = false,
 -}) {
 -  const groups = account[name];
 -  if (!Array.isArray(groups)
@@ -164,7 +163,10 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
 -  }
 -  for (const group of groups) {
 -    if (!isRecord(group)) throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
--    if (requireUnsampled && (!isRecord(group.avg) || group.avg.sampleInterval !== 1)) {
+-    if (requireSampleInterval
+-      && (!isRecord(group.avg)
+-        || !Number.isFinite(group.avg.sampleInterval)
+-        || group.avg.sampleInterval < 1)) {
 -      throw new UsageFailure('USAGE_UPSTREAM_ERROR', 502);
 -    }
 -    if (groupedByDatabase
@@ -183,7 +185,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
  }
  
  function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
-@@ -3607,6 +3598,12 @@ function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
+@@ -3610,6 +3598,12 @@ function usageLevel(value, limit, thresholds = [0.7, 0.85, 0.95, 1]) {
    return 'normal';
  }
  
@@ -196,7 +198,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
  function addUsageWarning(warnings, levels, codePrefix, level) {
    levels.push(level);
    if (level !== 'normal') warnings.push(`${codePrefix}_${level.toUpperCase()}`);
-@@ -3618,34 +3615,32 @@ function highestUsageLevel(levels) {
+@@ -3621,34 +3615,32 @@ function highestUsageLevel(levels) {
    ), 'normal');
  }
  
@@ -207,13 +209,13 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
 -  }
 -  const account = accounts[0];
 -  const accountWorkers = usageGroups(account, 'accountWorkers', {
--    limit: 1, exactLength: 1, requireUnsampled: true,
+-    limit: 1, exactLength: 1, requireSampleInterval: true,
 -  });
 -  const d1Usage = usageGroups(account, 'd1Usage', {
--    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireUnsampled: true,
+-    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireSampleInterval: true,
 -  });
 -  const d1Storage = usageGroups(account, 'd1Storage', {
--    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true, requireUnsampled: true,
+-    limit: USAGE_D1_GROUP_LIMIT, groupedByDatabase: true, rejectLimit: true,
 -  });
 +function buildUsageData(payload, config, period, observedAt) {
 +  const account = payload?.data?.viewer?.accounts?.[0];
@@ -249,7 +251,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
    };
  
    const warnings = [];
-@@ -3655,6 +3650,9 @@ function buildUsageData(payload, period, observedAt) {
+@@ -3658,6 +3650,9 @@ function buildUsageData(payload, period, observedAt) {
    addUsageWarning(warnings, levels, 'D1_ACCOUNT_READ', usageLevel(d1.accountRowsRead, d1.accountRowsReadLimit, d1Thresholds));
    addUsageWarning(warnings, levels, 'D1_ACCOUNT_WRITE', usageLevel(d1.accountRowsWritten, d1.accountRowsWrittenLimit, d1Thresholds));
    addUsageWarning(warnings, levels, 'D1_ACCOUNT_STORAGE', usageLevel(d1.accountStorageBytes, d1.accountStorageBytesLimit, d1Thresholds));
@@ -259,7 +261,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
  
    return {
      configured: true,
-@@ -3671,7 +3669,7 @@ function buildUsageData(payload, period, observedAt) {
+@@ -3674,7 +3669,7 @@ function buildUsageData(payload, period, observedAt) {
  
  async function usageCacheContext(config, period) {
    const fingerprint = bytesToHex(await sha256(new TextEncoder().encode(
@@ -268,7 +270,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
    )));
    const request = new Request(`https://uxuv.invalid/.usage-cache/${fingerprint}`);
    return { cache: globalThis.caches?.default ?? null, request };
-@@ -3703,8 +3701,9 @@ async function writeUsageCache(cacheContext, snapshot) {
+@@ -3706,8 +3701,9 @@ async function writeUsageCache(cacheContext, snapshot) {
  async function fetchUsageData(config, period, observedAt) {
    const controller = new AbortController();
    const timeout = setTimeout(() => controller.abort(), 10_000);
@@ -279,7 +281,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
        method: 'POST',
        headers: {
          Authorization: `Bearer ${config.token}`,
-@@ -3714,6 +3713,8 @@ async function fetchUsageData(config, period, observedAt) {
+@@ -3717,6 +3713,8 @@ async function fetchUsageData(config, period, observedAt) {
          query: USAGE_QUERY,
          variables: {
            accountTag: config.accountId,
@@ -288,7 +290,7 @@ index d006cd517aa83819842ca1a9075424647a427473..b91ce3a523ad58fa8fecc2f762a66e2a
            datetimeStart: period.start,
            datetimeEnd: period.end,
            dateStart: period.date,
-@@ -3723,22 +3724,28 @@ async function fetchUsageData(config, period, observedAt) {
+@@ -3726,22 +3724,28 @@ async function fetchUsageData(config, period, observedAt) {
        redirect: 'error',
        signal: controller.signal,
      });

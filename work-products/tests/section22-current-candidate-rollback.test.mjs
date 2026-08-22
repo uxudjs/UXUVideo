@@ -25,6 +25,7 @@ const artifacts = {
   pagesForward: join(evidenceRoot, "current-candidate-pages.forward.patch"),
   pagesReverse: join(evidenceRoot, "current-candidate-pages.reverse.patch"),
 };
+const candidateId = "s22-production-usage-fix-20260822-01";
 
 const workerFiles = new Set(["README.md", "CHANGELOG.md", "_worker.js", "package.json", "package-lock.json"]);
 const pagesFiles = new Set([
@@ -239,12 +240,13 @@ function patchRecord(path, bytes) {
 function generate() {
   mkdirSync(workRoot, { recursive: true });
   mkdirSync(evidenceRoot, { recursive: true });
+  const priorManifest = JSON.parse(readFileSync(artifacts.manifest, "utf8"));
   const generationRoot = join(workRoot, `generate-${process.pid}-${randomUUID()}`);
   let worker;
   let pages;
   try {
-    worker = stageCandidate(workerRoot, join(generationRoot, "UXUVideo"), text(git(workerRoot, ["rev-parse", "HEAD"])).trim(), workerScope);
-    pages = stageCandidate(pagesRoot, join(generationRoot, "UXUV-Pages"), text(git(pagesRoot, ["rev-parse", "HEAD"])).trim(), pagesScope);
+    worker = stageCandidate(workerRoot, join(generationRoot, "UXUVideo"), priorManifest.repositories.worker.baseCommit, workerScope);
+    pages = stageCandidate(pagesRoot, join(generationRoot, "UXUV-Pages"), priorManifest.repositories.pages.baseCommit, pagesScope);
   } finally {
     const boundary = `${resolve(workRoot)}${sep}`;
     if (!resolve(generationRoot).startsWith(boundary)) throw new Error("refusing unsafe generation cleanup");
@@ -258,7 +260,7 @@ function generate() {
   };
   const manifest = {
     schemaVersion: "section22-current-candidate-rollback/v1",
-    candidateId: "s22-review-remediation-20260822-13",
+    candidateId,
     generatedAt: new Date().toISOString(),
     repositories: { worker: worker.repository, pages: pages.repository },
     patches: Object.fromEntries(Object.entries(patches).map(([name, bytes]) => [name, patchRecord(artifacts[name], bytes)])),
@@ -276,7 +278,7 @@ function readEvidence() {
   assert.doesNotMatch(manifestText, /[A-Za-z]:[\\/]/u);
   const manifest = JSON.parse(manifestText);
   assert.equal(manifest.schemaVersion, "section22-current-candidate-rollback/v1");
-  assert.equal(manifest.candidateId, "s22-review-remediation-20260822-13");
+  assert.equal(manifest.candidateId, candidateId);
   assert.deepEqual(manifest.phases, [
     "forward-current-candidate",
     "reverse-current-head-pair",
